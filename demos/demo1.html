@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>战略材料知识库 · 智能问答</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+  background:#f5f6f8; color:#1a1d23; height:100vh; overflow:hidden;
+  display:flex; flex-direction:column;
+}
+header {
+  background:linear-gradient(135deg,#1e3a5f 0%,#2c5282 100%);
+  color:#fff; padding:16px 28px; display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 2px 8px rgba(0,0,0,.12); z-index:10;
+}
+header h1 { font-size:17px; font-weight:600; letter-spacing:.3px; display:flex; align-items:center; gap:10px; }
+.badge {
+  background:rgba(255,255,255,.18); padding:3px 9px; border-radius:4px;
+  font-size:11px; font-weight:400; letter-spacing:.5px;
+}
+.header-meta { font-size:12px; opacity:.85; display:flex; gap:18px; }
+.layout { display:flex; flex:1; overflow:hidden; }
+
+/* 左侧材料库 */
+aside {
+  width:290px; background:#fff; border-right:1px solid #e3e6eb;
+  display:flex; flex-direction:column; flex-shrink:0;
+}
+.aside-head {
+  padding:14px 18px 10px; border-bottom:1px solid #eef0f3;
+  font-size:12px; font-weight:600; color:#4a5568; letter-spacing:.5px;
+}
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:14px 16px; }
+.stat {
+  background:#f8f9fb; border-radius:6px; padding:10px 12px; border:1px solid #eef0f3;
+}
+.stat-num { font-size:19px; font-weight:700; color:#1e3a5f; line-height:1.2; }
+.stat-label { font-size:10.5px; color:#8b95a5; margin-top:3px; letter-spacing:.3px; }
+.doc-list { flex:1; overflow-y:auto; padding:4px 10px 16px; }
+.doc-list-title { font-size:11px; color:#8b95a5; padding:10px 8px 6px; letter-spacing:.5px; }
+.doc-item {
+  padding:8px 10px; border-radius:5px; font-size:12px; color:#3d4757;
+  margin-bottom:2px; cursor:default; display:flex; align-items:center; gap:7px;
+  transition:background .15s;
+}
+.doc-item:hover { background:#f0f4f9; }
+.doc-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.dot-strategy { background:#3182ce; }
+.dot-biz { background:#38a169; }
+.dot-func { background:#d69e2e; }
+.dot-topic { background:#9f7aea; }
+
+/* 右侧问答 */
+main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.chat { flex:1; overflow-y:auto; padding:26px 34px 10px; }
+.welcome { max-width:660px; margin:40px auto; text-align:center; }
+.welcome-icon {
+  width:56px; height:56px; background:linear-gradient(135deg,#2c5282,#4299e1);
+  border-radius:14px; margin:0 auto 18px; display:flex; align-items:center;
+  justify-content:center; font-size:26px;
+}
+.welcome h2 { font-size:19px; color:#1e3a5f; margin-bottom:8px; font-weight:600; }
+.welcome p { font-size:13px; color:#718096; line-height:1.7; }
+.suggests { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px; }
+.suggest {
+  background:#fff; border:1px solid #e3e6eb; border-radius:8px; padding:12px 14px;
+  font-size:12.5px; color:#3d4757; text-align:left; cursor:pointer;
+  transition:all .18s; line-height:1.5;
+}
+.suggest:hover { border-color:#4299e1; box-shadow:0 2px 10px rgba(66,153,225,.13); transform:translateY(-1px); }
+.suggest-tag { font-size:10px; color:#4299e1; display:block; margin-bottom:4px; letter-spacing:.4px; }
+
+.msg { margin-bottom:22px; animation:fadeUp .3s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.msg-user { display:flex; justify-content:flex-end; }
+.msg-user .bubble {
+  background:#2c5282; color:#fff; padding:11px 16px; border-radius:12px 12px 3px 12px;
+  max-width:72%; font-size:13.5px; line-height:1.6;
+}
+.msg-ai { display:flex; gap:11px; }
+.avatar {
+  width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,#2c5282,#4299e1);
+  display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; color:#fff;
+}
+.ai-body { flex:1; max-width:88%; }
+.answer {
+  background:#fff; border:1px solid #e3e6eb; border-radius:3px 12px 12px 12px;
+  padding:16px 18px; font-size:13.5px; line-height:1.75; color:#2d3748;
+}
+.answer h3 {
+  font-size:12px; color:#2c5282; font-weight:600; margin:14px 0 7px;
+  letter-spacing:.4px; display:flex; align-items:center; gap:6px;
+}
+.answer h3:first-child { margin-top:0; }
+.answer h3::before { content:''; width:3px; height:12px; background:#4299e1; border-radius:2px; }
+.answer ul { margin:0 0 4px 0; padding-left:18px; }
+.answer li { margin-bottom:5px; }
+.answer strong { color:#1e3a5f; font-weight:600; }
+.kpi-inline {
+  display:inline-block; background:#ebf4ff; color:#2c5282; padding:1px 6px;
+  border-radius:3px; font-size:12px; font-weight:600; margin:0 1px;
+}
+.sources { margin-top:11px; }
+.sources-label { font-size:11px; color:#8b95a5; margin-bottom:7px; letter-spacing:.4px; }
+.source-card {
+  background:#f8f9fb; border-left:3px solid #4299e1; border-radius:0 6px 6px 0;
+  padding:9px 13px; margin-bottom:6px; font-size:11.5px; color:#4a5568; line-height:1.6;
+}
+.source-card .src-title {
+  font-weight:600; color:#2c5282; font-size:11.5px; margin-bottom:3px;
+  display:flex; justify-content:space-between;
+}
+.src-score { color:#38a169; font-weight:600; font-size:10.5px; }
+
+.input-bar {
+  padding:14px 34px 20px; background:#f5f6f8; border-top:1px solid #e3e6eb;
+}
+.input-wrap {
+  background:#fff; border:1.5px solid #dde1e7; border-radius:10px;
+  display:flex; align-items:flex-end; padding:9px 9px 9px 15px;
+  transition:border-color .18s, box-shadow .18s; max-width:900px; margin:0 auto;
+}
+.input-wrap:focus-within { border-color:#4299e1; box-shadow:0 0 0 3px rgba(66,153,225,.11); }
+textarea {
+  flex:1; border:none; outline:none; resize:none; font-size:13.5px;
+  font-family:inherit; line-height:1.6; max-height:100px; color:#1a1d23;
+  background:transparent;
+}
+textarea::placeholder { color:#a8b1bf; }
+.send-btn {
+  background:#2c5282; color:#fff; border:none; border-radius:7px;
+  padding:8px 18px; font-size:13px; cursor:pointer; font-family:inherit;
+  transition:background .18s; font-weight:500;
+}
+.send-btn:hover { background:#1e3a5f; }
+.send-btn:disabled { background:#cbd5e0; cursor:not-allowed; }
+.hint { text-align:center; font-size:10.5px; color:#a8b1bf; margin-top:8px; letter-spacing:.3px; }
+.typing { display:inline-flex; gap:3px; padding:4px 0; }
+.typing span {
+  width:6px; height:6px; border-radius:50%; background:#a0aec0;
+  animation:bounce 1.2s infinite;
+}
+.typing span:nth-child(2){ animation-delay:.15s }
+.typing span:nth-child(3){ animation-delay:.3s }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0);opacity:.5} 30%{transform:translateY(-5px);opacity:1} }
+::-webkit-scrollbar { width:7px; }
+::-webkit-scrollbar-thumb { background:#d3d8e0; border-radius:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    战略材料知识库 · 智能问答
+    <span class="badge">RAG 检索增强</span>
+  </h1>
+  <div class="header-meta">
+    <span>材料库：209 份 / 2,310 万字符</span>
+    <span>覆盖：4 战队 · 5 产品线 · 7 职能</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="aside-head">材料库概览</div>
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-num">209</div><div class="stat-label">战略类材料</div></div>
+      <div class="stat"><div class="stat-num">V12</div><div class="stat-label">公司战略版本</div></div>
+      <div class="stat"><div class="stat-num">50</div><div class="stat-label">公司级重点工作</div></div>
+      <div class="stat"><div class="stat-num">4</div><div class="stat-label">程序文件</div></div>
+    </div>
+    <div class="doc-list" id="docList"></div>
+  </aside>
+
+  <main>
+    <div class="chat" id="chat">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">🔍</div>
+        <h2>问点什么吧，材料库已就绪</h2>
+        <p>基于 209 份战略材料构建的知识库，支持跨材料检索与要点归纳。<br>你可以问战略目标、战队分工、课题进展、预测口径等任何问题。</p>
+        <div class="suggests" id="suggests"></div>
+      </div>
+    </div>
+
+    <div class="input-bar">
+      <div class="input-wrap">
+        <textarea id="input" rows="1" placeholder="例如：四个战队的战略目标分别是什么？"></textarea>
+        <button class="send-btn" id="send">发送</button>
+      </div>
+      <div class="hint">演示版使用本地检索；生产环境接入大模型 API 后可支持开放式生成</div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ============ 知识库数据（模拟从 209 份材料抽取的结构化片段） ============
+const KNOWLEDGE = [
+  {
+    id: 'K01', title: '公司级战略规划 V12', category: 'strategy', cat: '公司战略',
+    content: '公司战略正式文件迭代至 V12，经 4 轮管理层汇报后上报集团。规划周期聚焦十五五（2026—2030），收敛形成 50 项公司级重点工作。战略体系为"公司—战队—产品线—职能"四级结构。',
+    keywords: ['公司战略','V12','十五五','50项','四级','上报集团','规划周期','2026','2030'],
+    numbers: ['V12', '4轮', '50项']
+  },
+  {
+    id: 'K02', title: '四大业务战队战略 · 德系', category: 'biz', cat: '业务战队',
+    content: '德系战队（含大众、奥迪、捷达三个客户体系）在十四五期间整体未达预期，是 GAP 复盘中的主要负向偏差来源。十五五规划重点为存量份额稳固与新能源配套产品导入，需重点说明项目清单变化原因。',
+    keywords: ['德系','大众','奥迪','捷达','未达预期','负向偏差','GAP','份额','新能源'],
+    numbers: ['3个客户体系']
+  },
+  {
+    id: 'K03', title: '四大业务战队战略 · 日系', category: 'biz', cat: '业务战队',
+    content: '日系战队（丰田体系）表现超预期，正向偏差约 21.5 亿元，是公司整体业绩的主要支撑。十五五规划重点为产能承接能力建设与新产品同步开发节奏匹配。',
+    keywords: ['日系','丰田','超预期','正向偏差','21.5亿','产能','新产品'],
+    numbers: ['+21.5亿元']
+  },
+  {
+    id: 'K04', title: '四大业务战队战略 · 自主', category: 'biz', cat: '业务战队',
+    content: '自主战队 OI 转化率 57%，低于目标水平，主要制约因素为项目获取概率偏低与部分产品竞争力不足。十五五规划重点为提升中标率、优化报价策略与产品组合。',
+    keywords: ['自主','OI','转化率','57%','中标率','报价','产品组合'],
+    numbers: ['57%']
+  },
+  {
+    id: 'K05', title: '四大业务战队战略 · 代工', category: 'biz', cat: '业务战队',
+    content: '代工战队定位为产能利用率调节与风险分散，十五五规划重点为优质代工客户筛选与装载率提升，需与自制产能排产统筹考虑。',
+    keywords: ['代工','产能利用','装载率','风险分散','排产'],
+    numbers: []
+  },
+  {
+    id: 'K06', title: '五条产品线规划 P01—P05', category: 'biz', cat: '产品线',
+    content: '产品线划分为 P01 至 P05 五条，规划编制需明确各产品线的技术路线、目标客户、生命周期阶段与销量预测。产品战略汇报需与业务战队战略对齐，避免重复投入与资源冲突。',
+    keywords: ['P01','P02','P03','P04','P05','产品线','技术路线','生命周期','销量预测'],
+    numbers: ['5条']
+  },
+  {
+    id: 'K07', title: '七大职能模块战略承接', category: 'func', cat: '职能模块',
+    content: '七大职能模块包括财务、研发、制造、质量、供应链、人力资源、信息技术。职能战略需承接业务侧资源需求，形成"业务提需求—职能给承接"的闭环。2025 年 6 月启动职能战略，10 月完成承接排期。',
+    keywords: ['财务','研发','制造','质量','供应链','人力资源','信息技术','职能','承接'],
+    numbers: ['7大模块']
+  },
+  {
+    id: 'K08', title: '销售预测体系与口径规则', category: 'topic', cat: '预测管理',
+    content: '销售预测按统一模板组织四大战队更新，逐项核对项目归属、获取概率（Chance）、生命周期、装载率、单价年降、量纲对应与预算衔接。累计维护 14 个迭代版本，单版本模型含公式与计算链路超 1,300 万字符。',
+    keywords: ['销售预测','模板','Chance','装载率','单价年降','量纲','预算','14个版本','1300万'],
+    numbers: ['14版', '1300万字符']
+  },
+  {
+    id: 'K09', title: '项目风险分级标准', category: 'topic', cat: '风险管控',
+    content: '建立项目风险分级标准：获取概率 Chance ≤50% 为高风险，50—80% 为中风险，80—100% 为低风险。同时按技术、客户、质量、成本四个维度做竞争性判断，风险结论纳入预测复核流程。',
+    keywords: ['风险分级','Chance','高风险','中风险','低风险','技术','客户','质量','成本','四维'],
+    numbers: ['3档+4维']
+  },
+  {
+    id: 'K10', title: '十四五 GAP 差距分析报告', category: 'topic', cat: '差距分析',
+    content: '差距分析覆盖德系、日系、自主三大板块。要求各战队从三个层面解释差异：一为项目变化（清单增减），二为内外部成因（市场、客户、竞争），三为举措对应关系（已采取/拟采取什么动作）。',
+    keywords: ['GAP','差距分析','项目变化','成因','举措','三层','德系','日系','自主'],
+    numbers: ['3大板块', '3层解释']
+  },
+  {
+    id: 'K11', title: '战略课题管理改善方案', category: 'topic', cat: '课题治理',
+    content: '识别三类核心问题：①课题大而全、②与 2030 目标支撑关系不清、③日常运营与战略工作混同。提出"战略—项目组合—项目分解"三层治理结构，并配套战略性工作定义、负责人激励机制与战略预算机制。',
+    keywords: ['课题','治理','大而全','2030','三层治理','项目组合','激励','预算'],
+    numbers: ['3类问题', '3层治理']
+  },
+  {
+    id: 'K12', title: '战略地图（2025版 / 2026版）', category: 'strategy', cat: '战略地图',
+    content: '战略地图年度迭代，完成 2025 版与 2026 版，输出业务、产品、职能、课题四类主题的匹配与调整建议。战略地图用于将战略意图转化为各层级可执行的举措序列。',
+    keywords: ['战略地图','2025版','2026版','主题','举措','迭代','业务','产品','职能','课题'],
+    numbers: ['2个版本']
+  },
+  {
+    id: 'K13', title: '战略管理程序文件', category: 'func', cat: '流程制度',
+    content: '独立拟制与修订 4 类程序文件：《公司级战略》CP-027-04 V6.0、《业务/职能级战略》、《战略课题管理》、《战略宣贯》。设计战略文件分级管控机制：跨部门查阅须经双审批、由总经办统一发放，实现全流程可追溯。',
+    keywords: ['程序文件','CP-027-04','V6.0','战略宣贯','双审批','分级管控','保密','追溯'],
+    numbers: ['4类文件']
+  },
+  {
+    id: 'K14', title: '年度部门方针与 KPI/MBO 管理', category: 'func', cat: '指标管理',
+    content: '完成年度全部部门方针的修订与签署确认，实现方针与战略举措逐条对应。协同开展公司及部门方针、KPI 与 MBO 的核对、签批与反馈，确保战略目标在指标层可追踪。',
+    keywords: ['方针','KPI','MBO','签批','指标','战略举措','逐条对应'],
+    numbers: []
+  },
+  {
+    id: 'K15', title: '十五五目标论证材料', category: 'strategy', cat: '目标论证',
+    content: '组织公司级战略会开展十五五目标论证与课题规划。论证需回答三个问题：目标是否与市场容量匹配、是否有项目支撑、资源投入是否可承受。论证结论纳入战略课题立项依据。',
+    keywords: ['十五五','目标论证','战略会','市场容量','项目支撑','资源投入','课题立项'],
+    numbers: []
+  }
+];
+
+const SUGGEST_QUESTIONS = [
+  { tag: '业务战队', q: '四个战队的战略目标分别是什么？各自的表现如何？' },
+  { tag: '差距分析', q: '十四五的差距分析覆盖哪些板块？每个战队要怎么解释差异？' },
+  { tag: '风险管控', q: '项目风险分级标准是怎么定的？' },
+  { tag: '课题治理', q: '战略课题管理存在什么问题？改善方案是什么？' }
+];
+
+// ============ 检索逻辑 ============
+function tokenize(text) {
+  const t = text.toLowerCase();
+  const tokens = new Set();
+  // 英文/数字词
+  (t.match(/[a-z0-9]+/g) || []).forEach(w => { if (w.length > 1) tokens.add(w); });
+  // 中文 2-gram + 3-gram
+  const cn = t.replace(/[^\u4e00-\u9fa5]/g, ' ');
+  cn.split(/\s+/).filter(Boolean).forEach(seg => {
+    for (let i = 0; i < seg.length - 1; i++) tokens.add(seg.slice(i, i + 2));
+    for (let i = 0; i < seg.length - 2; i++) tokens.add(seg.slice(i, i + 3));
+  });
+  return tokens;
+}
+
+function score(query, doc) {
+  const qTok = tokenize(query);
+  if (qTok.size === 0) return 0;
+  let s = 0;
+  const docText = (doc.title + ' ' + doc.content + ' ' + doc.keywords.join(' ') + ' ' + doc.cat).toLowerCase();
+  // 关键词精确命中（权重高）
+  for (const kw of doc.keywords) {
+    if (query.toLowerCase().includes(kw.toLowerCase())) s += 12;
+  }
+  // token 重叠
+  let hit = 0;
+  for (const tk of qTok) {
+    if (docText.includes(tk)) hit++;
+  }
+  s += (hit / Math.sqrt(qTok.size)) * 4;
+  // 标题命中加分
+  for (const tk of qTok) {
+    if (doc.title.toLowerCase().includes(tk)) { s += 5; break; }
+  }
+  return s;
+}
+
+function retrieve(query, topK = 3) {
+  const scored = KNOWLEDGE.map(d => ({ ...d, score: score(query, d) }))
+    .filter(d => d.score > 6)
+    .sort((a, b) => b.score - a.score);
+  return scored.slice(0, topK);
+}
+
+// ============ 回答生成 ============
+function generateAnswer(query, docs) {
+  if (docs.length === 0) {
+    return `<h3>未找到直接相关材料</h3>
+      <p>知识库中暂无与"${escapeHtml(query)}"直接匹配的片段。建议：<br>
+      ① 换用更具体的关键词（如"德系""Chance""课题治理"）<br>
+      ② 或明确问题范围（如"哪个战队的偏差最大"）</p>`;
+  }
+
+  const top = docs[0];
+  let html = '';
+
+  // 结论
+  html += `<h3>结论</h3><p>${summarize(top)}</p>`;
+
+  // 依据（多材料时展开）
+  if (docs.length > 1) {
+    html += `<h3>依据要点</h3><ul>`;
+    for (const d of docs) {
+      const key = extractKeyPoint(d);
+      if (key) html += `<li><strong>${d.cat}</strong>：${key}</li>`;
+    }
+    html += `</ul>`;
+  }
+
+  // 数字提示
+  const nums = docs.flatMap(d => d.numbers).filter((v, i, a) => a.indexOf(v) === i);
+  if (nums.length) {
+    html += `<h3>关键数据</h3><p>` + nums.map(n => `<span class="kpi-inline">${n}</span>`).join(' ') + `</p>`;
+  }
+
+  // 建议
+  html += `<h3>可延伸追问</h3><p style="color:#718096;font-size:13px;">${followUps(top)}</p>`;
+
+  return html;
+}
+
+function summarize(doc) {
+  const c = doc.content;
+  const sentences = c.split(/(?<=[。；])/).filter(s => s.length > 4);
+  return sentences.slice(0, 2).join('');
+}
+
+function extractKeyPoint(doc) {
+  const s = doc.content.split(/(?<=[。；])/).filter(x => x.length > 5);
+  return s[0] || doc.content.slice(0, 60);
+}
+
+function followUps(doc) {
+  const map = {
+    '业务战队': '可以继续问：德系的偏差有多大？日系的 21.5 亿是怎么来的？自主 57% 转化率意味着什么？',
+    '差距分析': '可以继续问：GAP 复盘的三层解释具体怎么落地？各战队的改进举措有哪些？',
+    '风险管控': '可以继续问：高风险项目在预测里的处理规则是什么？四维竞争判断怎么打分？',
+    '课题治理': '可以继续问：三层治理结构怎么和现有 KPI 衔接？激励机制怎么设计？',
+    '预测管理': '可以继续问：14 个版本之间主要差异在哪？量纲不统一怎么解决？',
+    '公司战略': '可以继续问：50 项重点工作怎么分解到部门？四级规划体系怎么协同？'
+  };
+  return map[doc.cat] || '可以针对具体战队、产品线或职能模块继续追问。';
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ============ UI 交互 ============
+const chatEl = document.getElementById('chat');
+const inputEl = document.getElementById('input');
+const sendBtn = document.getElementById('send');
+const welcomeEl = document.getElementById('welcome');
+
+// 渲染材料库列表
+const docListEl = document.getElementById('docList');
+const dotMap = { strategy:'dot-strategy', biz:'dot-biz', func:'dot-func', topic:'dot-topic' };
+const groupMap = { strategy:'公司战略层', biz:'业务与产品层', func:'职能与制度层', topic:'专题与管控' };
+for (const g of ['strategy','biz','func','topic']) {
+  const h = document.createElement('div');
+  h.className = 'doc-list-title';
+  h.textContent = groupMap[g];
+  docListEl.appendChild(h);
+  KNOWLEDGE.filter(d => d.category === g).forEach(d => {
+    const div = document.createElement('div');
+    div.className = 'doc-item';
+    div.innerHTML = `<span class="doc-dot ${dotMap[g]}"></span><span>${d.title}</span>`;
+    docListEl.appendChild(div);
+  });
+}
+
+// 渲染推荐问题
+const sugEl = document.getElementById('suggests');
+SUGGEST_QUESTIONS.forEach(s => {
+  const btn = document.createElement('button');
+  btn.className = 'suggest';
+  btn.innerHTML = `<span class="suggest-tag">${s.tag}</span>${s.q}`;
+  btn.onclick = () => { inputEl.value = s.q; ask(); };
+  sugEl.appendChild(btn);
+});
+
+function addUserMsg(text) {
+  const d = document.createElement('div');
+  d.className = 'msg msg-user';
+  d.innerHTML = `<div class="bubble">${escapeHtml(text)}</div>`;
+  chatEl.appendChild(d);
+}
+
+function addAiMsg(html, docs) {
+  const d = document.createElement('div');
+  d.className = 'msg msg-ai';
+  let sourcesHtml = '';
+  if (docs.length) {
+    sourcesHtml = `<div class="sources"><div class="sources-label">引用来源（${docs.length} 个片段）</div>`;
+    docs.forEach(doc => {
+      sourcesHtml += `<div class="source-card">
+        <div class="src-title"><span>${doc.id} · ${doc.title}</span><span class="src-score">相关度 ${doc.score.toFixed(1)}</span></div>
+        ${doc.content.slice(0, 110)}…
+      </div>`;
+    });
+    sourcesHtml += `</div>`;
+  }
+  d.innerHTML = `<div class="avatar">AI</div><div class="ai-body"><div class="answer">${html}</div>${sourcesHtml}</div>`;
+  chatEl.appendChild(d);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+function addTyping() {
+  const d = document.createElement('div');
+  d.className = 'msg msg-ai';
+  d.id = 'typing';
+  d.innerHTML = `<div class="avatar">AI</div><div class="ai-body"><div class="answer"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
+  chatEl.appendChild(d);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+let busy = false;
+function ask() {
+  const q = inputEl.value.trim();
+  if (!q || busy) return;
+  busy = true;
+  sendBtn.disabled = true;
+
+  if (welcomeEl) { welcomeEl.remove(); }
+
+  addUserMsg(q);
+  inputEl.value = '';
+  inputEl.style.height = 'auto';
+
+  addTyping();
+
+  setTimeout(() => {
+    const t = document.getElementById('typing');
+    if (t) t.remove();
+    const docs = retrieve(q, 3);
+    addAiMsg(generateAnswer(q, docs), docs);
+    busy = false;
+    sendBtn.disabled = false;
+    inputEl.focus();
+  }, 620);
+}
+
+sendBtn.onclick = ask;
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(); }
+});
+inputEl.addEventListener('input', () => {
+  inputEl.style.height = 'auto';
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + 'px';
+});
+inputEl.focus();
+</script>
+</body>
+</html>

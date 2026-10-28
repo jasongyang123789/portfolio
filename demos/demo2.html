@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>销售预测差异 · 自动汇总工作流</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:-apple-system,"Microsoft YaHei","PingFang SC",sans-serif;
+  background:#f0f2f5; color:#1a1d23; height:100vh; overflow:hidden;
+  display:flex; flex-direction:column;
+}
+header {
+  background:linear-gradient(135deg,#1a365d 0%,#2b6cb0 100%); color:#fff;
+  padding:15px 30px; display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 2px 10px rgba(0,0,0,.15); z-index:20;
+}
+header h1 { font-size:16.5px; font-weight:600; display:flex; align-items:center; gap:10px; }
+.tag { background:rgba(255,255,255,.16); padding:3px 9px; border-radius:4px; font-size:10.5px; font-weight:400; }
+.run-area { display:flex; align-items:center; gap:14px; }
+.btn-run {
+  background:#48bb78; color:#fff; border:none; padding:9px 22px; border-radius:7px;
+  font-size:13.5px; font-weight:600; cursor:pointer; font-family:inherit;
+  display:flex; align-items:center; gap:8px; transition:all .2s;
+  box-shadow:0 2px 8px rgba(72,187,120,.35);
+}
+.btn-run:hover { background:#38a169; transform:translateY(-1px); }
+.btn-run:disabled { background:#a0aec0; cursor:not-allowed; transform:none; box-shadow:none; }
+.btn-reset {
+  background:rgba(255,255,255,.13); color:#fff; border:1px solid rgba(255,255,255,.25);
+  padding:8px 16px; border-radius:7px; font-size:12.5px; cursor:pointer; font-family:inherit;
+}
+.btn-reset:hover { background:rgba(255,255,255,.22); }
+.elapsed { font-size:12px; opacity:.9; font-variant-numeric:tabular-nums; }
+.src-group { display:flex; align-items:center; gap:7px; }
+.src-label { font-size:11.5px; opacity:.85; }
+.src-select {
+  background:rgba(255,255,255,.13); color:#fff; border:1px solid rgba(255,255,255,.28);
+  border-radius:6px; padding:7px 10px; font-size:12px; font-family:inherit; cursor:pointer;
+}
+.src-select option { color:#1a202c; background:#fff; }
+.btn-export {
+  background:rgba(255,255,255,.13); color:#fff; border:1px solid rgba(255,255,255,.28);
+  padding:8px 14px; border-radius:7px; font-size:12.5px; cursor:pointer; font-family:inherit;
+  transition:background .18s;
+}
+.btn-export:hover { background:rgba(255,255,255,.22); }
+.api-panel {
+  background:#fff; border-bottom:1px solid #e2e8f0; padding:12px 30px;
+  display:flex; flex-direction:column; gap:9px;
+}
+.api-row { display:flex; align-items:center; gap:10px; }
+.api-label { font-size:11.5px; color:#718096; width:60px; flex-shrink:0; font-weight:600; }
+.api-input {
+  flex:1; max-width:560px; border:1px solid #dde1e7; border-radius:6px;
+  padding:7px 11px; font-size:12px; font-family:ui-monospace,Consolas,monospace; color:#2d3748;
+}
+.api-input:focus { outline:none; border-color:#4299e1; box-shadow:0 0 0 3px rgba(66,153,225,.12); }
+.api-status { font-size:11.5px; font-weight:600; }
+.api-status.ok { color:#38a169; }
+.api-status.err { color:#e53e3e; }
+.api-doc { font-size:11.5px; color:#4a5568; }
+.api-doc summary { cursor:pointer; color:#2b6cb0; font-weight:600; }
+.api-doc pre {
+  background:#f7fafc; border:1px solid #e2e8f0; border-radius:6px;
+  padding:10px 14px; margin-top:7px; font-size:11px; line-height:1.6;
+  overflow-x:auto; font-family:ui-monospace,Consolas,monospace;
+}
+.toast {
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:#1a202c; color:#fff; padding:11px 22px; border-radius:8px;
+  font-size:13px; z-index:99; transition:transform .3s ease; box-shadow:0 6px 22px rgba(0,0,0,.3);
+  display:flex; align-items:center; gap:9px;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+.toast.ok::before { content:'✓'; color:#68d391; font-weight:700; }
+.toast.err::before { content:'✕'; color:#fc8181; font-weight:700; }
+
+.workspace { flex:1; display:flex; overflow:hidden; }
+
+/* 左：流程节点 */
+.flow-panel {
+  width:330px; background:#fff; border-right:1px solid #e2e8f0;
+  display:flex; flex-direction:column; flex-shrink:0; overflow-y:auto;
+}
+.panel-title {
+  padding:15px 20px 11px; font-size:11.5px; font-weight:600; color:#4a5568;
+  letter-spacing:.6px; border-bottom:1px solid #edf2f7;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.panel-title span:last-child { font-size:10.5px; color:#a0aec0; font-weight:400; }
+.flow { padding:16px 20px 26px; }
+.node {
+  position:relative; padding-left:34px; padding-bottom:20px;
+}
+.node:last-child { padding-bottom:0; }
+.node::before {
+  content:''; position:absolute; left:9px; top:22px; bottom:0; width:2px;
+  background:#e2e8f0; transition:background .3s;
+}
+.node:last-child::before { display:none; }
+.node.done::before { background:#48bb78; }
+.node-dot {
+  position:absolute; left:0; top:2px; width:20px; height:20px; border-radius:50%;
+  background:#fff; border:2px solid #cbd5e0; display:flex; align-items:center;
+  justify-content:center; font-size:9px; color:#a0aec0; font-weight:700;
+  transition:all .3s; z-index:2;
+}
+.node.running .node-dot {
+  border-color:#4299e1; color:#4299e1; animation:pulse 1.1s infinite;
+}
+.node.done .node-dot { background:#48bb78; border-color:#48bb78; color:#fff; }
+@keyframes pulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(66,153,225,.45); }
+  50% { box-shadow:0 0 0 7px rgba(66,153,225,0); }
+}
+.node-name { font-size:13px; font-weight:600; color:#2d3748; margin-bottom:3px; }
+.node.running .node-name { color:#2b6cb0; }
+.node-desc { font-size:11.5px; color:#8b95a5; line-height:1.55; }
+.node-status {
+  font-size:10.5px; margin-top:5px; color:#a0aec0;
+  font-variant-numeric:tabular-nums;
+}
+.node.done .node-status { color:#38a169; font-weight:600; }
+.node.running .node-status { color:#3182ce; }
+
+/* 右：结果区 */
+.result-panel { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.tabs {
+  display:flex; gap:2px; padding:0 24px; background:#fff;
+  border-bottom:1px solid #e2e8f0; flex-shrink:0;
+}
+.tab {
+  padding:13px 18px; font-size:12.5px; color:#718096; cursor:pointer;
+  border-bottom:2px solid transparent; transition:all .18s; font-weight:500;
+}
+.tab.active { color:#2b6cb0; border-bottom-color:#2b6cb0; }
+.tab:hover:not(.active) { color:#4a5568; }
+.content { flex:1; overflow-y:auto; padding:22px 26px 40px; }
+
+.empty {
+  text-align:center; padding:90px 20px; color:#a0aec0;
+}
+.empty-icon { font-size:44px; margin-bottom:16px; opacity:.5; }
+.empty h3 { font-size:15px; color:#718096; margin-bottom:7px; font-weight:600; }
+.empty p { font-size:12.5px; line-height:1.7; }
+
+/* 汇总卡片 */
+.cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+.card {
+  background:#fff; border-radius:9px; padding:15px 16px; border:1px solid #e2e8f0;
+  animation:fadeUp .4s ease both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.card-team { font-size:11.5px; color:#718096; margin-bottom:9px; font-weight:600; letter-spacing:.4px; }
+.card-val {
+  font-size:23px; font-weight:700; color:#1a365d; line-height:1.15;
+  font-variant-numeric:tabular-nums;
+}
+.card-val.neg { color:#c53030; }
+.card-val.pos { color:#2f855a; }
+.card-sub { font-size:11px; color:#a0aec0; margin-top:5px; }
+.card-flag {
+  display:inline-block; margin-top:9px; padding:2px 7px; border-radius:3px;
+  font-size:10px; font-weight:600; letter-spacing:.3px;
+}
+.flag-risk { background:#fed7d7; color:#9b2c2c; }
+.flag-warn { background:#feebc8; color:#975a16; }
+.flag-ok { background:#c6f6d5; color:#276749; }
+
+/* 异常清单 */
+.section-title {
+  font-size:13px; font-weight:600; color:#2d3748; margin:22px 0 11px;
+  display:flex; align-items:center; gap:8px;
+}
+.section-title::before {
+  content:''; width:3px; height:14px; background:#4299e1; border-radius:2px;
+}
+.section-title .count {
+  background:#edf2f7; color:#4a5568; font-size:10.5px; padding:1px 7px;
+  border-radius:9px; font-weight:600;
+}
+.issue-list { display:flex; flex-direction:column; gap:9px; }
+.issue {
+  background:#fff; border:1px solid #e2e8f0; border-left:3px solid #e2e8f0;
+  border-radius:0 7px 7px 0; padding:13px 16px;
+  animation:fadeUp .35s ease both;
+}
+.issue.high { border-left-color:#e53e3e; }
+.issue.mid { border-left-color:#dd6b20; }
+.issue.low { border-left-color:#38a975; }
+.issue-head {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:12px; margin-bottom:6px;
+}
+.issue-title { font-size:12.8px; font-weight:600; color:#2d3748; }
+.sev {
+  font-size:10px; padding:2px 8px; border-radius:9px; font-weight:600;
+  flex-shrink:0; letter-spacing:.3px;
+}
+.sev.high { background:#fed7d7; color:#9b2c2c; }
+.sev.mid { background:#feebc8; color:#975a16; }
+.sev.low { background:#c6f6d5; color:#276749; }
+.issue-why { font-size:11.8px; color:#718096; line-height:1.65; margin-bottom:7px; }
+.issue-fix {
+  font-size:11.8px; color:#2b6cb0; background:#ebf8ff; padding:7px 11px;
+  border-radius:5px; line-height:1.6;
+}
+.issue-fix::before { content:'建议动作：'; font-weight:600; }
+
+/* 表格 */
+.tbl-wrap {
+  background:#fff; border:1px solid #e2e8f0; border-radius:9px; overflow:hidden;
+  margin-top:12px;
+}
+table { width:100%; border-collapse:collapse; font-size:12px; }
+th {
+  background:#f7fafc; color:#4a5568; font-weight:600; text-align:left;
+  padding:10px 14px; font-size:11.5px; letter-spacing:.3px;
+  border-bottom:1px solid #e2e8f0; white-space:nowrap;
+}
+td {
+  padding:9px 14px; border-bottom:1px solid #f0f2f5; color:#3d4757;
+  font-variant-numeric:tabular-nums;
+}
+tr:last-child td { border-bottom:none; }
+tbody tr:hover { background:#f9fbfd; }
+.num { text-align:right; font-variant-numeric:tabular-nums; }
+.diff-neg { color:#c53030; font-weight:600; }
+.diff-pos { color:#2f855a; font-weight:600; }
+.tag-cell {
+  display:inline-block; padding:1px 6px; border-radius:3px; font-size:10.5px;
+  background:#edf2f7; color:#4a5568;
+}
+.tag-cell.bad { background:#fed7d7; color:#9b2c2c; }
+.tag-cell.good { background:#c6f6d5; color:#276749; }
+
+/* 日志 */
+.log-box {
+  background:#1a202c; border-radius:8px; padding:16px 18px;
+  font-family:"Consolas","Monaco",monospace; font-size:11.5px; line-height:1.85;
+  color:#a0aec0; max-height:100%; overflow-y:auto;
+}
+.log-line { display:flex; gap:11px; }
+.log-time { color:#4a5568; flex-shrink:0; }
+.log-ok { color:#68d391; }
+.log-warn { color:#f6ad55; }
+.log-info { color:#63b3ed; }
+.log-txt { flex:1; }
+.log-head { color:#e2e8f0; font-weight:600; margin-bottom:9px; }
+
+/* 报告 */
+.report {
+  background:#fff; border:1px solid #e2e8f0; border-radius:9px; padding:26px 30px;
+  max-width:860px; line-height:1.8; font-size:12.8px; color:#2d3748;
+}
+.report h2 {
+  font-size:16px; color:#1a365d; margin-bottom:5px; font-weight:700;
+}
+.report .meta {
+  font-size:11px; color:#a0aec0; padding-bottom:14px; margin-bottom:16px;
+  border-bottom:1px solid #edf2f7;
+}
+.report h3 {
+  font-size:13px; color:#2b6cb0; margin:19px 0 8px; font-weight:600;
+}
+.report p { margin-bottom:9px; }
+.report ul { padding-left:19px; margin-bottom:10px; }
+.report li { margin-bottom:5px; }
+.report .hl { background:#fefcbf; padding:0 3px; border-radius:2px; }
+.report table { font-size:11.5px; margin:10px 0; }
+.report th, .report td { padding:7px 10px; }
+
+.pbar {
+  height:3px; background:#e2e8f0; border-radius:2px; overflow:hidden; margin-top:8px;
+}
+.pbar-fill {
+  height:100%; background:linear-gradient(90deg,#4299e1,#48bb78);
+  width:0; transition:width .4s ease; border-radius:2px;
+}
+::-webkit-scrollbar { width:7px; height:7px; }
+::-webkit-scrollbar-thumb { background:#cbd5e0; border-radius:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    销售预测差异 · 自动汇总
+    <span class="tag">Workflow Automation</span>
+  </h1>
+  <div class="run-area">
+    <span class="elapsed" id="elapsed"></span>
+    <div class="src-group">
+      <label class="src-label">数据源</label>
+      <select id="srcSelect" class="src-select">
+        <option value="demo">本地演示数据</option>
+        <option value="api">API 接口</option>
+      </select>
+    </div>
+    <button class="btn-export" id="btnExport" title="导出明细与汇总为 Excel (CSV)">
+      ⬇ 导出 Excel
+    </button>
+    <button class="btn-reset" id="reset">重置</button>
+    <button class="btn-run" id="run">
+      <span>▶</span> 开始运行
+    </button>
+  </div>
+</header>
+
+<div id="apiPanel" class="api-panel" style="display:none;">
+  <div class="api-row">
+    <span class="api-label">接口地址</span>
+    <input id="apiUrl" class="api-input" placeholder="https://your-api.example.com/api/v1/forecast/summary" value="">
+  </div>
+  <div class="api-row">
+    <span class="api-label">Token</span>
+    <input id="apiToken" class="api-input" placeholder="Bearer 认证令牌（可选）" value="">
+    <button class="btn-run" id="btnTestApi" style="padding:7px 14px; font-size:12px;">测试连接</button>
+    <span id="apiStatus" class="api-status"></span>
+  </div>
+  <details class="api-doc">
+    <summary>接口规范（点击展开）</summary>
+    <pre>GET {apiUrl}
+Authorization: Bearer {token}（可选）
+
+响应 200 application/json：
+{
+  "teams": [
+    {
+      "name": "德系",
+      "target": 30300,                       // 战队年度目标（万元）
+      "projects": [
+        { "project": "A-SUV前后端项目", "chance": 45, "unit": "万套",
+          "qty": 12.5, "price": 820, "life": 60,
+          "loading": 0.72, "yoyDrop": 0.03, "budget": 760 }
+      ]
+    }
+  ]
+}</pre>
+  </details>
+</div>
+
+<div class="workspace">
+  <div class="flow-panel">
+    <div class="panel-title"><span>工作流节点</span><span id="nodeProgress">0 / 6</span></div>
+    <div class="flow" id="flow"></div>
+  </div>
+
+  <div class="result-panel">
+    <div class="tabs">
+      <div class="tab active" data-tab="overview">汇总概览</div>
+      <div class="tab" data-tab="issues">异常清单</div>
+      <div class="tab" data-tab="detail">明细对比</div>
+      <div class="tab" data-tab="log">执行日志</div>
+      <div class="tab" data-tab="report">生成报告</div>
+    </div>
+    <div class="content" id="content">
+      <div class="empty">
+        <div class="empty-icon">⚙️</div>
+        <h3>工作流待运行</h3>
+        <p>点击右上角「开始运行」，自动完成：<br>数据接入 → 口径校验 → 差异计算 → 风险判定 → 异常归因 → 报告生成</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ 数据源与导出 ============
+const srcSelect = document.getElementById('srcSelect');
+const apiPanel = document.getElementById('apiPanel');
+const apiUrlEl = document.getElementById('apiUrl');
+const apiTokenEl = document.getElementById('apiToken');
+const apiStatusEl = document.getElementById('apiStatus');
+
+srcSelect.onchange = () => { apiPanel.style.display = srcSelect.value === 'api' ? 'flex' : 'none'; };
+
+function toast(msg, type) {
+  let el = document.querySelector('.toast');
+  if (!el) { el = document.createElement('div'); el.className = 'toast'; document.body.appendChild(el); }
+  el.className = 'toast ' + (type || '');
+  el.textContent = msg;
+  requestAnimationFrame(() => el.classList.add('show'));
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// API 模式：拉取远端 JSON 并映射为内部数据结构
+async function fetchApiRecords() {
+  const url = apiUrlEl.value.trim();
+  if (!url) throw new Error('请先填写接口地址');
+  const headers = { 'Accept': 'application/json' };
+  const token = apiTokenEl.value.trim();
+  if (token) headers['Authorization'] = token.startsWith('Bearer') ? token : 'Bearer ' + token;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10000);
+  try {
+    const resp = await fetch(url, { headers, signal: ctrl.signal });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const json = await resp.json();
+    if (!json || !Array.isArray(json.teams)) throw new Error('响应格式不符合接口规范（缺少 teams 数组）');
+    const records = [];
+    for (const t of json.teams) {
+      if (!t.name || !Array.isArray(t.projects)) continue;
+      TARGETS[t.name] = Number(t.target) || TARGETS[t.name] || 0;
+      if (!TEAMS.includes(t.name)) TEAMS.push(t.name);
+      for (const p of t.projects) {
+        records.push({
+          team: t.name, project: p.project || '(未命名项目)',
+          chance: Number(p.chance) || 0, unit: p.unit || '万套',
+          qty: Number(p.qty) || 0, price: Number(p.price) || 0,
+          life: Number(p.life) || 0, loading: Number(p.loading) || 0,
+          yoyDrop: Number(p.yoyDrop) || 0, budget: Number(p.budget) || 0
+        });
+      }
+    }
+    if (!records.length) throw new Error('接口返回的项目数据为空');
+    return records;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Excel 导出（CSV + UTF-8 BOM，Excel 直接打开不乱码）
+function downloadCSV(filename, rows) {
+  const csv = rows.map(r => r.map(c => {
+    const v = String(c ?? '');
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+}
+
+function exportExcel() {
+  if (!window.__data) { toast('请先运行工作流，再导出结果', 'err'); return; }
+  const { rows, teamAgg, issues } = window.__data;
+  const ts = new Date().toISOString().slice(0, 10);
+
+  // 明细表
+  const detail = [['战队','项目','获取概率Chance','数量','单位','单价(元)','生命周期(月)','装载率','年降','金额(万元)','加权金额(万元)','风险等级']];
+  rows.forEach(r => detail.push([r.team, r.project, r.chance + '%', r.qty, r.unit, r.price, r.life,
+    (r.loading * 100).toFixed(0) + '%', (r.yoyDrop * 100).toFixed(0) + '%', r.grossWan.toFixed(1), r.weighted.toFixed(1),
+    r.riskLevel === 'high' ? '高风险' : r.riskLevel === 'mid' ? '中风险' : '低风险']));
+
+  // 汇总表
+  const summary = [['战队','项目数','上报金额(万元)','加权金额(万元)','目标(万元)','差异(万元)','差异率','高风险金额占比','状态']];
+  TEAMS.forEach(t => {
+    const a = teamAgg[t];
+    const st = a.gapPct < -15 ? '缺口风险' : a.gapPct < -5 ? '接近警戒' : a.gapPct > 20 ? '超预期待核' : '健康';
+    summary.push([t, a.count, a.rawSum.toFixed(1), a.wSum.toFixed(1), a.target, a.gapWan.toFixed(1),
+      (a.gapPct > 0 ? '+' : '') + a.gapPct.toFixed(1) + '%', a.highRiskRatio.toFixed(1) + '%', st]);
+  });
+
+  // 异常表
+  const issueRows = [['风险等级','战队','问题','原因分析','建议动作']];
+  const order = { high: '高风险', mid: '中风险', low: '低风险' };
+  issues.forEach(i => issueRows.push([order[i.sev], i.team, i.title, i.why, i.fix]));
+
+  downloadCSV(`预测明细_${ts}.csv`, detail);
+  setTimeout(() => downloadCSV(`战队汇总_${ts}.csv`, summary), 350);
+  setTimeout(() => downloadCSV(`异常清单_${ts}.csv`, issueRows), 700);
+  toast('已导出 3 个 Excel 文件（明细 / 汇总 / 异常清单）', 'ok');
+  pushLog('ok', '导出 Excel：明细 ' + rows.length + ' 行、汇总 ' + TEAMS.length + ' 行、异常 ' + issues.length + ' 行');
+}
+
+// ============ 数据（模拟四战队上报，含真实存在的口径问题） ============
+// API 模式下 TEAMS/TARGETS 会被远端数据覆盖，故用 let
+let TEAMS = ['德系', '日系', '自主', '代工'];
+
+// 原始上报数据：故意包含 4 类典型问题
+const RAW = [
+  // 德系
+  { team:'德系', project:'A-SUV前后端项目', chance:45, unit:'万套', qty:12.5, price:820, life:60, loading:0.72, yoyDrop:0.03, budget:760 },
+  { team:'德系', project:'B-电池壳体',       chance:85, unit:'万套', qty:8.2,  price:1450, life:48, loading:0.88, yoyDrop:0.05, budget:1200 },
+  { team:'德系', project:'C-座椅骨架',       chance:30, unit:'套',   qty:15.0, price:680, life:60, loading:0.60, yoyDrop:0.02, budget:640 },
+  { team:'德系', project:'D-仪表板总成',     chance:92, unit:'万套', qty:6.8,  price:2100, life:72, loading:0.85, yoyDrop:0.04, budget:1980 },
+  // 日系
+  { team:'日系', project:'E-门板总成',       chance:95, unit:'万套', qty:22.0, price:1580, life:60, loading:0.94, yoyDrop:0.03, budget:1500 },
+  { team:'日系', project:'F-保险杠',         chance:88, unit:'万套', qty:18.5, price:920, life:48, loading:0.91, yoyDrop:0.02, budget:880 },
+  { team:'日系', project:'G-顶棚',           chance:78, unit:'万套', qty:9.6,  price:540, life:60, loading:0.76, yoyDrop:0.06, budget:520 },
+  // 自主
+  { team:'自主', project:'H-轻量化支架',     chance:52, unit:'万套', qty:5.4,  price:760, life:48, loading:0.55, yoyDrop:0.08, budget:700 },  // 单位问题：万套 vs 套
+  { team:'自主', project:'I-新能源储物盒',   chance:65, unit:'套',   qty:11.2, price:320, life:48, loading:0.68, yoyDrop:0.05, budget:300 },  // 单位不一致
+  { team:'自主', project:'J-副仪表板',       chance:40, unit:'万套', qty:4.1,  price:1180, life:60, loading:0.48, yoyDrop:0.09, budget:1100 },
+  // 代工
+  { team:'代工', project:'K-外部代工项目',   chance:60, unit:'万套', qty:7.8,  price:620, life:36, loading:0.62, yoyDrop:0.04, budget:600 },
+  { team:'代工', project:'L-模具代工',       chance:35, unit:'套',   qty:2.3,  price:2400, life:24, loading:0.40, yoyDrop:0.10, budget:2300 }
+];
+
+let TARGETS = { '德系': 30300, '日系': 51000, '自主': 5200, '代工': 3350 };
+
+// ============ 工作流节点定义 ============
+const NODES = [
+  { key:'ingest',  name:'数据接入',     desc:'接取四战队上报的预测模板' },
+  { key:'validate',name:'量纲口径校验', desc:'核对单位、生命周期、概率、预算衔接' },
+  { key:'calc',    name:'差异计算',     desc:'按概率加权折算，对比战队目标' },
+  { key:'risk',    name:'风险判定',     desc:'Chance 三档 + 四维竞争判断' },
+  { key:'attrib',  name:'异常归因',     desc:'定位偏差来源并生成建议动作' },
+  { key:'report',  name:'生成报告',     desc:'输出管理层可用的汇总报告' }
+];
+
+const flowEl = document.getElementById('flow');
+let nodeEls = [];
+function renderFlow() {
+  flowEl.innerHTML = '';
+  nodeEls = NODES.map((n, i) => {
+    const d = document.createElement('div');
+    d.className = 'node';
+    d.innerHTML = `<div class="node-dot">${i+1}</div>
+      <div class="node-name">${n.name}</div>
+      <div class="node-desc">${n.desc}</div>
+      <div class="node-status"></div>`;
+    flowEl.appendChild(d);
+    return d;
+  });
+  document.getElementById('nodeProgress').textContent = `0 / ${NODES.length}`;
+}
+renderFlow();
+
+// ============ 计算逻辑 ============
+function computeAll(RECORDS) {
+  const RAW = RECORDS;
+  const issues = [];
+  const rows = [];
+
+  // 1) 单位一致性检查
+  const unitSets = {};
+  RAW.forEach(r => {
+    if (!unitSets[r.team]) unitSets[r.team] = new Set();
+    unitSets[r.team].add(r.unit);
+  });
+  Object.entries(unitSets).forEach(([team, set]) => {
+    if (set.size > 1) {
+      issues.push({
+        sev:'high', team,
+        title:`${team}战队上报单位不统一（${[...set].join(' / ')}）`,
+        why:`同一战队内部同时出现「万套」与「套」两种量纲，直接汇总会导致数量级错误（差 1 万倍）。这是多战队模板不统一最典型的坑。`,
+        fix:`统一为「万套」为基准单位，将「套」数据除以 10,000 后重新汇总；同时在模板中锁定单位下拉选项，禁止自由填写。`
+      });
+    }
+  });
+
+  // 2) 计算加权金额（统一换算为万元）
+  RAW.forEach(r => {
+    const qtyInWan = r.unit === '万套' ? r.qty : r.qty / 10000; // 统一为万套
+    const grossWan = qtyInWan * 10000 * r.price / 10000; // 万套 * 单价(元) / 10000 = 万元
+    const weighted = grossWan * (r.chance / 100);
+    rows.push({
+      ...r, qtyWan: qtyInWan, grossWan, weighted,
+      riskLevel: r.chance <= 50 ? 'high' : r.chance <= 80 ? 'mid' : 'low'
+    });
+  });
+
+  // 3) 按战队汇总
+  const teamAgg = {};
+  TEAMS.forEach(t => {
+    const list = rows.filter(r => r.team === t);
+    const target = TARGETS[t];
+    const rawSum = list.reduce((s, r) => s + r.grossWan, 0);
+    const wSum = list.reduce((s, r) => s + r.weighted, 0);
+    const highRisk = list.filter(r => r.riskLevel === 'high');
+    const highRiskAmt = highRisk.reduce((s, r) => s + r.grossWan, 0);
+    teamAgg[t] = {
+      target, rawSum, wSum,
+      gapWan: wSum - target,
+      gapPct: (wSum - target) / target * 100,
+      highRiskCount: highRisk.length,
+      highRiskAmt,
+      highRiskRatio: rawSum ? highRiskAmt / rawSum * 100 : 0,
+      count: list.length
+    };
+  });
+
+  // 4) 风险与偏差规则
+  TEAMS.forEach(t => {
+    const a = teamAgg[t];
+    // 缺口超过 15%
+    if (a.gapPct < -15) {
+      issues.push({
+        sev:'high', team:t,
+        title:`${t}战队加权预测缺口 ${Math.abs(a.gapPct).toFixed(1)}%（缺口 ${Math.abs(a.gapWan/10000).toFixed(2)} 亿元）`,
+        why:`加权后预测 ${(a.wSum/10000).toFixed(2)} 亿元，低于目标 ${(a.target/10000).toFixed(2)} 亿元。主要因高风险项目（Chance≤50%）金额占比达 ${a.highRiskRatio.toFixed(1)}%，存在较大不确定性。`,
+        fix:`对高风险的 ${a.highRiskCount} 个项目逐项复核获取概率依据；同步启动替补项目识别，或在预算侧预留缺口应对方案。`
+      });
+    } else if (a.gapPct < -5) {
+      issues.push({
+        sev:'mid', team:t,
+        title:`${t}战队加权预测小幅低于目标 ${Math.abs(a.gapPct).toFixed(1)}%`,
+        why:`缺口 ${Math.abs(a.gapWan/10000).toFixed(2)} 亿元，可控范围内但需关注高风险项目转化。`,
+        fix:`按月跟踪高风险项目概率变化；若季度末仍无改善，提前准备资源调整方案。`
+      });
+    } else if (a.gapPct > 20) {
+      issues.push({
+        sev:'mid', team:t,
+        title:`${t}战队加权预测超出目标 ${a.gapPct.toFixed(1)}%，需核验合理性`,
+        why:`超目标 ${(a.gapWan/10000).toFixed(2)} 亿元。大幅超预期通常意味着口径问题（重复计算、生命周期跨期混算）或目标设定偏低。`,
+        fix:`核查是否存在项目重复归集或跨期混算；确认超预期部分是否具备产能承接能力，避免"报得出做不出"。`
+      });
+    }
+  });
+
+  // 5) 装载率与生命周期检查
+  rows.forEach(r => {
+    if (r.loading < 0.5) {
+      issues.push({
+        sev:'mid', team:r.team,
+        title:`${r.team}·${r.project} 装载率仅 ${(r.loading*100).toFixed(0)}%`,
+        why:`装载率低于 50%，说明产能利用不充分，该项目的固定成本摊薄效果差，实际盈利能力存疑。`,
+        fix:`与该战队确认是否存在产能预留在其他项目；若无，评估是否需要调整排产或合并产线。`
+      });
+    }
+    if (r.life < 24) {
+      issues.push({
+        sev:'low', team:r.team,
+        title:`${r.team}·${r.project} 生命周期仅 ${r.life} 个月`,
+        why:`生命周期短于 24 个月，长期预测的可持续性弱，后续需有接续项目填充。`,
+        fix:`确认接续项目储备情况，避免出现产能空窗期。`
+      });
+    }
+    if (r.yoyDrop > 0.07) {
+      issues.push({
+        sev:'mid', team:r.team,
+        title:`${r.team}·${r.project} 年降幅度 ${(r.yoyDrop*100).toFixed(0)}% 偏高`,
+        why:`年降超过 7%，对毛利率侵蚀明显，需确认是否已纳入成本改善计划。`,
+        fix:`核查该项目的成本下降路径（工艺优化、材料替代、规模效应），确保降价的利润影响可控。`
+      });
+    }
+  });
+
+  return { rows, teamAgg, issues };
+}
+
+// ============ 渲染 ============
+function renderOverview(data) {
+  const { teamAgg } = data;
+  let html = `<div class="cards">`;
+  TEAMS.forEach((t, i) => {
+    const a = teamAgg[t];
+    const gapCls = a.gapPct < 0 ? 'neg' : 'pos';
+    const flag = a.gapPct < -15 ? ['flag-risk','缺口风险'] : a.gapPct < -5 ? ['flag-warn','接近警戒'] : a.gapPct > 20 ? ['flag-warn','超预期待核'] : ['flag-ok','健康'];
+    html += `<div class="card" style="animation-delay:${i*0.07}s">
+      <div class="card-team">${t}战队</div>
+      <div class="card-val ${gapCls}">${a.gapPct > 0 ? '+' : ''}${a.gapPct.toFixed(1)}%</div>
+      <div class="card-sub">加权 ${(a.wSum/10000).toFixed(2)} 亿 / 目标 ${(a.target/10000).toFixed(2)} 亿</div>
+      <div class="card-flag ${flag[0]}">${flag[1]}</div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // 汇总表
+  html += `<div class="section-title">战队汇总对比</div><div class="tbl-wrap"><table>
+    <thead><tr>
+      <th>战队</th><th class="num">项目数</th><th class="num">上报金额(亿)</th>
+      <th class="num">加权金额(亿)</th><th class="num">目标(亿)</th>
+      <th class="num">差异</th><th class="num">差异率</th>
+      <th class="num">高风险占比</th><th>状态</th>
+    </tr></thead><tbody>`;
+  TEAMS.forEach(t => {
+    const a = teamAgg[t];
+    const cls = a.gapPct < 0 ? 'diff-neg' : 'diff-pos';
+    const st = a.gapPct < -15 ? ['bad','缺口风险'] : a.gapPct < -5 ? ['','需关注'] : a.gapPct > 20 ? ['','待核验'] : ['good','正常'];
+    html += `<tr>
+      <td><strong>${t}</strong></td>
+      <td class="num">${a.count}</td>
+      <td class="num">${(a.rawSum/10000).toFixed(2)}</td>
+      <td class="num">${(a.wSum/10000).toFixed(2)}</td>
+      <td class="num">${(a.target/10000).toFixed(2)}</td>
+      <td class="num ${cls}">${a.gapWan > 0 ? '+' : ''}${(a.gapWan/10000).toFixed(2)}</td>
+      <td class="num ${cls}">${a.gapPct > 0 ? '+' : ''}${a.gapPct.toFixed(1)}%</td>
+      <td class="num">${a.highRiskRatio.toFixed(1)}%</td>
+      <td><span class="tag-cell ${st[0]}">${st[1]}</span></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  // 总量
+  const totalW = TEAMS.reduce((s,t)=>s+teamAgg[t].wSum,0);
+  const totalT = TEAMS.reduce((s,t)=>s+teamAgg[t].target,0);
+  const totalGap = (totalW-totalT)/totalT*100;
+  html += `<div class="section-title">公司整体</div>
+    <div class="tbl-wrap"><table><tbody>
+    <tr><td><strong>全公司加权合计</strong></td><td class="num"><strong>${(totalW/10000).toFixed(2)} 亿元</strong></td>
+    <td class="num">目标 ${(totalT/10000).toFixed(2)} 亿元</td>
+    <td class="num ${totalGap<0?'diff-neg':'diff-pos'}"><strong>${totalGap>0?'+':''}${totalGap.toFixed(1)}%</strong></td></tr>
+    </tbody></table></div>`;
+
+  document.getElementById('content').innerHTML = html;
+}
+
+function renderIssues(data) {
+  const { issues } = data;
+  const order = { high:0, mid:1, low:2 };
+  const sorted = [...issues].sort((a,b) => order[a.sev]-order[b.sev]);
+  const counts = { high:0, mid:0, low:0 };
+  issues.forEach(i => counts[i.sev]++);
+
+  let html = `<div class="cards" style="grid-template-columns:repeat(3,1fr)">
+    <div class="card"><div class="card-team">高风险</div><div class="card-val neg">${counts.high}</div><div class="card-sub">需立即处理</div></div>
+    <div class="card"><div class="card-team">中风险</div><div class="card-val" style="color:#dd6b20">${counts.mid}</div><div class="card-sub">需跟踪关注</div></div>
+    <div class="card"><div class="card-team">低风险</div><div class="card-val pos">${counts.low}</div><div class="card-sub">提示性信息</div></div>
+  </div>`;
+
+  html += `<div class="section-title">异常明细<span class="count">${issues.length} 项</span></div><div class="issue-list">`;
+  sorted.forEach((it, i) => {
+    const sevTxt = { high:'高风险', mid:'中风险', low:'低风险' }[it.sev];
+    html += `<div class="issue ${it.sev}" style="animation-delay:${Math.min(i*0.04,0.5)}s">
+      <div class="issue-head">
+        <div class="issue-title">${it.title}</div>
+        <span class="sev ${it.sev}">${sevTxt}</span>
+      </div>
+      <div class="issue-why">${it.why}</div>
+      <div class="issue-fix">${it.fix}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  document.getElementById('content').innerHTML = html;
+}
+
+function renderDetail(data) {
+  const { rows } = data;
+  let html = `<div class="section-title">项目明细（已统一量纲并折算加权金额）<span class="count">${rows.length} 个项目</span></div>`;
+  html += `<div class="tbl-wrap"><table>
+    <thead><tr>
+      <th>战队</th><th>项目</th><th class="num">Chance</th><th class="num">数量</th>
+      <th>单位</th><th class="num">单价(元)</th><th class="num">装载率</th>
+      <th class="num">年降</th><th class="num">金额(万)</th><th class="num">加权(万)</th><th>风险</th>
+    </tr></thead><tbody>`;
+  rows.forEach(r => {
+    const rk = r.riskLevel === 'high' ? ['bad','高'] : r.riskLevel === 'mid' ? ['','中'] : ['good','低'];
+    const unitFlag = r.unit === '套' ? ' <span style="color:#c53030;font-size:10px;">⚠</span>' : '';
+    html += `<tr>
+      <td>${r.team}</td><td>${r.project}</td>
+      <td class="num">${r.chance}%</td>
+      <td class="num">${r.qty}</td>
+      <td>${r.unit}${unitFlag}</td>
+      <td class="num">${r.price.toLocaleString()}</td>
+      <td class="num">${(r.loading*100).toFixed(0)}%</td>
+      <td class="num ${r.yoyDrop>0.07?'diff-neg':''}">${(r.yoyDrop*100).toFixed(0)}%</td>
+      <td class="num">${r.grossWan.toFixed(0)}</td>
+      <td class="num">${r.weighted.toFixed(0)}</td>
+      <td><span class="tag-cell ${rk[0]}">${rk[1]}</span></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+  html += `<p style="font-size:11px;color:#a0aec0;margin-top:11px;">⚠ 标记表示该行单位与其他行不一致，已按「万套」基准换算（套数据 ÷ 10,000）。</p>`;
+  document.getElementById('content').innerHTML = html;
+}
+
+const LOGS = [];
+function pushLog(type, txt) {
+  const t = new Date();
+  const ts = `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`;
+  LOGS.push({ ts, type, txt });
+  renderLog();
+}
+
+function renderLog() {
+  let html = `<div class="log-box"><div class="log-head">▶ Workflow Execution Log</div>`;
+  LOGS.forEach(l => {
+    const cls = l.type === 'ok' ? 'log-ok' : l.type === 'warn' ? 'log-warn' : 'log-info';
+    const mark = l.type === 'ok' ? '✓' : l.type === 'warn' ? '⚠' : '·';
+    html += `<div class="log-line"><span class="log-time">${l.ts}</span><span class="${cls}">${mark}</span><span class="log-txt">${l.txt}</span></div>`;
+  });
+  html += `</div>`;
+  const el = document.getElementById('content');
+  el.innerHTML = html;
+  el.scrollTop = el.scrollHeight;
+}
+
+function renderReport(data) {
+  const { teamAgg, issues, rows } = data;
+  const totalW = TEAMS.reduce((s,t)=>s+teamAgg[t].wSum,0);
+  const totalT = TEAMS.reduce((s,t)=>s+teamAgg[t].target,0);
+  const totalGap = (totalW-totalT)/totalT*100;
+  const highIssues = issues.filter(i=>i.sev==='high');
+  const negTeams = TEAMS.filter(t => teamAgg[t].gapPct < 0);
+
+  let html = `<div class="report">
+    <h2>四战队销售预测汇总分析报告</h2>
+    <div class="meta">生成时间：${new Date().toLocaleString('zh-CN')} ｜ 数据来源：四战队预测模板（${rows.length} 个项目） ｜ 报表周期：年度滚动</div>
+
+    <h3>一、总体结论</h3>
+    <p>本期加权预测合计 <span class="hl">${(totalW/10000).toFixed(2)} 亿元</span>，对比年度目标 ${(totalT/10000).toFixed(2)} 亿元，整体差异 <span class="hl">${totalGap>0?'+':''}${totalGap.toFixed(1)}%</span>。
+    ${negTeams.length ? `存在缺口的战队为 ${negTeams.join('、')}，` : '各战队均无重大缺口，'}系统识别出 <span class="hl">${issues.length} 项异常</span>，其中高风险 ${highIssues.length} 项。</p>
+
+    <h3>二、战队对比</h3>
+    <table><thead><tr><th>战队</th><th class="num">加权金额(亿)</th><th class="num">目标(亿)</th><th class="num">差异率</th><th>主要问题</th></tr></thead><tbody>`;
+  TEAMS.forEach(t => {
+    const a = teamAgg[t];
+    const ti = issues.filter(i => i.team === t);
+    const main = ti.length ? ti[0].title.split('（')[0].slice(0, 24) : '无明显异常';
+    html += `<tr><td><strong>${t}</strong></td>
+      <td class="num">${(a.wSum/10000).toFixed(2)}</td>
+      <td class="num">${(a.target/10000).toFixed(2)}</td>
+      <td class="num ${a.gapPct<0?'diff-neg':'diff-pos'}">${a.gapPct>0?'+':''}${a.gapPct.toFixed(1)}%</td>
+      <td style="font-size:11px;">${main}</td></tr>`;
+  });
+  html += `</tbody></table>
+
+    <h3>三、需重点关注的问题</h3><ul>`;
+  highIssues.forEach(i => {
+    html += `<li><strong>${i.title}</strong><br><span style="color:#718096;font-size:11.5px;">${i.fix}</span></li>`;
+  });
+  if (!highIssues.length) html += `<li>本期无高风险项。</li>`;
+  html += `</ul>
+
+    <h3>四、下一步action</h3><ul>
+      <li><strong>本周内</strong>：完成单位口径统一（统一为「万套」并在模板锁定），重新出具修订版汇总。</li>
+      <li><strong>本周内</strong>：逐一复核 Chance≤50% 的高风险项目，要求战队补充概率依据与客户承诺文件。</li>
+      <li><strong>两周内</strong>：对缺口战队，评估替补项目识别或预算调整方案，纳入下一次经营会议议题。</li>
+      <li><strong>持续</strong>：将本套校验规则（单位、装载率、年降、概率分级）固化为模板内置校验，减少人工核对返工。</li>
+    </ul>
+
+    <h3>五、方法说明</h3>
+    <p>加权金额 = 数量 × 单价 × 获取概率（Chance）。风险分级采用三档标准（≤50% 高、50—80% 中、80—100% 低），并结合技术、客户、质量、成本四维做竞争性判断。
+    本节数据经量纲统一处理后计算，原始上报中存在的单位混用已在异常清单中标注。</p>
+  </div>`;
+
+  document.getElementById('content').innerHTML = html;
+}
+
+// ============ 运行 ============
+const runBtn = document.getElementById('run');
+const resetBtn = document.getElementById('reset');
+const elapsedEl = document.getElementById('elapsed');
+let running = false;
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function loadRecords() {
+  if (srcSelect.value === 'api') {
+    setNodeState(0, 'running', '调用接口中…');
+    pushLog('info', '数据源：API 接口（' + apiUrlEl.value.trim().slice(0, 60) + '）');
+    try {
+      const recs = await fetchApiRecords();
+      apiStatusEl.textContent = '';
+      pushLog('ok', '接口调用成功：' + TEAMS.length + ' 个战队，共 ' + recs.length + ' 个项目（远端数据）');
+      setNodeState(0, 'done', '已接入远端 ' + recs.length + ' 条记录');
+      return recs;
+    } catch (e) {
+      const msg = e.name === 'AbortError' ? '请求超时（10s）' : e.message;
+      apiStatusEl.textContent = '✕ ' + msg;
+      apiStatusEl.className = 'api-status err';
+      pushLog('warn', '接口调用失败：' + msg + '，已回退到本地演示数据');
+      toast('接口调用失败：' + msg + '，已回退演示数据', 'err');
+      setNodeState(0, 'done', '接口失败，回退演示数据');
+      return RAW;
+    }
+  }
+  pushLog('info', '数据源：本地演示数据');
+  return RAW;
+}
+
+async function run() {
+  if (running) return;
+  running = true;
+  runBtn.disabled = true;
+  LOGS.length = 0;
+  renderFlow();
+  const t0 = Date.now();
+  const timer = setInterval(() => {
+    const s = ((Date.now()-t0)/1000).toFixed(1);
+    elapsedEl.textContent = `耗时 ${s}s`;
+  }, 100);
+
+  const records = await loadRecords();
+  const data = computeAll(records);
+  const setNodeState = (i, state, status) => {
+    nodeEls[i].className = 'node ' + state;
+    if (status) nodeEls[i].querySelector('.node-status').textContent = status;
+    const done = nodeEls.filter((_,k)=>k<=i && nodeEls[k].classList.contains('done')).length;
+    document.getElementById('nodeProgress').textContent = `${done} / ${NODES.length}`;
+  };
+
+  // 节点 1：数据接入
+  setNodeState(0, 'running', '读取中…');
+  pushLog('info', '开始执行工作流：销售预测差异自动汇总');
+  await sleep(500);
+  setNodeState(0, 'done', `已接入 ${records.length} 条项目记录`);
+  pushLog('ok', `数据接入完成：${TEAMS.length} 个战队，共 ${records.length} 个上报项目`);
+
+  // 节点 2：口径校验
+  setNodeState(1, 'running', '校验中…');
+  await sleep(800);
+  const unitIssues = data.issues.filter(i => i.title.includes('单位不统一'));
+  setNodeState(1, 'done', `发现 ${unitIssues.length} 处口径异常`);
+  if (unitIssues.length) {
+    pushLog('warn', `口径校验：发现 ${unitIssues.length} 个战队存在单位混用（${unitIssues.map(i=>i.team).join('、')}），已自动按「万套」基准换算`);
+  } else {
+    pushLog('ok', '口径校验通过，未发现单位混用');
+  }
+
+  // 节点 3：差异计算
+  setNodeState(2, 'running', '计算中…');
+  await sleep(900);
+  setNodeState(2, 'done', '已完成加权折算与目标比对');
+  const totalW = TEAMS.reduce((s,t)=>s+data.teamAgg[t].wSum,0);
+  pushLog('ok', `差异计算完成：加权预测合计 ${(totalW/10000).toFixed(2)} 亿元`);
+  TEAMS.forEach(t => {
+    const a = data.teamAgg[t];
+    const ty = a.gapPct < -5 ? 'warn' : 'ok';
+    pushLog(ty, `  ${t}：加权 ${(a.wSum/10000).toFixed(2)} 亿 / 目标 ${(a.target/10000).toFixed(2)} 亿 → ${a.gapPct>0?'+':''}${a.gapPct.toFixed(1)}%`);
+  });
+
+  // 节点 4：风险判定
+  setNodeState(3, 'running', '判定中…');
+  await sleep(750);
+  const highN = data.issues.filter(i=>i.sev==='high').length;
+  const midN = data.issues.filter(i=>i.sev==='mid').length;
+  setNodeState(3, 'done', `高 ${highN} / 中 ${midN}`);
+  pushLog('ok', `风险判定完成：高风险 ${highN} 项、中风险 ${midN} 项、低风险 ${data.issues.filter(i=>i.sev==='low').length} 项`);
+
+  // 节点 5：异常归因
+  setNodeState(4, 'running', '归因中…');
+  await sleep(800);
+  setNodeState(4, 'done', `已生成 ${data.issues.length} 条建议动作`);
+  pushLog('ok', `异常归因完成：为 ${data.issues.length} 项异常生成原因分析与建议动作`);
+  if (highN) pushLog('warn', `⚠ ${highN} 项高风险问题需立即处理，已列入报告「需重点关注」章节`);
+
+  // 节点 6：报告生成
+  setNodeState(5, 'running', '生成中…');
+  await sleep(700);
+  setNodeState(5, 'done', '汇总报告已就绪');
+  pushLog('ok', '汇总报告生成完成，可在「生成报告」页签查看');
+
+  clearInterval(timer);
+  const secs = ((Date.now()-t0)/1000).toFixed(1);
+  elapsedEl.textContent = `耗时 ${secs}s`;
+  pushLog('ok', `工作流执行结束，总耗时 ${secs}s`);
+
+  renderOverview(data);
+  window.__data = data;
+  window.__logs = LOGS;
+  running = false;
+  runBtn.disabled = false;
+
+  // 自动切到概览
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.tab[data-tab="overview"]').classList.add('active');
+  document.getElementById('content').scrollTop = 0;
+}
+
+runBtn.onclick = run;
+btnExport.onclick = exportExcel;
+document.getElementById('btnTestApi').onclick = async () => {
+  apiStatusEl.textContent = '测试中…';
+  apiStatusEl.className = 'api-status';
+  try {
+    const recs = await fetchApiRecords();
+    apiStatusEl.textContent = '✓ 连接成功：' + TEAMS.length + ' 战队 / ' + recs.length + ' 项目';
+    apiStatusEl.className = 'api-status ok';
+  } catch (e) {
+    apiStatusEl.textContent = '✕ ' + (e.name === 'AbortError' ? '超时' : e.message);
+    apiStatusEl.className = 'api-status err';
+  }
+};
+
+resetBtn.onclick = () => {
+  if (running) return;
+  LOGS.length = 0;
+  renderFlow();
+  elapsedEl.textContent = '';
+  document.getElementById('content').innerHTML = `
+    <div class="empty">
+      <div class="empty-icon">⚙️</div>
+      <h3>工作流待运行</h3>
+      <p>点击右上角「开始运行」，自动完成：<br>数据接入 → 口径校验 → 差异计算 → 风险判定 → 异常归因 → 报告生成</p>
+    </div>`;
+};
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.onclick = () => {
+    if (!window.__data) return;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const k = tab.dataset.tab;
+    if (k === 'overview') renderOverview(window.__data);
+    else if (k === 'issues') renderIssues(window.__data);
+    else if (k === 'detail') renderDetail(window.__data);
+    else if (k === 'log') { LOGS.length = 0; (window.__logs||[]).forEach(l=>LOGS.push(l)); renderLog(); }
+    else if (k === 'report') renderReport(window.__data);
+  };
+});
+</script>
+</body>
+</html>
