@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行业研究工作台 · 市场测算 / 竞争对标 / 政策评估 / 风险分级</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:-apple-system,"Microsoft YaHei","PingFang SC",sans-serif;
+  background:#f0f2f5; color:#1a1d23; height:100vh; overflow:hidden;
+  display:flex; flex-direction:column;
+}
+header {
+  background:linear-gradient(135deg,#14304d 0%,#2b6cb0 100%); color:#fff;
+  padding:14px 26px; display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 2px 10px rgba(0,0,0,.15); z-index:20; flex-shrink:0;
+}
+header h1 { font-size:16px; font-weight:600; display:flex; align-items:center; gap:10px; }
+.tag { background:rgba(255,255,255,.16); padding:3px 9px; border-radius:4px; font-size:10.5px; font-weight:400; }
+.hdr-right { display:flex; align-items:center; gap:12px; font-size:11.5px; opacity:.92; }
+.scenario { display:flex; background:rgba(255,255,255,.12); border-radius:7px; padding:3px; gap:2px; }
+.scenario button {
+  background:none; border:none; color:rgba(255,255,255,.75); font-family:inherit;
+  font-size:11.5px; padding:5px 13px; border-radius:5px; cursor:pointer; transition:all .18s;
+}
+.scenario button.on { background:#fff; color:#1a365d; font-weight:600; }
+.scenario button:hover:not(.on) { color:#fff; }
+
+.note {
+  background:#fffbe6; border-bottom:1px solid #f0e0a8; color:#7a6417;
+  font-size:11.5px; padding:8px 26px; flex-shrink:0;
+}
+.note b { color:#5d4b0f; }
+
+.tabs {
+  display:flex; gap:2px; padding:0 22px; background:#fff;
+  border-bottom:1px solid #e2e8f0; flex-shrink:0;
+}
+.tab {
+  padding:13px 18px; font-size:12.5px; color:#718096; cursor:pointer;
+  border-bottom:2px solid transparent; transition:all .18s; font-weight:500;
+}
+.tab.active { color:#2b6cb0; border-bottom-color:#2b6cb0; }
+.tab:hover:not(.active) { color:#4a5568; }
+
+.content { flex:1; overflow-y:auto; padding:20px 26px 36px; }
+.pane { display:none; }
+.pane.active { display:block; }
+.pane-head { margin-bottom:14px; }
+.pane-head h2 { font-size:15px; font-weight:600; color:#2d3748; }
+.pane-head p { font-size:12px; color:#8b95a5; margin-top:4px; line-height:1.7; }
+
+.cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
+.card {
+  background:#fff; border:1px solid #e2e8f0; border-radius:9px; padding:15px 17px;
+}
+.card-lab { font-size:11px; color:#8b95a5; letter-spacing:.5px; }
+.card-val { font-size:23px; font-weight:700; color:#1a365d; margin-top:5px; font-variant-numeric:tabular-nums; }
+.card-val small { font-size:12px; font-weight:500; color:#718096; margin-left:2px; }
+.card-sub { font-size:10.5px; color:#a0aec0; margin-top:4px; }
+
+.panel {
+  background:#fff; border:1px solid #e2e8f0; border-radius:9px;
+  padding:18px 20px; margin-bottom:16px;
+}
+.panel-title {
+  font-size:12.5px; font-weight:600; color:#2d3748; margin-bottom:14px;
+  display:flex; justify-content:space-between; align-items:baseline;
+}
+.panel-title span { font-size:10.5px; font-weight:400; color:#a0aec0; }
+
+/* 市场规模条 */
+.bars { display:flex; flex-direction:column; gap:11px; }
+.bar-row { display:grid; grid-template-columns:118px 1fr 86px; align-items:center; gap:12px; }
+.bar-name { font-size:12px; color:#4a5568; }
+.bar-track {
+  height:22px; background:#edf2f7; border-radius:4px; position:relative; overflow:hidden;
+}
+.bar-fill {
+  position:absolute; left:0; border-radius:3px;
+  transition:width .6s cubic-bezier(.2,.8,.2,1);
+}
+.bar-fill.tam { top:3px;    height:16px; background:linear-gradient(90deg,#bee3f8,#90cdf4); }
+.bar-fill.sam { top:6px;    height:10px; background:linear-gradient(90deg,#4299e1,#63b3ed); }
+.bar-fill.som { top:8.5px;  height:5px;  background:linear-gradient(90deg,#1a365d,#2b6cb0); }
+.bar-val { font-size:11.5px; color:#2d3748; font-weight:600; text-align:right; font-variant-numeric:tabular-nums; }
+.legend { display:flex; gap:18px; margin-top:14px; font-size:11px; color:#718096; }
+.legend i { display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; }
+
+/* 表格 */
+table { width:100%; border-collapse:collapse; font-size:12px; }
+th {
+  text-align:left; padding:9px 10px; color:#718096; font-weight:600;
+  border-bottom:2px solid #e2e8f0; font-size:11px; white-space:nowrap; cursor:pointer;
+  user-select:none; background:#fafbfc;
+}
+th:hover { color:#2b6cb0; }
+th .ar { color:#cbd5e0; font-size:9px; margin-left:3px; }
+th.sorted .ar { color:#2b6cb0; }
+td { padding:9px 10px; border-bottom:1px solid #edf2f7; color:#2d3748; }
+tr:hover td { background:#f7fafc; }
+td.num { text-align:right; font-variant-numeric:tabular-nums; }
+.badge {
+  display:inline-block; padding:2px 8px; border-radius:10px; font-size:10.5px; font-weight:600;
+}
+.b-hi { background:#fed7d7; color:#9b2c2c; }
+.b-mid { background:#feebc8; color:#975a16; }
+.b-low { background:#c6f6d5; color:#22543d; }
+.b-neutral { background:#e2e8f0; color:#4a5568; }
+
+/* 热力评分 */
+.score { font-weight:700; font-variant-numeric:tabular-nums; }
+.s5 { color:#22543d; } .s4 { color:#2f855a; } .s3 { color:#975a16; } .s2 { color:#c05621; } .s1 { color:#9b2c2c; }
+.heat { display:inline-block; width:52px; height:5px; border-radius:3px; background:#edf2f7; position:relative; vertical-align:middle; margin-left:6px; }
+.heat i { position:absolute; left:0; top:0; bottom:0; border-radius:3px; }
+
+/* 政策时间轴 */
+.ptl { position:relative; padding-left:26px; }
+.ptl::before { content:''; position:absolute; left:7px; top:6px; bottom:6px; width:2px; background:#e2e8f0; }
+.ptl-item { position:relative; padding-bottom:16px; }
+.ptl-item:last-child { padding-bottom:0; }
+.ptl-item::before {
+  content:''; position:absolute; left:-24px; top:5px; width:11px; height:11px; border-radius:50%;
+  background:#fff; border:2px solid #2b6cb0;
+}
+.ptl-item.pos::before { border-color:#38a169; }
+.ptl-item.neg::before { border-color:#e53e3e; }
+.ptl-date { font-size:10.5px; color:#a0aec0; font-variant-numeric:tabular-nums; }
+.ptl-title { font-size:12.5px; font-weight:600; color:#2d3748; margin:2px 0 3px; }
+.ptl-body { font-size:11.5px; color:#718096; line-height:1.65; }
+
+/* 风险分级 */
+.risk-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.risk-box { border:1px solid #e2e8f0; border-radius:9px; padding:14px 16px; background:#fff; }
+.risk-box h4 { font-size:12px; font-weight:600; margin-bottom:8px; display:flex; justify-content:space-between; }
+.risk-box p { font-size:11px; color:#8b95a5; line-height:1.6; }
+.risk-box .n { font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; }
+
+.tip {
+  margin-top:14px; font-size:11px; color:#8b95a5; line-height:1.75;
+  border-left:3px solid #e2e8f0; padding-left:11px;
+}
+@media (max-width:900px) {
+  .cards { grid-template-columns:repeat(2,1fr); }
+  .risk-grid { grid-template-columns:1fr; }
+  .bar-row { grid-template-columns:84px 1fr 70px; }
+  .content { padding:14px 14px 30px; }
+  .tabs { overflow-x:auto; }
+  .tab { white-space:nowrap; }
+  .hdr-right { display:none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>行业研究工作台 <span class="tag">市场测算 · 竞争对标 · 政策评估 · 风险分级</span></h1>
+  <div class="hdr-right">
+    <div class="scenario" id="scenario">
+      <button data-s="base" class="on">基准</button>
+      <button data-s="opt">乐观</button>
+      <button data-s="con">保守</button>
+    </div>
+    <span>脱敏示意数据 · 展示分析方法</span>
+  </div>
+</header>
+
+<div class="note">
+  <b>说明：</b>本页为脱敏示意数据，用于展示行业研究的分析框架与工作流，不代表任何真实企业数据或结论。
+  方法对应岗位要求：市场规模测算（TAM/SAM/SOM）· 竞争对标 · 政策影响评估 · 项目风险分级。
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="size">市场规模测算</div>
+  <div class="tab" data-tab="comp">竞争对标矩阵</div>
+  <div class="tab" data-tab="policy">政策影响评估</div>
+  <div class="tab" data-tab="risk">风险分级清单</div>
+</div>
+
+<div class="content">
+
+  <!-- 市场规模 -->
+  <div class="pane active" id="pane-size">
+    <div class="pane-head">
+      <h2>协议客户市场容量测算（2026 年，亿元）</h2>
+      <p>按产品线拆解 TAM（全市场）→ SAM（可服务市场）→ SOM（可获取市场），用于判断资源投入优先级与增长曲线。</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-lab">协议客户 TAM</div><div class="card-val" id="k-tam">529<small>亿元</small></div><div class="card-sub">2026 年 · 全产品线合计</div></div>
+      <div class="card"><div class="card-lab">可服务 SAM</div><div class="card-val" id="k-sam">312<small>亿元</small></div><div class="card-sub">按客户结构与技术准入筛选</div></div>
+      <div class="card"><div class="card-lab">可获取 SOM</div><div class="card-val" id="k-som">96<small>亿元</small></div><div class="card-sub">按现有份额与定点概率</div></div>
+      <div class="card"><div class="card-lab">TAM → 2031 CAGR</div><div class="card-val" id="k-cagr">8.4<small>%</small></div><div class="card-sub">2026—2031 复合增速</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">分产品线市场容量 <span id="size-hint">2026 年 · 基准情景</span></div>
+      <div class="bars" id="bars"></div>
+      <div class="legend">
+        <span><i style="background:#90cdf4"></i>TAM 全市场</span>
+        <span><i style="background:#4299e1"></i>SAM 可服务</span>
+        <span><i style="background:#1a365d"></i>SOM 可获取</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">产品线增长与投入建议 <span>按 CAGR × 体量排序</span></div>
+      <table id="tbl-size">
+        <thead>
+          <tr>
+            <th data-k="name">产品线 <span class="ar">↕</span></th>
+            <th data-k="tam" class="num">TAM 2026 <span class="ar">↕</span></th>
+            <th data-k="cagr" class="num">CAGR <span class="ar">↕</span></th>
+            <th data-k="som" class="num">SOM <span class="ar">↕</span></th>
+            <th data-k="adv">投入建议</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="tip">判断逻辑：体量大且 CAGR 高 → 重点投入；体量大但增速低 → 保份额、控成本；体量小但增速高 → 试点投入、观察窗口。</div>
+    </div>
+  </div>
+
+  <!-- 竞争对标 -->
+  <div class="pane" id="pane-comp">
+    <div class="pane-head">
+      <h2>竞争对标矩阵（1—5 分）</h2>
+      <p>五个维度横向对标：产品力、成本、交付、质量、客户关系。分数越高代表相对优势越明显；红色为相对短板，需要专项改进。</p>
+    </div>
+    <div class="panel">
+      <div class="panel-title">五维竞争力评分 <span>示例企业 A—E（脱敏）</span></div>
+      <table id="tbl-comp">
+        <thead>
+          <tr>
+            <th data-k="name">对标对象 <span class="ar">↕</span></th>
+            <th data-k="prod" class="num">产品力 <span class="ar">↕</span></th>
+            <th data-k="cost" class="num">成本 <span class="ar">↕</span></th>
+            <th data-k="deliv" class="num">交付 <span class="ar">↕</span></th>
+            <th data-k="qual" class="num">质量 <span class="ar">↕</span></th>
+            <th data-k="rel" class="num">客户关系 <span class="ar">↕</span></th>
+            <th data-k="avg" class="num">均分 <span class="ar">↕</span></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="tip">
+        读法：<b>优势维度</b>决定以什么打；<b>短板维度</b>决定先补什么。若某对手在四个维度均优于我方，则该标段应判定为高风险，不宜按常规份额假设进入预测。
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">对标结论建议 <span>由评分自动生成</span></div>
+      <div id="comp-insight"></div>
+    </div>
+  </div>
+
+  <!-- 政策影响 -->
+  <div class="pane" id="pane-policy">
+    <div class="pane-head">
+      <h2>政策与行业事件影响评估</h2>
+      <p>把政策/事件按「影响方向 × 影响强度 × 作用时点」结构化，避免只做新闻摘录，而是转化为对业务的具体影响判断。</p>
+    </div>
+    <div class="panel">
+      <div class="panel-title">关键事件时间轴 <span>绿=利好 · 红=利空</span></div>
+      <div class="ptl" id="ptl"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">影响强度评估 <span>按业务线加权</span></div>
+      <table id="tbl-policy">
+        <thead>
+          <tr>
+            <th data-k="ev">事件 <span class="ar">↕</span></th>
+            <th data-k="dir">方向 <span class="ar">↕</span></th>
+            <th data-k="strength" class="num">影响强度 <span class="ar">↕</span></th>
+            <th data-k="when">作用时点 <span class="ar">↕</span></th>
+            <th data-k="act">建议动作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 风险分级 -->
+  <div class="pane" id="pane-risk">
+    <div class="pane-head">
+      <h2>项目风险分级清单</h2>
+      <p>按 Chance 分级：≤50% 高风险、50—80% 中风险、80—100% 低风险；并结合四维竞争判断复核。用于预测口径统一与资源排序。</p>
+    </div>
+    <div class="risk-grid">
+      <div class="risk-box"><h4>高风险 <span class="n b-hi" style="padding:1px 9px;border-radius:10px">≤50%</span></h4><p>两个及以下维度优于对手；需备选方案与专项攻坚，不计入必达口径。</p></div>
+      <div class="risk-box"><h4>中风险 <span class="n b-mid" style="padding:1px 9px;border-radius:10px">50—80%</span></h4><p>任意三个维度优于对手；纳入挑战口径，需明确卡点与责任人。</p></div>
+      <div class="risk-box"><h4>低风险 <span class="n b-low" style="padding:1px 9px;border-radius:10px">80—100%</span></h4><p>四个维度均优于对手；可纳入必达口径，重点保交付与量产节奏。</p></div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <div class="panel-title">项目风险清单 <span>示例项目（脱敏）</span></div>
+      <table id="tbl-risk">
+        <thead>
+          <tr>
+            <th data-k="proj">项目 <span class="ar">↕</span></th>
+            <th data-k="cust">客户 <span class="ar">↕</span></th>
+            <th data-k="chance" class="num">Chance <span class="ar">↕</span></th>
+            <th data-k="lvl">风险等级 <span class="ar">↕</span></th>
+            <th data-k="gap">主要卡点</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="tip">口径提醒：Chance 是「获取概率」而非「完成度」；100% 才视为已定点。发布预测前必须完成单位、量纲、项目归属与生命周期四项校验。</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ========== 数据（脱敏示意） ==========
+const SIZE = [
+  { name:'P01 座舱域控',  tam:156.2, sam:96.0, som:31.5, cagr:7.4 },
+  { name:'P02 智驾域控',  tam:101.1, sam:64.0, som:18.2, cagr:17.7 },
+  { name:'P03 显示',      tam: 81.7, sam:48.0, som:14.6, cagr:4.8 },
+  { name:'P04 T-BOX',     tam: 23.5, sam:16.0, som: 6.1, cagr:9.4 },
+  { name:'P05 感知',      tam: 35.5, sam:24.0, som: 8.4, cagr:14.2 },
+  { name:'P.O 新品',      tam:130.8, sam:64.0, som:17.2, cagr:8.3 }
+];
+const SCEN = {
+  base:{ f:1.00, lab:'基准情景' },
+  opt :{ f:1.15, lab:'乐观情景' },
+  con :{ f:0.86, lab:'保守情景' }
+};
+const COMP = [
+  { name:'我方（示例）', prod:4, cost:3, deliv:4, qual:4, rel:5 },
+  { name:'对手 A',      prod:5, cost:4, deliv:4, qual:5, rel:4 },
+  { name:'对手 B',      prod:3, cost:5, deliv:3, qual:3, rel:2 },
+  { name:'对手 C',      prod:4, cost:4, deliv:5, qual:4, rel:3 },
+  { name:'对手 D',      prod:2, cost:4, deliv:3, qual:4, rel:4 }
+];
+const POLICY = [
+  { date:'2026.01', ev:'智能网联准入试点扩围', dir:'利好', strength:4, when:'当年', act:'跟进试点客户，锁定首批定点', cls:'pos',
+    body:'试点范围扩大，整车厂对 L2+/L3 方案需求前置，域控与感知件订单节奏提前。' },
+  { date:'2026.03', ev:'购置税优惠退坡', dir:'利空', strength:3, when:'当年', act:'下调低端车型配套预测，转投中高端', cls:'neg',
+    body:'A00 级与入门新能源销量承压，相关屏显与座舱低配方案需求下滑。' },
+  { date:'2026.06', ev:'国产芯片替代补贴落地', dir:'利好', strength:5, when:'1—2 年', act:'加速国芯平台导入，锁定成本优势', cls:'pos',
+    body:'国产化方案获得直接补贴，具备国芯平台的供应商在报价端形成结构性优势。' },
+  { date:'2026.09', ev:'原材料价格上行', dir:'利空', strength:3, when:'当年', act:'启动价格联动条款，重算毛利', cls:'neg',
+    body:'芯片、钢材与结构件成本上涨，原有报价假设失效，需重估项目 OI。' },
+  { date:'2027.02', ev:'数据合规新规实施', dir:'中性', strength:2, when:'1—2 年', act:'补充合规成本，纳入方案报价', cls:'',
+    body:'车端数据采集与出境要求提高，需增加合规投入，但不改变竞争格局。' }
+];
+const RISK = [
+  { proj:'某德系座舱域控', cust:'客户 A', chance:35, gap:'技术方案落后一代，价格无优势' },
+  { proj:'某日系智驾域控', cust:'客户 B', chance:45, gap:'缺 L2+ 量产案例背书' },
+  { proj:'某自主中控屏',   cust:'客户 C', chance:65, gap:'交付周期承诺偏紧' },
+  { proj:'某代工 T-BOX',   cust:'客户 D', chance:72, gap:'产能爬坡需验证' },
+  { proj:'某合资显示模组', cust:'客户 E', chance:88, gap:'仅需保量产质量稳定' },
+  { proj:'某自主 T-BOX',   cust:'客户 F', chance:95, gap:'已定点，聚焦成本优化' }
+];
+
+const fmt = n => n.toFixed(1);
+
+// ========== 市场规模 ==========
+function renderSize(sc){
+  const cur = SCEN[sc], f = cur.f;
+  document.getElementById('size-hint').textContent = '2026 年 · ' + cur.lab;
+  const max = Math.max(...SIZE.map(d=>d.tam)) * 1.06;
+  document.getElementById('bars').innerHTML = SIZE.map(d=>{
+    const tam=d.tam, sam=d.sam*f, som=d.som*f;
+    return `<div class="bar-row">
+      <div class="bar-name">${d.name}</div>
+      <div class="bar-track">
+        <div class="bar-fill tam" style="width:${(tam/max*100).toFixed(1)}%"></div>
+        <div class="bar-fill sam" style="width:${(sam/max*100).toFixed(1)}%"></div>
+        <div class="bar-fill som" style="width:${(som/max*100).toFixed(1)}%"></div>
+      </div>
+      <div class="bar-val">${fmt(tam)} 亿</div>
+    </div>`;
+  }).join('');
+  const tam=SUM('tam'), sam=SUM('sam')*f, som=SUM('som')*f;
+  document.getElementById('k-tam').innerHTML = Math.round(tam*f)+'<small>亿元</small>';
+  document.getElementById('k-sam').innerHTML = Math.round(sam)+'<small>亿元</small>';
+  document.getElementById('k-som').innerHTML = Math.round(som)+'<small>亿元</small>';
+  document.getElementById('k-cagr').innerHTML = (8.4*f).toFixed(1)+'<small>%</small>';
+  document.querySelector('#tbl-size tbody').innerHTML = SIZE.map(d=>{
+    const adv = d.cagr>=12 && d.tam>=60 ? '重点投入'
+              : d.cagr>=12 ? '试点投入'
+              : d.tam>=80 ? '保份额控成本' : '跟随观察';
+    const cls = adv==='重点投入'?'b-low':adv==='试点投入'?'b-mid':adv==='保份额控成本'?'b-neutral':'b-neutral';
+    return `<tr>
+      <td>${d.name}</td>
+      <td class="num">${fmt(d.tam*f)}</td>
+      <td class="num">${(d.cagr*f).toFixed(1)}%</td>
+      <td class="num">${fmt(d.som*f)}</td>
+      <td><span class="badge ${cls}">${adv}</span></td>
+    </tr>`;
+  }).join('');
+}
+function SUM(k){ return SIZE.reduce((s,d)=>s+d[k],0); }
+
+// ========== 竞争对标 ==========
+function heat(v){
+  const colors={5:'#2f855a',4:'#48bb78',3:'#d69e2e',2:'#dd6b20',1:'#e53e3e'};
+  return `<span class="heat"><i style="width:${v/5*100}%;background:${colors[v]}"></i></span>`;
+}
+function renderComp(){
+  document.querySelector('#tbl-comp tbody').innerHTML = COMP.map(d=>{
+    const avg=((d.prod+d.cost+d.deliv+d.qual+d.rel)/5);
+    const isMe=d.name.indexOf('我方')===0;
+    return `<tr${isMe?' style="background:#f7fafc"':''}>
+      <td><b>${d.name}</b></td>
+      <td class="num"><span class="score s${d.prod}">${d.prod}</span>${heat(d.prod)}</td>
+      <td class="num"><span class="score s${d.cost}">${d.cost}</span>${heat(d.cost)}</td>
+      <td class="num"><span class="score s${d.deliv}">${d.deliv}</span>${heat(d.deliv)}</td>
+      <td class="num"><span class="score s${d.qual}">${d.qual}</span>${heat(d.qual)}</td>
+      <td class="num"><span class="score s${d.rel}">${d.rel}</span>${heat(d.rel)}</td>
+      <td class="num"><b>${avg.toFixed(1)}</b></td>
+    </tr>`;
+  }).join('');
+
+  const me=COMP[0];
+  const dims=[['产品力','prod'],['成本','cost'],['交付','deliv'],['质量','qual'],['客户关系','rel']];
+  const stronger=dims.filter(([,k])=>me[k]>=4).map(([n])=>n);
+  const weaker=dims.filter(([,k])=>me[k]<=3).map(([n])=>n);
+  const leader=COMP.slice(1).sort((a,b)=>
+    (b.prod+b.cost+b.deliv+b.qual+b.rel)-(a.prod+a.cost+a.deliv+a.qual+a.rel))[0];
+  document.getElementById('comp-insight').innerHTML = `
+    <div class="tip" style="border-left-color:#2b6cb0">
+      <b>相对优势维度：</b>${stronger.join('、')||'无'}——这些是可以主动打的点，方案与报价应向这些维度倾斜。<br>
+      <b>相对短板维度：</b>${weaker.join('、')||'无'}——需要在方案阶段补强或明确规避，不要在这些维度硬碰。<br>
+      <b>最强对手：</b>${leader.name}（均分 ${((leader.prod+leader.cost+leader.deliv+leader.qual+leader.rel)/5).toFixed(1)}）。
+      若其在四个及以上维度优于我方，该项目应按高风险口径处理，不纳入必达预测。
+    </div>`;
+}
+
+// ========== 政策 ==========
+function renderPolicy(){
+  document.getElementById('ptl').innerHTML = POLICY.map(p=>`
+    <div class="ptl-item ${p.cls}">
+      <div class="ptl-date">${p.date}</div>
+      <div class="ptl-title">${p.ev} <span class="badge ${p.dir==='利好'?'b-low':p.dir==='利空'?'b-hi':'b-neutral'}" style="margin-left:6px">${p.dir}</span></div>
+      <div class="ptl-body">${p.body}</div>
+    </div>`).join('');
+  document.querySelector('#tbl-policy tbody').innerHTML = POLICY.map(p=>`
+    <tr>
+      <td>${p.ev}</td>
+      <td><span class="badge ${p.dir==='利好'?'b-low':p.dir==='利空'?'b-hi':'b-neutral'}">${p.dir}</span></td>
+      <td class="num">${'★'.repeat(p.strength)}<span style="color:#cbd5e0">${'★'.repeat(5-p.strength)}</span></td>
+      <td>${p.when}</td>
+      <td style="font-size:11.5px;color:#4a5568">${p.act}</td>
+    </tr>`).join('');
+}
+
+// ========== 风险 ==========
+function lvl(c){ return c<=50?['高风险','b-hi']:c<80?['中风险','b-mid']:['低风险','b-low']; }
+function renderRisk(){
+  document.querySelector('#tbl-risk tbody').innerHTML = RISK.map(d=>{
+    const [l,cls]=lvl(d.chance);
+    return `<tr>
+      <td>${d.proj}</td>
+      <td>${d.cust}</td>
+      <td class="num"><b>${d.chance}%</b></td>
+      <td><span class="badge ${cls}">${l}</span></td>
+      <td style="font-size:11.5px;color:#4a5568">${d.gap}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ========== 表格排序 ==========
+function bindSort(tableId){
+  const tbl=document.getElementById(tableId);
+  if(!tbl) return;
+  let dir={};
+  tbl.querySelectorAll('th').forEach(th=>{
+    th.addEventListener('click',()=>{
+      const k=th.dataset.k;
+      if(!k) return;
+      dir[k]=!dir[k];
+      tbl.querySelectorAll('th').forEach(x=>{x.classList.remove('sorted');const a=x.querySelector('.ar');if(a)a.textContent='↕';});
+      th.classList.add('sorted');
+      th.querySelector('.ar').textContent = dir[k]?'↑':'↓';
+      const tbody=tbl.querySelector('tbody');
+      const rows=[...tbody.querySelectorAll('tr')];
+      rows.sort((a,b)=>{
+        const ia=[...tbl.querySelectorAll('th')].findIndex(x=>x===th);
+        const va=a.children[ia].textContent.trim(), vb=b.children[ia].textContent.trim();
+        const na=parseFloat(va.replace(/[^\d.\-]/g,'')), nb=parseFloat(vb.replace(/[^\d.\-]/g,''));
+        const cmp=(!isNaN(na)&&!isNaN(nb))?na-nb:va.localeCompare(vb,'zh');
+        return dir[k]?cmp:-cmp;
+      });
+      rows.forEach(r=>tbody.appendChild(r));
+    });
+  });
+}
+
+// ========== Tab 切换 ==========
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('pane-'+t.dataset.tab).classList.add('active');
+  });
+});
+
+// ========== 情景切换 ==========
+document.querySelectorAll('#scenario button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#scenario button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    renderSize(b.dataset.s);
+  });
+});
+
+// ========== 初始化 ==========
+renderSize('base');
+renderComp();
+renderPolicy();
+renderRisk();
+bindSort('tbl-size');
+bindSort('tbl-comp');
+bindSort('tbl-policy');
+bindSort('tbl-risk');
+</script>
+</body>
+</html>

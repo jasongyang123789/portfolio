@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>杨钧凇 · 行业研究 × 市场分析 × 数据分析</title>
-<meta name="description" content="杨钧凇 —— 6 年行业研究与经营数据分析经验。独立搭建行业与竞品数据库、11 万字风险数据库、14 版销售预测模型；从数据到决策建议的完整链路。">
+<meta name="description" content="杨钧凇 —— 6 年行业研究与经营数据分析经验。安永、毕马威咨询出身，上市医疗器械与汽车零部件甲方实战。行业与竞品数据库、11 万字风险数据库、14 版销售预测模型；从数据到决策建议的完整链路。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231f3a5f'/%3E%3Ctext x='16' y='22' font-size='16' font-family='Georgia' fill='%23faf9f6' text-anchor='middle'%3E%E6%9D%A8%3C/text%3E%3C/svg%3E">
 <style>
 :root {
@@ -238,6 +238,84 @@ footer {
   .nav-links { display: none; }
   .work-meta, .work-links { padding-left: 24px; padding-right: 24px; }
 }
+
+/* ===== 文字简历式信息栏 ===== */
+.resume-meta {
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px 26px;
+  margin:6px 0 34px; padding:18px 0;
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  font-size:13.5px; color:var(--ink-2);
+}
+.resume-meta b { color:var(--ink); font-weight:600; }
+.resume-meta .dot { color:var(--line); }
+.hl-list { list-style:none; display:flex; flex-direction:column; gap:18px; }
+.hl-item {
+  display:grid; grid-template-columns:120px 1fr; gap:24px; align-items:start;
+  padding-bottom:18px; border-bottom:1px dashed var(--line);
+}
+.hl-item:last-child { border-bottom:none; padding-bottom:0; }
+.hl-key {
+  font-family:var(--serif); font-size:15px; font-weight:700; color:var(--accent);
+  letter-spacing:.5px; padding-top:2px;
+}
+.hl-val { font-size:14.5px; color:var(--ink-2); line-height:1.95; }
+.hl-val b { color:var(--ink); font-weight:600; }
+.job-block { padding-bottom:30px; }
+.job-block:last-child { padding-bottom:0; }
+.job-hd { display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; }
+.job-title { font-family:var(--serif); font-size:18px; font-weight:700; }
+.job-org { font-size:13px; color:var(--gold); margin-left:10px; font-weight:400; }
+.job-time { font-family:var(--mono); font-size:12px; color:var(--ink-3); letter-spacing:1px; }
+.job-body { margin-top:10px; display:flex; flex-direction:column; gap:9px; }
+.job-line { font-size:14.5px; color:var(--ink-2); line-height:1.9; padding-left:14px; position:relative; }
+.job-line::before {
+  content:''; position:absolute; left:0; top:11px; width:5px; height:5px;
+  border-radius:50%; background:var(--accent); opacity:.55;
+}
+.job-line b { color:var(--ink); font-weight:600; }
+@media (max-width:860px) {
+  .hl-item { grid-template-columns:1fr; gap:6px; }
+  .resume-meta { font-size:12.5px; gap:8px 18px; }
+}
+
+/* ===== 文字简历式信息栏 ===== */
+.resume-meta {
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px 26px;
+  margin:6px 0 34px; padding:18px 0;
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  font-size:13.5px; color:var(--ink-2);
+}
+.resume-meta b { color:var(--ink); font-weight:600; }
+.resume-meta .dot { color:var(--line); }
+.hl-list { list-style:none; display:flex; flex-direction:column; gap:18px; }
+.hl-item {
+  display:grid; grid-template-columns:120px 1fr; gap:24px; align-items:start;
+  padding-bottom:18px; border-bottom:1px dashed var(--line);
+}
+.hl-item:last-child { border-bottom:none; padding-bottom:0; }
+.hl-key {
+  font-family:var(--serif); font-size:15px; font-weight:700; color:var(--accent);
+  letter-spacing:.5px; padding-top:2px;
+}
+.hl-val { font-size:14.5px; color:var(--ink-2); line-height:1.95; }
+.hl-val b { color:var(--ink); font-weight:600; }
+.job-block { padding-bottom:30px; }
+.job-block:last-child { padding-bottom:0; }
+.job-hd { display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; }
+.job-title { font-family:var(--serif); font-size:18px; font-weight:700; }
+.job-org { font-size:13px; color:var(--gold); margin-left:10px; font-weight:400; }
+.job-time { font-family:var(--mono); font-size:12px; color:var(--ink-3); letter-spacing:1px; }
+.job-body { margin-top:10px; display:flex; flex-direction:column; gap:9px; }
+.job-line { font-size:14.5px; color:var(--ink-2); line-height:1.9; padding-left:14px; position:relative; }
+.job-line::before {
+  content:''; position:absolute; left:0; top:11px; width:5px; height:5px;
+  border-radius:50%; background:var(--accent); opacity:.55;
+}
+.job-line b { color:var(--ink); font-weight:600; }
+@media (max-width:860px) {
+  .hl-item { grid-template-columns:1fr; gap:6px; }
+  .resume-meta { font-size:12.5px; gap:8px 18px; }
+}
 </style>
 </head>
 <body>
@@ -246,9 +324,10 @@ footer {
   <div class="nav-inner">
     <div class="nav-logo">杨钧凇<span>.</span></div>
     <div class="nav-links">
-      <a href="#works">作品</a>
-      <a href="#experience">经历</a>
-      <a href="#metrics">成果</a>
+      <a href="#profile">个人信息</a>
+      <a href="#highlights">个人亮点</a>
+      <a href="#works">代表项目</a>
+      <a href="#experience">工作经历</a>
       <a href="#capabilities">能力</a>
       <a href="#contact">联系</a>
       <a href="../matching.html">岗位匹配</a>
@@ -256,13 +335,22 @@ footer {
   </div>
 </nav>
 
-<!-- ============ Hero ============ -->
-<header class="hero">
+<!-- ============ Hero / 个人信息 ============ -->
+<header class="hero" id="profile">
   <div class="hero-tag">Industry Research · Market Insight · Data Analysis</div>
-  <h1>从行业数据里，<br>读出<em>机会</em>、<em>风险</em>，和<em>该做的事</em>。</h1>
-  <p class="hero-sub">
-    我是<strong>杨钧凇</strong>，6 年行业研究与数据分析经验的「研究型」选手——安永、毕马威咨询出身，先后在上市医疗器械企业与汽车零部件企业负责行业研究、竞争监控与销售预测建模。我相信：<strong>研究要能回答「所以呢」</strong>——每一个数字都要连到一个可执行的判断。这个页面陈列我做成过的事。
+  <h1>杨钧凇</h1>
+  <p class="hero-sub" style="margin-bottom:0">
+    求职意向：<strong>行业研究 / 市场分析 / 数据分析</strong>　·　6 年行业研究与经营数据分析经验
   </p>
+  <div class="resume-meta">
+    <span><b>电话 / 微信</b>　130-8998-9416</span>
+    <span class="dot">|</span>
+    <span><b>邮箱</b>　903334159@qq.com</span>
+    <span class="dot">|</span>
+    <span><b>常驻</b>　长春（可接受大连 / 沈阳）</span>
+    <span class="dot">|</span>
+    <span><b>学历</b>　东北农业大学（211）· 会计学 · 本科</span>
+  </div>
   <div class="hero-stats">
     <div class="stat"><div class="stat-num">11<small> 万字</small></div><div class="stat-label">风险数据库</div></div>
     <div class="stat"><div class="stat-num">14<small> 版</small></div><div class="stat-label">销售预测模型迭代</div></div>
@@ -271,20 +359,96 @@ footer {
   </div>
 </header>
 
-<!-- ============ 作品 ============ -->
+<!-- ============ 个人亮点 ============ -->
+<section id="highlights">
+  <div class="sec-head reveal">
+    <span class="sec-index">01 — HIGHLIGHTS</span>
+    <h2 class="sec-title">个人亮点</h2>
+    <p class="sec-desc">六年在做的只有一件事：把分散的信息变成可判断的结论，再变成可执行的建议。</p>
+  </div>
+  <div class="hl-list reveal">
+    <div class="hl-item">
+      <div class="hl-key">研究型复合背景</div>
+      <div class="hl-val">
+        四大咨询（<b>安永、毕马威</b>）出身，转入甲方后再做 <b>6 年</b>行业研究与数据分析——
+        先后在上市医疗器械企业与汽车零部件企业负责行业研究、竞争监控与销售预测建模，
+        <b>既懂研究方法论，也懂组织里怎么把结论推下去</b>。
+      </div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-key">数据 → 判断</div>
+      <div class="hl-val">
+        搭建行业与竞品数据库、政策影响建模、<b>11 万字风险数据库</b>与龙头上市公司标杆研究；
+        销售预测模型迭代 <b>14 个版本</b>，单版公式链路超 <b>1,300 万字符</b>，多口径复算一致、可审计。
+        不停在「发生了什么」，而是回答「所以呢、我们该怎么办」。
+      </div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-key">直接贡献经营</div>
+      <div class="hl-val">
+        在上市医疗器械企业，协助公司<b>提前应对集采降价冲击、阻击竞品上市节奏</b>；
+        在咨询阶段个人主导某上市公司运营优化项目，<b>节约资金 1,000 余万元</b>，获集团与业务部门深度认可。
+      </div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-key">可落地的机制</div>
+      <div class="hl-val">
+        不只交付一次性报告：建立行业动态 / 竞品 / 政策的<b>常态化监控与预警机制</b>、
+        口径统一的报表体系与自动化汇总流程，让研究成为<b>持续运转的机制</b>而不是阶段性作业。
+      </div>
+    </div>
+  </div>
+
+  <div class="metrics reveal" style="margin-top:44px">
+    <div class="metric"><div class="metric-num">11<small> 万字</small></div><div class="metric-name">全面风险管理体系风险数据库</div><div class="metric-sub">2 家上市公司风控项目</div></div>
+    <div class="metric"><div class="metric-num">14<small> 版</small></div><div class="metric-name">销售预测模型迭代版本</div><div class="metric-sub">4 战队 · 统一模板与口径</div></div>
+    <div class="metric"><div class="metric-num">1,300<small> 万字符</small></div><div class="metric-name">单版销售预测模型公式链路</div><div class="metric-sub">复算一致 · 可审计</div></div>
+    <div class="metric"><div class="metric-num">11<small> 类</small></div><div class="metric-name">预测数据业务异常自动识别</div><div class="metric-sub">单位混用 / 概率 / 归属等</div></div>
+    <div class="metric"><div class="metric-num">209<small> 份</small></div><div class="metric-name">结构化行业与战略材料</div><div class="metric-sub">2,310 万字符 · 可检索</div></div>
+    <div class="metric"><div class="metric-num">1,000<small> 万+</small></div><div class="metric-name">数据驱动优化项目节约资金</div><div class="metric-sub">个人主导 · 集团认可</div></div>
+  </div>
+</section>
+
+<!-- ============ 代表项目 ============ -->
+
 <section id="works">
   <div class="sec-head reveal">
-    <span class="sec-index">01 — SELECTED WORKS</span>
+    <span class="sec-index">02 — SELECTED WORKS</span>
     <h2 class="sec-title">用数据回答：市场在发生什么，我们该怎么办</h2>
     <p class="sec-desc">
-      下面第一个是我把日常预测数据工作自动化的工作流，第二个是行业与材料信息的检索工具；
-      第三张卡是我行业研究的完整打法。所有数字都来自真实工作。
+      下面第一个是行业研究的标准工作台（市场测算 / 竞争对标 / 政策评估 / 风险分级），
+      第二个是我把预测数据校验自动化的工作流。均可在线交互，数据已脱敏。
     </p>
   </div>
 
   <div class="work-card reveal">
     <div class="work-meta">
       <div class="work-idx">WORK 01</div>
+      <div class="work-title">行业研究工作台 · 市场测算 / 竞争对标 / 政策评估 / 风险分级</div>
+      <p class="work-desc">
+        把行业研究拆成四个可复用的分析模块：<b>TAM/SAM/SOM 市场容量测算</b>（含情景切换）、
+        <b>五维竞争对标矩阵</b>（自动识别优势与短板维度）、<b>政策事件影响评估</b>（方向 × 强度 × 时点）、
+        <b>项目风险分级清单</b>（按 Chance 三档口径）。研究结论直接落成资源投入建议与动作项。
+      </p>
+      <div class="work-points">
+        <span class="point">TAM / SAM / SOM 测算</span>
+        <span class="point">五维竞争对标</span>
+        <span class="point">政策影响 × 强度评估</span>
+        <span class="point">Chance 三档风险分级</span>
+      </div>
+    </div>
+    <div class="work-links">
+      <a class="work-link" href="../demos/demo3.html" target="_blank">在新窗口打开完整版 ↗</a>
+    </div>
+    <div class="work-frame-wrap">
+      <iframe class="work-frame" data-src="../demos/demo3.html" loading="lazy" title="行业研究工作台"></iframe>
+      <div class="frame-tip" onclick="loadFrame(this)"><div class="play">▶</div>点击加载交互演示</div>
+    </div>
+  </div>
+
+  <div class="work-card reveal">
+    <div class="work-meta">
+      <div class="work-idx">WORK 02</div>
       <div class="work-title">四战队销售预测差异 · 自动汇总工作流</div>
       <p class="work-desc">
         多战队上报模板口径不一，人工汇总要两天还容易错。这条 6 节点工作流（数据接入 → 口径校验 → 差异计算 →
@@ -309,30 +473,6 @@ footer {
 
   <div class="work-card reveal">
     <div class="work-meta">
-      <div class="work-idx">WORK 02</div>
-      <div class="work-title">行业与战略材料知识库 · 智能问答</div>
-      <p class="work-desc">
-        把 209 份、2,310 万字符行业与战略材料结构化为四层知识库。提问后返回「结论 → 依据要点 → 关键数据 →
-        引用来源（含相关度打分）」——行业信息从「散落在文件夹」变成「随问随答、可追溯」。
-      </p>
-      <div class="work-points">
-        <span class="point">检索增强 RAG 结构</span>
-        <span class="point">引用溯源 + 相关度打分</span>
-        <span class="point">2,310 万字符结构化</span>
-        <span class="point">防编造设计</span>
-      </div>
-    </div>
-    <div class="work-links">
-      <a class="work-link" href="../demos/demo1.html" target="_blank">在新窗口打开完整版 ↗</a>
-    </div>
-    <div class="work-frame-wrap">
-      <iframe class="work-frame" data-src="../demos/demo1.html" loading="lazy" title="行业与战略材料知识库"></iframe>
-      <div class="frame-tip" onclick="loadFrame(this)"><div class="play">▶</div>点击加载交互演示</div>
-    </div>
-  </div>
-
-  <div class="work-card reveal">
-    <div class="work-meta">
       <div class="work-idx">WORK 03</div>
       <div class="work-title">行业研究 · 竞争监控 · 政策建模体系</div>
       <p class="work-desc">
@@ -351,57 +491,58 @@ footer {
   </div>
 </section>
 
-<!-- ============ 经历 ============ -->
+<!-- ============ 工作经历 ============ -->
 <section id="experience">
   <div class="sec-head reveal">
-    <span class="sec-index">02 — EXPERIENCE</span>
-    <h2 class="sec-title">从咨询研究，到甲方数据体系</h2>
+    <span class="sec-index">03 — EXPERIENCE</span>
+    <h2 class="sec-title">工作经历</h2>
   </div>
-  <div class="timeline">
-    <div class="tl-item reveal">
-      <div class="tl-time">2023.04 — 2025.05 · 大连</div>
-      <div class="tl-role">经营数据分析师 <span>目立康（中国）医疗科技 · 上市</span></div>
-      <p class="tl-body">
-        独立负责行业动态、竞争格局、产业链监控与政策影响建模预测：建立行业与竞品数据库、完成 <b>11 万字</b>风险数据库与龙头上市公司标杆研究，输出可直接支撑经营决策的市场判断；协助公司提前应对集采降价冲击、阻击竞品上市节奏。
-      </p>
-    </div>
-    <div class="tl-item reveal">
-      <div class="tl-time">2025.06 — 至今 · 长春</div>
-      <div class="tl-role">总经办（GMO）战略规划工程师 <span>汽车零部件 · 富奥体系</span></div>
-      <p class="tl-body">
-        主导销售预测体系与口径校验：组织 4 支业务战队、5 条产品线按统一模板更新十五五预测，<b>14 个版本模型</b>、单版公式链路超 <b>1,300 万字符</b>，建立项目概率风险分级标准；承担市场洞察与行业资料研究，支撑管理层战略研讨。
-      </p>
-    </div>
-    <div class="tl-item reveal">
-      <div class="tl-time">2022.10 — 2023.04</div>
-      <div class="tl-role">咨询顾问 <span>毕马威（中国）</span></div>
-      <p class="tl-body">
-        百亿级上市公司五年战略规划中的市场空间测算与业务组合分析；国企「十四五」规划中的行业研究与对标研究；个人主导某上市公司运营优化项目，节约资金 <b>1,000 余万元</b>。
-      </p>
-    </div>
-    <div class="tl-item reveal">
-      <div class="tl-time">2020.10 — 2022.10</div>
-      <div class="tl-role">咨询顾问 <span>安永（中国）</span></div>
-      <p class="tl-body">
-        2 家上市公司全面风险管理体系建设：输出风险数据库 <b>11 万余字</b>，覆盖行业风险、政策风险与经营风险的识别、评估与应对。
-      </p>
-    </div>
-  </div>
-</section>
 
-<!-- ============ 成果 ============ -->
-<section id="metrics">
-  <div class="sec-head reveal">
-    <span class="sec-index">03 — RESULTS</span>
-    <h2 class="sec-title">数字会替我说话</h2>
+  <div class="job-block reveal">
+    <div class="job-hd">
+      <div class="job-title">总经办（GMO）战略规划工程师<span class="job-org">汽车零部件 · 富奥体系</span></div>
+      <div class="job-time">2025.06 — 至今 · 长春</div>
+    </div>
+    <div class="job-body">
+      <div class="job-line">统筹公司级战略规划编制（4 支业务战队、5 条产品线、7 大职能模块），战略文件迭代至 <b>V12</b>、经 4 轮管理层汇报后上报集团，收敛形成 <b>50 项</b>公司级重点工作。</div>
+      <div class="job-line">主导销售预测体系与口径校验：组织 4 支战队按统一模板更新中长期及滚动预测，<b>14 个版本模型</b>迭代、单版公式链路超 <b>1,300 万字符</b>，建立项目风险分级标准（Chance ≤50% / 50—80% / 80—100% 三档 + 四维竞争判断）。</div>
+      <div class="job-line">承担市场洞察与行业资料研究：行业动态、竞争格局、产业链监控，输出支撑管理层研讨的分析材料。</div>
+    </div>
   </div>
-  <div class="metrics reveal">
-    <div class="metric"><div class="metric-num">11<small> 万字</small></div><div class="metric-name">全面风险管理体系风险数据库</div><div class="metric-sub">2 家上市公司风控项目</div></div>
-    <div class="metric"><div class="metric-num">14<small> 版</small></div><div class="metric-name">销售预测模型迭代版本</div><div class="metric-sub">4 战队 · 统一模板与口径</div></div>
-    <div class="metric"><div class="metric-num">1,300<small> 万字符</small></div><div class="metric-name">单版销售预测模型公式链路</div><div class="metric-sub">复算一致 · 可审计</div></div>
-    <div class="metric"><div class="metric-num">11<small> 类</small></div><div class="metric-name">预测数据业务异常自动识别</div><div class="metric-sub">单位混用 / 概率 / 归属等</div></div>
-    <div class="metric"><div class="metric-num">209<small> 份</small></div><div class="metric-name">结构化行业与战略材料</div><div class="metric-sub">2,310 万字符 · 可检索</div></div>
-    <div class="metric"><div class="metric-num">1,000<small> 万+</small></div><div class="metric-name">数据驱动优化项目节约资金</div><div class="metric-sub">个人主导 · 集团认可</div></div>
+
+  <div class="job-block reveal">
+    <div class="job-hd">
+      <div class="job-title">经营数据分析师<span class="job-org">目立康（中国）医疗科技 · 上市</span></div>
+      <div class="job-time">2023.04 — 2025.05 · 大连</div>
+    </div>
+    <div class="job-body">
+      <div class="job-line">为事业部总经理提供数据运营、战略与市场规划的决策支持；独立负责行业动态、竞争格局、产业链监控与政策影响建模预测。</div>
+      <div class="job-line">建立行业与竞品数据库、完成 <b>11 万字</b>风险数据库与龙头上市公司标杆研究，输出可直接支撑经营决策的对比结论。</div>
+      <div class="job-line">成功协助公司<b>提前应对集采降价冲击、阻击竞品上市节奏</b>；独立负责市场调研、新产品推出战略、竞争对手并购战略等重大经营事项测算。</div>
+    </div>
+  </div>
+
+  <div class="job-block reveal">
+    <div class="job-hd">
+      <div class="job-title">咨询顾问<span class="job-org">毕马威（中国）</span></div>
+      <div class="job-time">2022.10 — 2023.04</div>
+    </div>
+    <div class="job-body">
+      <div class="job-line">参与某百亿级上市公司五年战略规划、三大业务战略规划及职能战略规划撰写、迭代与优化；发布战略规划体系当日市值拉升 <b>7%</b>（约 6,500 万元）。</div>
+      <div class="job-line">负责「十四五」战略规划编制中的外部环境分析、产业分析与不同业务板块的业务组合分析、未来市场空间测算。</div>
+      <div class="job-line">个人主导某上市公司运营优化提升项目，通过内外部访谈定位产品结构、设计思路与库存滞销问题，<b>节约资金 1,000 余万元</b>。</div>
+    </div>
+  </div>
+
+  <div class="job-block reveal">
+    <div class="job-hd">
+      <div class="job-title">咨询顾问<span class="job-org">安永（中国）</span></div>
+      <div class="job-time">2020.10 — 2022.10</div>
+    </div>
+    <div class="job-body">
+      <div class="job-line">参与 2 家地方国企破产重整（债权人 GP），通过债转股方式完成交易结构设计、估值、战投引入与退出路径设计。</div>
+      <div class="job-line">参与 2 家上市公司全面风险管理体系建设，负责风险识别、评估、数据分析与风险管控机制设计，输出<b>风险数据库 11 万余字</b>。</div>
+    </div>
   </div>
 </section>
 
@@ -453,7 +594,7 @@ footer {
 
 <footer>
   <div class="footer-inner">
-    <span>© 2026 杨钧凇 · 本页作品均可交互</span>
+    <span>© 2026 杨钧凇 · 本页项目均可交互</span>
     <span>行业研究 × 市场分析 × 数据分析</span>
   </div>
 </footer>
@@ -483,6 +624,5 @@ const ro = new IntersectionObserver((ents) => {
 }, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
 </script>
-
 </body>
 </html>
