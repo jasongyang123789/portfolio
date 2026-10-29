@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>战略规划工作台 · 战略解码 / GAP 复盘 / 跨部门协同 / 高管决策包</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:-apple-system,"Microsoft YaHei","PingFang SC",sans-serif;
+  background:#f2f4f7; color:#1a1d23; height:100vh; overflow:hidden;
+  display:flex; flex-direction:column;
+}
+header {
+  background:linear-gradient(135deg,#1a2f4a 0%,#2c5282 100%); color:#fff;
+  padding:14px 26px; display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 2px 10px rgba(0,0,0,.16); z-index:20; flex-shrink:0;
+}
+header h1 { font-size:16px; font-weight:600; display:flex; align-items:center; gap:10px; }
+.tag { background:rgba(255,255,255,.16); padding:3px 9px; border-radius:4px; font-size:10.5px; font-weight:400; }
+.hdr-right { display:flex; align-items:center; gap:14px; font-size:11.5px; opacity:.92; }
+.cycle { display:flex; background:rgba(255,255,255,.12); border-radius:7px; padding:3px; gap:2px; }
+.cycle button {
+  background:none; border:none; color:rgba(255,255,255,.75); font-family:inherit;
+  font-size:11.5px; padding:5px 12px; border-radius:5px; cursor:pointer; transition:all .18s;
+}
+.cycle button.on { background:#fff; color:#1a365d; font-weight:600; }
+.cycle button:hover:not(.on) { color:#fff; }
+
+.note {
+  background:#fffbe6; border-bottom:1px solid #f0e0a8; color:#7a6417;
+  font-size:11.5px; padding:8px 26px; flex-shrink:0; line-height:1.6;
+}
+.note b { color:#5d4b0f; }
+
+.tabs {
+  display:flex; gap:2px; padding:0 22px; background:#fff;
+  border-bottom:1px solid #e2e8f0; flex-shrink:0;
+}
+.tab {
+  padding:13px 18px; font-size:12.5px; color:#718096; cursor:pointer;
+  border-bottom:2px solid transparent; transition:all .18s; font-weight:500;
+}
+.tab.active { color:#2b6cb0; border-bottom-color:#2b6cb0; }
+.tab:hover:not(.active) { color:#4a5568; }
+
+.content { flex:1; overflow-y:auto; padding:20px 26px 36px; }
+.pane { display:none; }
+.pane.active { display:block; }
+.pane-head { margin-bottom:14px; }
+.pane-head h2 { font-size:15px; font-weight:600; color:#2d3748; }
+.pane-head p { font-size:12px; color:#8b95a5; margin-top:4px; line-height:1.7; }
+
+.cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
+.card { background:#fff; border:1px solid #e2e8f0; border-radius:9px; padding:15px 17px; }
+.card-lab { font-size:11px; color:#8b95a5; letter-spacing:.5px; }
+.card-val { font-size:23px; font-weight:700; color:#1a365d; margin-top:5px; font-variant-numeric:tabular-nums; }
+.card-val small { font-size:12px; font-weight:500; color:#718096; margin-left:2px; }
+.card-sub { font-size:10.5px; color:#a0aec0; margin-top:4px; }
+
+.panel { background:#fff; border:1px solid #e2e8f0; border-radius:9px; padding:18px 20px; margin-bottom:16px; }
+.panel-title {
+  font-size:12.5px; font-weight:600; color:#2d3748; margin-bottom:14px;
+  display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+}
+.panel-title span { font-size:10.5px; font-weight:400; color:#a0aec0; }
+
+table { width:100%; border-collapse:collapse; font-size:12px; }
+th {
+  text-align:left; padding:9px 10px; color:#718096; font-weight:600;
+  border-bottom:2px solid #e2e8f0; font-size:11px; white-space:nowrap;
+  cursor:pointer; user-select:none; background:#fafbfc;
+}
+th:hover { color:#2b6cb0; }
+th .ar { color:#cbd5e0; font-size:9px; margin-left:3px; }
+th.sorted .ar { color:#2b6cb0; }
+td { padding:9px 10px; border-bottom:1px solid #edf2f7; color:#2d3748; vertical-align:top; }
+tr:hover td { background:#f7fafc; }
+td.num { text-align:right; font-variant-numeric:tabular-nums; }
+
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10.5px; font-weight:600; white-space:nowrap; }
+.b-hi { background:#fed7d7; color:#9b2c2c; }
+.b-mid { background:#feebc8; color:#975a16; }
+.b-low { background:#c6f6d5; color:#22543d; }
+.b-neutral { background:#e2e8f0; color:#4a5568; }
+.b-blue { background:#bee3f8; color:#1a365d; }
+
+/* 战略地图四层 */
+.map-layer { display:flex; gap:10px; margin-bottom:9px; align-items:stretch; }
+.map-side {
+  width:62px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  font-size:10.5px; font-weight:700; letter-spacing:1px; border-radius:6px;
+}
+.lv1 { background:#bee3f8; color:#1a365d; }
+.lv2 { background:#c6f6d5; color:#22543d; }
+.lv3 { background:#fefcbf; color:#744210; }
+.lv4 { background:#e9d8fd; color:#44337a; }
+.map-items { flex:1; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.map-item {
+  background:#fafbfc; border:1px solid #e2e8f0; border-radius:6px; padding:9px 10px;
+  font-size:11px; color:#4a5568; line-height:1.55; cursor:default; transition:all .18s;
+}
+.map-item:hover { border-color:#4299e1; background:#f0f7ff; }
+.map-item b { display:block; color:#2d3748; font-size:11.5px; margin-bottom:2px; }
+.map-item .owner { font-size:10px; color:#a0aec0; margin-top:4px; }
+
+/* RACI */
+.raci-r { background:#c6f6d5; color:#22543d; font-weight:700; }
+.raci-a { background:#bee3f8; color:#1a365d; font-weight:700; }
+.raci-c { background:#feebc8; color:#975a16; font-weight:700; }
+.raci-i { background:#edf2f7; color:#718096; }
+.raci-cell { text-align:center; font-size:11px; border-radius:4px; padding:2px 0; display:block; width:22px; margin:0 auto; }
+
+/* GAP 瀑布 */
+.gap-row { display:grid; grid-template-columns:150px 1fr 92px; gap:12px; align-items:center; margin-bottom:10px; }
+.gap-name { font-size:11.5px; color:#4a5568; }
+.gap-track { height:26px; background:#edf2f7; border-radius:4px; position:relative; overflow:hidden; }
+.gap-bar { position:absolute; top:3px; bottom:3px; border-radius:3px; transition:all .5s; }
+.gap-bar.neg { background:linear-gradient(90deg,#fc8181,#e53e3e); left:50%; }
+.gap-bar.pos { background:linear-gradient(90deg,#68d391,#38a169); right:50%; }
+.gap-mid { position:absolute; left:50%; top:0; bottom:0; width:1px; background:#a0aec0; }
+.gap-val { font-size:11.5px; font-weight:600; text-align:right; font-variant-numeric:tabular-nums; }
+
+/* 决策包 */
+.dec { border-left:3px solid #2b6cb0; padding:10px 0 10px 14px; margin-bottom:14px; background:#fafbfc; border-radius:0 6px 6px 0; }
+.dec-hd { font-size:12.5px; font-weight:600; color:#2d3748; display:flex; justify-content:space-between; gap:10px; }
+.dec-body { font-size:11.5px; color:#718096; margin-top:5px; line-height:1.75; }
+.dec-body b { color:#2d3748; }
+.opt { display:flex; gap:8px; margin-top:7px; flex-wrap:wrap; }
+.opt span { font-size:11px; background:#edf2f7; color:#4a5568; padding:3px 9px; border-radius:3px; }
+.opt span.rec { background:#c6f6d5; color:#22543d; font-weight:600; }
+
+.tip { margin-top:14px; font-size:11px; color:#8b95a5; line-height:1.75; border-left:3px solid #e2e8f0; padding-left:11px; }
+.tip b { color:#4a5568; }
+
+@media (max-width:900px) {
+  .cards { grid-template-columns:repeat(2,1fr); }
+  .map-items { grid-template-columns:repeat(2,1fr); }
+  .gap-row { grid-template-columns:96px 1fr 72px; }
+  .content { padding:14px 14px 30px; }
+  .tabs { overflow-x:auto; } .tab { white-space:nowrap; }
+  .hdr-right { display:none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>战略规划工作台 <span class="tag">战略解码 · GAP 复盘 · 跨部门协同 · 高管决策包</span></h1>
+  <div class="hdr-right">
+    <div class="cycle" id="cycle">
+      <button data-y="2026" class="on">2026 年</button>
+      <button data-y="2027">2027 年</button>
+    </div>
+    <span>脱敏示意数据 · 展示工作方法</span>
+  </div>
+</header>
+
+<div class="note">
+  <b>说明：</b>本页为脱敏示意数据，用于展示战略规划工作的分析与推进方法，不代表任何真实企业数据或结论。
+  覆盖四类工作：战略地图与举措解码、经营 GAP 复盘、跨部门协同（RACI 与议题闭环）、高管决策包。
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="map">战略解码</div>
+  <div class="tab" data-tab="gap">经营 GAP 复盘</div>
+  <div class="tab" data-tab="raci">跨部门协同</div>
+  <div class="tab" data-tab="decide">高管决策包</div>
+</div>
+
+<div class="content">
+
+  <!-- ===== 战略解码 ===== -->
+  <div class="pane active" id="pane-map">
+    <div class="pane-head">
+      <h2>战略地图与举措解码（四层结构）</h2>
+      <p>把公司战略拆成财务 / 客户 / 内部流程 / 学习成长四层，每一层落到举措与责任人；再向下解码为可考核的部门方针与 KPI。</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-lab">战略主题</div><div class="card-val">4<small>个</small></div><div class="card-sub">财务 2 · 客户 2 · 流程 3 · 成长 2</div></div>
+      <div class="card"><div class="card-lab">战略举措</div><div class="card-val">50<small>项</small></div><div class="card-sub">经验收敛后的公司级重点工作</div></div>
+      <div class="card"><div class="card-lab">承接单元</div><div class="card-val">16<small>个</small></div><div class="card-sub">4 战队 · 5 产品线 · 7 职能</div></div>
+      <div class="card"><div class="card-lab">方针指标</div><div class="card-val">38<small>个</small></div><div class="card-sub">含权重与责任人，季度点检</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">战略地图（示例） <span>点击卡片可看责任人</span></div>
+      <div id="mapLayers"></div>
+      <div class="tip">
+        解码逻辑：<b>财务结果</b>回答「要赚多少」；<b>客户与市场</b>回答「靠谁买单」；<b>内部流程</b>回答「靠什么能力交付」；<b>学习成长</b>回答「靠什么组织支撑」。
+        四层之间要有明确的因果链，否则地图只是分类表。
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">举措 → 部门方针 / KPI 解码表 <span>节选 6 项</span></div>
+      <table id="tbl-decode">
+        <thead>
+          <tr>
+            <th data-k="init">战略举措 <span class="ar">↕</span></th>
+            <th data-k="layer">地图层级 <span class="ar">↕</span></th>
+            <th data-k="owner">承接单元 <span class="ar">↕</span></th>
+            <th data-k="kpi">对应方针 / KPI <span class="ar">↕</span></th>
+            <th data-k="w" class="num">权重 <span class="ar">↕</span></th>
+            <th data-k="st">状态 <span class="ar">↕</span></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="tip">权重合计须为 100%，且与考核周期一致；无承接单元或无指标的举措视为「未解码」，必须退回重做。</div>
+    </div>
+  </div>
+
+  <!-- ===== GAP ===== -->
+  <div class="pane" id="pane-gap">
+    <div class="pane-head">
+      <h2>经营 GAP 复盘：业绩差距 vs 机会差距</h2>
+      <p>业绩差距 = 执行不到位（现有打法没做到）；机会差距 = 判断失误（没看到或没敢投）。两者对应完全不同的改进动作，不能混为一谈。</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-lab">年度目标</div><div class="card-val" id="g-target">80<small>亿元</small></div><div class="card-sub">管理层下达口径</div></div>
+      <div class="card"><div class="card-lab">预计完成</div><div class="card-val" id="g-actual">67<small>亿元</small></div><div class="card-sub">当前预测口径</div></div>
+      <div class="card"><div class="card-lab">总差距</div><div class="card-val" id="g-total" style="color:#c53030">-13<small>亿元</small></div><div class="card-sub">目标 − 预测</div></div>
+      <div class="card"><div class="card-lab">其中机会差距</div><div class="card-val" id="g-opp" style="color:#975a16">-5<small>亿元</small></div><div class="card-sub">未进入/未投的赛道</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">分板块差距归因 <span>红=未达标 · 绿=超额</span></div>
+      <div id="gapBars"></div>
+      <div class="tip">读法：每条差距必须落在「数量 / 价格 / 节奏 / 归属」一类可解释变量上，且给出可执行的补救动作；只写「市场不好」不算归因。</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">差距清单与改进动作 <span>按金额排序</span></div>
+      <table id="tbl-gap">
+        <thead>
+          <tr>
+            <th data-k="unit">板块 / 单元 <span class="ar">↕</span></th>
+            <th data-k="type">差距类型 <span class="ar">↕</span></th>
+            <th data-k="amt" class="num">金额（亿元） <span class="ar">↕</span></th>
+            <th data-k="cause">根因判断 <span class="ar">↕</span></th>
+            <th data-k="act">改进动作 <span class="ar">↕</span></th>
+            <th data-k="by">责任人 <span class="ar">↕</span></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== RACI ===== -->
+  <div class="pane" id="pane-raci">
+    <div class="pane-head">
+      <h2>跨部门协同：责任矩阵与议题闭环</h2>
+      <p>RACI 明确每一项关键任务由谁执行、谁批准、谁被咨询、谁被告知；议题闭环看板保证「提了的事有人接、接了的事有节点」。</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">责任矩阵 RACI <span>R执行 · A批准 · C咨询 · I知会</span></div>
+      <table id="tbl-raci">
+        <thead>
+          <tr>
+            <th>关键任务</th>
+            <th style="text-align:center">业务战队</th>
+            <th style="text-align:center">产品线</th>
+            <th style="text-align:center">财务</th>
+            <th style="text-align:center">研发</th>
+            <th style="text-align:center">供应链</th>
+            <th style="text-align:center">总经办</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="tip">常见问题：一个任务出现两个 A（谁都能拍板 = 没人拍板），或只有 R 没有 A（执行层背锅）。矩阵定稿前先做这两项体检。</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">议题闭环看板 <span>按截止日排序</span></div>
+      <table id="tbl-issue">
+        <thead>
+          <tr>
+            <th data-k="issue">议题 <span class="ar">↕</span></th>
+            <th data-k="from">提出方 <span class="ar">↕</span></th>
+            <th data-k="to">责任方 <span class="ar">↕</span></th>
+            <th data-k="due">截止 <span class="ar">↕</span></th>
+            <th data-k="st">状态 <span class="ar">↕</span></th>
+            <th data-k="esc">升级路径 <span class="ar">↕</span></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 决策包 ===== -->
+  <div class="pane" id="pane-decide">
+    <div class="pane-head">
+      <h2>高管决策包：议题一页说清</h2>
+      <p>每个议题按「背景—选项—建议—影响—需要的决策」组织，管理层只需回答「同意 / 不同意 / 要补充什么」，而不是从头听背景。</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">本次上会议题 <span>3 项</span></div>
+      <div id="decList"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">会议决议与行动项跟踪 <span>到人到日</span></div>
+      <table id="tbl-action">
+        <thead>
+          <tr>
+            <th data-k="act">行动项 <span class="ar">↕</span></th>
+            <th data-k="by">责任人 <span class="ar">↕</span></th>
+            <th data-k="due">截止 <span class="ar">↕</span></th>
+            <th data-k="prog" class="num">进度 <span class="ar">↕</span></th>
+            <th data-k="st">状态 <span class="ar">↕</span></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="tip">
+        决策包的关键不是「写得多」，而是<b>把决策点显性化</b>：每个议题都要明确「今天需要老板决定什么」。会后再用行动项表闭环，避免「会上都同意、会后没人动」。
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ================= 数据（脱敏示意） =================
+const MAP = {
+  '财务结果': [
+    { t:'销售目标达成', o:'业务战队' }, { t:'利润总额保障', o:'财务 / 总经办' },
+    { t:'毛利率提升', o:'产品线 / 财务' }, { t:'资产效率提升', o:'财务' }
+  ],
+  '客户与市场': [
+    { t:'目标客户份额提升', o:'业务战队' }, { t:'白点客户突破', o:'业务战队' },
+    { t:'产品竞争力', o:'产品线' }, { t:'客户关系深化', o:'业务战队' }
+  ],
+  '内部流程': [
+    { t:'成本竞争力', o:'供应链 / 制造' }, { t:'卓越质量', o:'质量' },
+    { t:'准时交付', o:'研发 / 制造' }, { t:'技术传承与突破', o:'研发' }
+  ],
+  '学习成长': [
+    { t:'组织架构配称', o:'总经办 / HR' }, { t:'人才培养与发展', o:'HR' },
+    { t:'数智化建设', o:'IT' }, { t:'文化与雇主品牌', o:'HR' }
+  ]
+};
+const DECODE = [
+  { init:'提升核心客户份额', layer:'客户与市场', owner:'业务战队（德系）', kpi:'内部客户市占率 ≥ 21%', w:12, st:'跟踪中' },
+  { init:'成本竞争力提升', layer:'内部流程', owner:'供应链 + 制造', kpi:'核心 BOM 成本年降 3%', w:10, st:'跟踪中' },
+  { init:'技术平台国产化', layer:'内部流程', owner:'研发 + 产品线', kpi:'国产化方案覆盖 ≥ 2 条产品线', w:8, st:'延期风险' },
+  { init:'战略课题治理', layer:'学习成长', owner:'总经办', kpi:'课题准时跟进率 ≥ 95%', w:6, st:'正常' },
+  { init:'质量成本优化', layer:'内部流程', owner:'质量', kpi:'质量成本率下降 0.5pt', w:7, st:'正常' },
+  { init:'数智化系统建设', layer:'学习成长', owner:'IT', kpi:'关键流程线上化 ≥ 80%', w:5, st:'未启动' }
+];
+const GAP = [
+  { unit:'德系业务', type:'业绩差距', amt:-4.2, cause:'重点车型项目未获取，节奏延后', act:'锁定替代项目，重排定点节奏', by:'战队负责人' },
+  { unit:'日系业务', type:'业绩差距', amt:1.8,  cause:'存量客户上量超预期', act:'补充产能与交付保障', by:'战队负责人' },
+  { unit:'自主业务', type:'机会差距', amt:-3.1, cause:'外部新客户未突破', act:'明确目标客户与进入路径', by:'战队 + 产品线' },
+  { unit:'代工业务', type:'机会差距', amt:-2.4, cause:'集团外代工机会未识别', act:'建立机会清单与报价能力', by:'代工团队' },
+  { unit:'产品线溢价', type:'业绩差距', amt:-3.5, cause:'产品魅点未转化为报价能力', act:'魅点清单化，进入报价模板', by:'产品线' },
+  { unit:'成本端', type:'业绩差距', amt:-1.6, cause:'降本举措落地慢于计划', act:'按项目分解到月，纳入点检', by:'供应链' }
+];
+const RACI = [
+  { task:'年度战略规划编制', cells:['C','C','C','C','C','A'], note:'' },
+  { task:'销售预测与口径校验', cells:['R','C','C','I','I','A'], note:'' },
+  { task:'战略课题立项与推进', cells:['R','R','I','C','C','A'], note:'' },
+  { task:'部门方针与 KPI 签批', cells:['C','C','C','C','C','A'], note:'' },
+  { task:'关键客户项目定点', cells:['R','C','I','R','C','I'], note:'' },
+  { task:'经营风险预警处置', cells:['C','I','R','C','R','A'], note:'' }
+];
+const ISSUE = [
+  { issue:'国产化方案 B 点认证进度滞后', from:'研发', to:'研发 + 供应链', due:'10-31', st:'进行中', esc:'两周未闭环 → 升级至管理层' },
+  { issue:'代工报价模型缺失', from:'代工团队', to:'财务 + 总经办', due:'11-08', st:'待启动', esc:'逾期 → 列入月度经营会' },
+  { issue:'预测口径与财务预算不一致', from:'财务', to:'总经办', due:'11-15', st:'进行中', esc:'差异 > 5% → 专项研讨' },
+  { issue:'质量成本数据来源不统一', from:'质量', to:'质量 + IT', due:'11-30', st:'待启动', esc:'跨部门 → 总经办协调' },
+  { issue:'组织变革建议未形成方案', from:'HR', to:'总经办', due:'12-15', st:'进行中', esc:'逾期 → 提交管理层决策' }
+];
+const DECIDE = [
+  {
+    t:'议题一：2027 年是否增设国产化技术中心',
+    body:'背景：国产化替代从「点状推进」转为「体系推进」，当前缺专职统筹与技术载体。<br><b>建议：</b>先以虚拟小组形式试运行 6 个月，再决定是否实体化。',
+    opts:['方案 A：立即实体化（投入 大）','方案 B：虚拟小组试运行 6 个月（推荐）','方案 C：维持现状（风险 高）'],
+    rec:1
+  },
+  {
+    t:'议题二：代工业务是否单列考核口径',
+    body:'背景：代工业务的盈利结构与自研差异大，混在一起考核会掩盖真实贡献。<br><b>建议：</b>单列毛利口径，与自研分账管理。',
+    opts:['方案 A：维持合并口径','方案 B：单列毛利口径（推荐）'],
+    rec:1
+  },
+  {
+    t:'议题三：战略课题数量是否从 6 项收敛至 4 项',
+    body:'背景：课题数量过多导致资源分散，日常运营工作与战略性工作混同。<br><b>建议：</b>收敛至 4 项，并明确每项的战略控制点。',
+    opts:['方案 A：维持 6 项','方案 B：收敛至 4 项（推荐）'],
+    rec:1
+  }
+];
+const ACTION = [
+  { act:'国产化技术中心方案（试运行版）', by:'研发负责人', due:'11-10', prog:40, st:'进行中' },
+  { act:'代工业务毛利口径测算', by:'财务', due:'11-08', prog:70, st:'进行中' },
+  { act:'战略课题收敛清单与责任人确认', by:'总经办', due:'11-15', prog:20, st:'进行中' },
+  { act:'部门方针指标权重复核', by:'总经办 + HR', due:'11-20', prog:0, st:'待启动' },
+  { act:'经营风险预警指标口径统一', by:'财务 + 质量', due:'11-30', prog:55, st:'进行中' }
+];
+
+// ================= 渲染 =================
+function renderMap(){
+  const levelCls = { '财务结果':'lv1', '客户与市场':'lv2', '内部流程':'lv3', '学习成长':'lv4' };
+  document.getElementById('mapLayers').innerHTML = Object.entries(MAP).map(([lv, items])=>{
+    return `<div class="map-layer">
+      <div class="map-side ${levelCls[lv]}">${lv.replace('与','<br>与')}</div>
+      <div class="map-items">
+        ${items.map(i=>`<div class="map-item"><b>${i.t}</b><span class="owner">${i.o}</span></div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDecode(){
+  document.querySelector('#tbl-decode tbody').innerHTML = DECODE.map(d=>{
+    const cls = d.st==='正常'?'b-low':d.st==='跟踪中'?'b-blue':d.st==='延期风险'?'b-mid':'b-hi';
+    return `<tr>
+      <td>${d.init}</td><td>${d.layer}</td><td>${d.owner}</td>
+      <td style="font-size:11.5px">${d.kpi}</td>
+      <td class="num">${d.w}%</td>
+      <td><span class="badge ${cls}">${d.st}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderGap(){
+  const max = Math.max(...GAP.map(g=>Math.abs(g.amt)));
+  document.getElementById('gapBars').innerHTML = GAP.map(g=>{
+    const pct = Math.abs(g.amt)/max*50;
+    const cls = g.amt<0?'neg':'pos';
+    return `<div class="gap-row">
+      <div class="gap-name">${g.unit}</div>
+      <div class="gap-track"><div class="gap-mid"></div>
+        <div class="gap-bar ${cls}" style="width:${pct}%"></div>
+      </div>
+      <div class="gap-val" style="color:${g.amt<0?'#c53030':'#2f855a'}">${g.amt>0?'+':''}${g.amt.toFixed(1)}</div>
+    </div>`;
+  }).join('');
+  document.querySelector('#tbl-gap tbody').innerHTML = GAP.slice().sort((a,b)=>a.amt-b.amt).map(g=>{
+    const cls = g.type==='机会差距'?'b-mid':'b-hi';
+    return `<tr>
+      <td>${g.unit}</td>
+      <td><span class="badge ${cls}">${g.type}</span></td>
+      <td class="num" style="color:${g.amt<0?'#c53030':'#2f855a'}">${g.amt>0?'+':''}${g.amt.toFixed(1)}</td>
+      <td style="font-size:11.5px;color:#4a5568">${g.cause}</td>
+      <td style="font-size:11.5px;color:#4a5568">${g.act}</td>
+      <td>${g.by}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderRaci(){
+  document.querySelector('#tbl-raci tbody').innerHTML = RACI.map(r=>{
+    const cells = r.cells.map(c=>`<td><span class="raci-cell raci-${c.toLowerCase()}">${c}</span></td>`).join('');
+    return `<tr><td style="font-size:11.5px">${r.task}</td>${cells}</tr>`;
+  }).join('');
+  document.querySelector('#tbl-issue tbody').innerHTML = ISSUE.map(i=>{
+    const cls = i.st==='进行中'?'b-blue':i.st==='待启动'?'b-neutral':'b-low';
+    return `<tr>
+      <td>${i.issue}</td><td>${i.from}</td><td>${i.to}</td>
+      <td style="font-variant-numeric:tabular-nums">${i.due}</td>
+      <td><span class="badge ${cls}">${i.st}</span></td>
+      <td style="font-size:11px;color:#8b95a5">${i.esc}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDecide(){
+  document.getElementById('decList').innerHTML = DECIDE.map(d=>`
+    <div class="dec">
+      <div class="dec-hd"><span>${d.t}</span></div>
+      <div class="dec-body">${d.body}</div>
+      <div class="opt">${d.opts.map((o,idx)=>`<span class="${idx===d.rec?'rec':''}">${o}</span>`).join('')}</div>
+    </div>`).join('');
+  document.querySelector('#tbl-action tbody').innerHTML = ACTION.map(a=>{
+    const cls = a.st==='进行中'?'b-blue':a.st==='待启动'?'b-neutral':'b-low';
+    return `<tr>
+      <td>${a.act}</td><td>${a.by}</td>
+      <td style="font-variant-numeric:tabular-nums">${a.due}</td>
+      <td class="num">${a.prog}%</td>
+      <td><span class="badge ${cls}">${a.st}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// 表格排序
+function bindSort(id){
+  const tbl=document.getElementById(id); if(!tbl)return;
+  const dir={};
+  tbl.querySelectorAll('th').forEach(th=>{
+    if(!th.dataset.k)return;
+    th.addEventListener('click',()=>{
+      const k=th.dataset.k; dir[k]=!dir[k];
+      tbl.querySelectorAll('th').forEach(x=>{x.classList.remove('sorted');const a=x.querySelector('.ar');if(a)a.textContent='↕';});
+      th.classList.add('sorted'); th.querySelector('.ar').textContent=dir[k]?'↑':'↓';
+      const tbody=tbl.querySelector('tbody'), rows=[...tbody.querySelectorAll('tr')];
+      const idx=[...tbl.querySelectorAll('th')].indexOf(th);
+      rows.sort((a,b)=>{
+        const va=a.children[idx].textContent.trim(), vb=b.children[idx].textContent.trim();
+        const na=parseFloat(va.replace(/[^\d.\-]/g,'')), nb=parseFloat(vb.replace(/[^\d.\-]/g,''));
+        const c=(!isNaN(na)&&!isNaN(nb))?na-nb:va.localeCompare(vb,'zh');
+        return dir[k]?c:-c;
+      });
+      rows.forEach(r=>tbody.appendChild(r));
+    });
+  });
+}
+
+// Tab
+
+// 支持 #tab=xxx 直达（便于分享与截图）
+function activateTab(key){
+  const t = document.querySelector('.tab[data-tab="'+key+'"]');
+  if(!t) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  const pane = document.getElementById('pane-'+key);
+  if(pane) pane.classList.add('active');
+}
+(function(){
+  const m = location.hash.match(/tab=([\w-]+)/);
+  if(m) activateTab(m[1]);
+  // #hash-tab 标记
+})();
+addEventListener('hashchange', ()=>{
+  const m = location.hash.match(/tab=([\w-]+)/);
+  if(m) activateTab(m[1]);
+});
+// #hash-tab
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('pane-'+t.dataset.tab).classList.add('active');
+  });
+});
+
+// 年度切换：轻微扰动数据，展示口径可切换
+document.querySelectorAll('#cycle button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#cycle button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    const is2027 = b.dataset.y==='2027';
+    document.getElementById('g-target').innerHTML = (is2027?95:80) + '<small>亿元</small>';
+    document.getElementById('g-actual').innerHTML = (is2027?79:67) + '<small>亿元</small>';
+    document.getElementById('g-total').innerHTML = (is2027?-16:-13) + '<small>亿元</small>';
+    document.getElementById('g-opp').innerHTML = (is2027?-6:-5) + '<small>亿元</small>';
+  });
+});
+
+// 初始化
+renderMap(); renderDecode(); renderGap(); renderRaci(); renderDecide();
+bindSort('tbl-decode'); bindSort('tbl-gap'); bindSort('tbl-issue'); bindSort('tbl-action');
+</script>
+</body>
+</html>

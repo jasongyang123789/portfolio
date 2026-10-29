@@ -176,6 +176,8 @@ td.num { text-align:right; font-variant-numeric:tabular-nums; }
   <div class="tab" data-tab="comp">竞争对标矩阵</div>
   <div class="tab" data-tab="policy">政策影响评估</div>
   <div class="tab" data-tab="risk">风险分级清单</div>
+  <div class="tab" data-tab="invest">投资测算</div>
+  <div class="tab" data-tab="model">预测建模</div>
 </div>
 
 <div class="content">
@@ -306,6 +308,87 @@ td.num { text-align:right; font-variant-numeric:tabular-nums; }
         <tbody></tbody>
       </table>
       <div class="tip">口径提醒：Chance 是「获取概率」而非「完成度」；100% 才视为已定点。发布预测前必须完成单位、量纲、项目归属与生命周期四项校验。</div>
+    </div>
+  </div>
+
+  <!-- 投资测算 -->
+  <div class="pane" id="pane-invest">
+    <div class="pane-head">
+      <h2>项目投资测算：NPV / IRR / 回收期</h2>
+      <p>按「投资 — 逐年现金流 — 折现 — 多情景」四步测算，输出投不投、怎么投的判断；折现率与营收规模可调，用于敏感性分析。</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-lab">净现值 NPV</div><div class="card-val" id="iv-npv">—<small>万元</small></div><div class="card-sub">折现率 <span id="iv-rate-lab">10</span>%</div></div>
+      <div class="card"><div class="card-lab">内部收益率 IRR</div><div class="card-val" id="iv-irr">—<small>%</small></div><div class="card-sub">高于折现率即可行</div></div>
+      <div class="card"><div class="card-lab">静态回收期</div><div class="card-val" id="iv-pay">—<small>年</small></div><div class="card-sub">累计现金流转正</div></div>
+      <div class="card"><div class="card-lab">投资结论</div><div class="card-val" id="iv-conc" style="font-size:17px">—</div><div class="card-sub">按 NPV 与回收期综合判断</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">测算参数 <span>调整后自动重算</span></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;font-size:12px;color:#4a5568">
+        <label>初始投资（万元）<br><input id="iv-inv" type="range" min="500" max="5000" step="100" value="1500" style="width:100%;margin-top:6px"><b id="iv-inv-v">1500</b></label>
+        <label>折现率（%）<br><input id="iv-rate" type="range" min="6" max="18" step="1" value="10" style="width:100%;margin-top:6px"><b id="iv-rate-v">10</b></label>
+        <label>达产年营收（万元）<br><input id="iv-rev" type="range" min="1000" max="8000" step="200" value="4200" style="width:100%;margin-top:6px"><b id="iv-rev-v">4200</b></label>
+      </div>
+      <div class="tip" style="margin-top:14px">模型假设：建设期 1 年无收入；第 1—5 年营收按 <b>50% / 75% / 95% / 100% / 100%</b> 爬坡；毛利率 25%；固定成本逐年 3% 增长。以上为示意参数，实际测算需按项目 BOM 与产能规划校准。</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">逐年现金流 <span>单位：万元</span></div>
+      <table id="tbl-cf">
+        <thead><tr><th>年份</th><th class="num">营收</th><th class="num">毛利</th><th class="num">净现金流</th><th class="num">折现现金流</th><th class="num">累计折现</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">敏感性分析 <span>单价 / 爬坡 / 折现率扰动</span></div>
+      <table id="tbl-sens">
+        <thead><tr><th>情景</th><th class="num">NPV（万元）</th><th class="num">IRR（%）</th><th>结论</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="tip">投资判断不只看单点 NPV：<b>若最差情景下 NPV 仍为正</b>，项目抗风险能力才算过关；若只在乐观情景为正，需要补充分阶段投资或对赌条款。</div>
+    </div>
+  </div>
+
+  <!-- 预测建模 -->
+  <div class="pane" id="pane-model">
+    <div class="pane-head">
+      <h2>销售预测建模与敏感性分析</h2>
+      <p>预测 = 量纲 × 装载率 × 市占率 × 获取概率 × 单价年降。任一参数变化都会传导到最终收入，必须能拆开解释。</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-lab">2030 年预测收入</div><div class="card-val" id="md-rev">—<small>亿元</small></div><div class="card-sub">基准参数下</div></div>
+      <div class="card"><div class="card-lab">该产品线目标</div><div class="card-val">8<small>亿元</small></div><div class="card-sub">2030 年单产品线口径</div></div>
+      <div class="card"><div class="card-lab">达成率</div><div class="card-val" id="md-ratio">—<small>%</small></div><div class="card-sub">预测 / 目标</div></div>
+      <div class="card"><div class="card-lab">最敏感参数</div><div class="card-val" id="md-top" style="font-size:17px">—</div><div class="card-sub">±10% 扰动影响最大</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">模型参数 <span>拖动即时重算</span></div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px 28px;font-size:12px;color:#4a5568">
+        <label>量纲（万辆）<br><input id="md-vol" type="range" min="200" max="800" step="10" value="420" style="width:100%;margin-top:6px"><b id="md-vol-v">420</b></label>
+        <label>装载率（%）<br><input id="md-fit" type="range" min="20" max="100" step="5" value="70" style="width:100%;margin-top:6px"><b id="md-fit-v">70</b></label>
+        <label>市占率（%）<br><input id="md-share" type="range" min="5" max="40" step="1" value="20" style="width:100%;margin-top:6px"><b id="md-share-v">20</b></label>
+        <label>获取概率 Chance（%）<br><input id="md-chance" type="range" min="20" max="100" step="5" value="70" style="width:100%;margin-top:6px"><b id="md-chance-v">70</b></label>
+        <label>平均单价（元/套）<br><input id="md-price" type="range" min="500" max="4000" step="100" value="1500" style="width:100%;margin-top:6px"><b id="md-price-v">1500</b></label>
+        <label>年降幅度（%/年）<br><input id="md-decay" type="range" min="0" max="8" step="0.5" value="3" style="width:100%;margin-top:6px"><b id="md-decay-v">3</b></label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">分年测算 <span>含年降，单位：亿元</span></div>
+      <table id="tbl-model">
+        <thead><tr><th>年份</th><th class="num">量纲</th><th class="num">装载率</th><th class="num">市占率</th><th class="num">Chance</th><th class="num">单价（元）</th><th class="num">收入</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">敏感性排序 <span>单参数 +10% 对 2030 年收入的影响</span></div>
+      <div id="md-sens"></div>
+      <div class="tip">建模纪律：<b>参数与结论分开</b>——参数来自业务与市场判断，模型只负责一致传导；任何手工调整都要留痕，否则版本之间无法解释差异。</div>
     </div>
   </div>
 
@@ -490,6 +573,27 @@ function bindSort(tableId){
 }
 
 // ========== Tab 切换 ==========
+
+// 支持 #tab=xxx 直达（便于分享与截图）
+function activateTab(key){
+  const t = document.querySelector('.tab[data-tab="'+key+'"]');
+  if(!t) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  const pane = document.getElementById('pane-'+key);
+  if(pane) pane.classList.add('active');
+}
+(function(){
+  const m = location.hash.match(/tab=([\w-]+)/);
+  if(m) activateTab(m[1]);
+  // #hash-tab 标记
+})();
+addEventListener('hashchange', ()=>{
+  const m = location.hash.match(/tab=([\w-]+)/);
+  if(m) activateTab(m[1]);
+});
+// #hash-tab
 document.querySelectorAll('.tab').forEach(t=>{
   t.addEventListener('click',()=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
@@ -508,15 +612,176 @@ document.querySelectorAll('#scenario button').forEach(b=>{
   });
 });
 
+// ========== 投资测算 ==========
+const CF_RAMP = [0, 0.5, 0.75, 0.95, 1, 1];
+function calcInvest(inv, rate, rev, grossRate){
+  const r = rate/100, g = grossRate;
+  const rows = [];
+  for(let y=1; y<=6; y++){
+    const revenue = y===1 ? 0 : rev*CF_RAMP[y-1];
+    const gross = revenue*g;
+    const fixed = 220*Math.pow(1.03, y-1);
+    const net = gross - fixed;
+    rows.push({y, revenue, gross, net, disc: net/Math.pow(1+r, y)});
+  }
+  let npv = -inv, cum = -inv, pb = null;
+  rows.forEach(row=>{ npv += row.disc; });
+  rows.forEach((row,idx)=>{
+    const prev = cum; cum += row.net;
+    if(pb===null && cum>=0 && row.y>1) pb = (row.y-1) + (-prev)/(row.net||1);
+  });
+  const f = irr => -inv + rows.reduce((s,row)=> s + row.net/Math.pow(1+irr, row.y), 0);
+  let lo=0.0001, hi=2, irr=null;
+  if(f(lo)*f(hi) < 0){
+    for(let i=0;i<80;i++){ const mid=(lo+hi)/2; (f(lo)*f(mid)<=0)? hi=mid : lo=mid; }
+    irr = (lo+hi)/2*100;
+  }
+  return {rows, npv, irr, payback: pb};
+}
+function renderInvest(){
+  const inv=+document.getElementById('iv-inv').value;
+  const rate=+document.getElementById('iv-rate').value;
+  const rev=+document.getElementById('iv-rev').value;
+  document.getElementById('iv-inv-v').textContent=inv;
+  document.getElementById('iv-rate-v').textContent=rate;
+  document.getElementById('iv-rate-lab').textContent=rate;
+  document.getElementById('iv-rev-v').textContent=rev;
+
+  const {rows, npv, irr, payback} = calcInvest(inv, rate, rev, 0.25);
+  const npvEl=document.getElementById('iv-npv');
+  npvEl.innerHTML = Math.round(npv) + '<small>万元</small>';
+  npvEl.style.color = npv>=0 ? '#2f855a' : '#c53030';
+
+  const irrEl=document.getElementById('iv-irr');
+  irrEl.innerHTML = irr!==null ? irr.toFixed(1)+'<small>%</small>' : '不适用';
+  irrEl.style.color = (irr!==null && irr>rate) ? '#2f855a' : '#c53030';
+
+  document.getElementById('iv-pay').innerHTML = payback!==null ? payback.toFixed(1)+'<small>年</small>' : '未回收';
+
+  const ok = npv>0 && irr!==null && irr>rate && payback!==null && payback<=4;
+  const ce=document.getElementById('iv-conc');
+  ce.textContent = ok ? '建议投' : (npv>0 ? '有条件投' : '不建议投');
+  ce.style.color = ok ? '#2f855a' : (npv>0?'#975a16':'#c53030');
+
+  let cum=-inv;
+  document.querySelector('#tbl-cf tbody').innerHTML = rows.map(r=>{
+    cum += r.disc;
+    return `<tr${r.y===1?' style="color:#8b95a5"':''}>
+      <td>第 ${r.y} 年</td>
+      <td class="num">${Math.round(r.revenue)}</td>
+      <td class="num">${Math.round(r.gross)}</td>
+      <td class="num">${Math.round(r.net)}</td>
+      <td class="num">${Math.round(r.disc)}</td>
+      <td class="num" style="color:${cum>=0?'#2f855a':'#c53030'}">${Math.round(cum)}</td>
+    </tr>`;
+  }).join('');
+
+  const scen = [
+    ['基准', inv, rate, rev, 0.25],
+    ['单价 −10%', inv, rate, rev*0.9, 0.25],
+    ['爬坡慢 1 年', inv, rate, rev*0.8, 0.25],
+    ['毛利率降至 20%', inv, rate, rev, 0.20],
+    ['折现率 +4pt', inv, rate+4, rev, 0.25]
+  ];
+  document.querySelector('#tbl-sens tbody').innerHTML = scen.map(([name,i2,r2,v2,g2])=>{
+    const x = calcInvest(i2, r2, v2, g2);
+    const good = x.npv>0;
+    return `<tr>
+      <td>${name}</td>
+      <td class="num" style="color:${good?'#2f855a':'#c53030'}">${Math.round(x.npv)}</td>
+      <td class="num">${x.irr!==null?x.irr.toFixed(1):'—'}</td>
+      <td><span class="badge ${good?'b-low':'b-hi'}">${good?'可行':'不可行'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ========== 预测建模 ==========
+function renderModel(){
+  const vol=+document.getElementById('md-vol').value;
+  const fit=+document.getElementById('md-fit').value;
+  const share=+document.getElementById('md-share').value;
+  const chance=+document.getElementById('md-chance').value;
+  const price=+document.getElementById('md-price').value;
+  const decay=+document.getElementById('md-decay').value;
+
+  document.getElementById('md-vol-v').textContent=vol;
+  document.getElementById('md-fit-v').textContent=fit;
+  document.getElementById('md-share-v').textContent=share;
+  document.getElementById('md-chance-v').textContent=chance;
+  document.getElementById('md-price-v').textContent=price;
+  document.getElementById('md-decay-v').textContent=decay;
+
+  const years=[2026,2027,2028,2029,2030,2031], rows=[];
+  years.forEach((y,i)=>{
+    const p = price*Math.pow(1-decay/100, i);
+    const revenue = vol*1e4*(fit/100)*(share/100)*(chance/100)*p/1e8;
+    rows.push({y, p, revenue});
+  });
+  const rev2030 = rows[4].revenue;
+  document.getElementById('md-rev').innerHTML = rev2030.toFixed(1)+'<small>亿元</small>';
+  const ratio=document.getElementById('md-ratio');
+  const target=8;
+  ratio.innerHTML = Math.round(rev2030/target*100)+'<small>%</small>';
+  ratio.style.color = rev2030>=target?'#2f855a':(rev2030>=target*0.85?'#975a16':'#c53030');
+
+  document.querySelector('#tbl-model tbody').innerHTML = rows.map(r=>`
+    <tr>
+      <td>${r.y}</td><td class="num">${vol}</td>
+      <td class="num">${fit}%</td><td class="num">${share}%</td>
+      <td class="num">${chance}%</td><td class="num">${Math.round(r.p)}</td>
+      <td class="num"><b>${r.revenue.toFixed(1)}</b></td>
+    </tr>`).join('');
+
+  const calc=(v,f,sh,ch)=>{
+    const p=price*Math.pow(1-decay/100,4);
+    return v*1e4*(f/100)*(sh/100)*(ch/100)*p/1e8;
+  };
+  const base=calc(vol,fit,share,chance);
+  // 各参数的实际不确定性区间不同：量纲 ±5%、装载率 ±10pt、市占率 ±3pt、Chance ±10pt、单价 ±10%
+  const sens=[
+    ['量纲 ±5%',    calc(vol*1.05,fit,share,chance), '-5%'],
+    ['装载率 ±10pt', calc(vol,fit+10,share,chance),  '-10pt'],
+    ['市占率 ±3pt',  calc(vol,fit,share+3,chance),   '-3pt'],
+    ['获取概率 ±10pt', calc(vol,fit,share,chance+10), '-10pt'],
+    ['单价 ±10%',    calc(vol,fit,share,chance)*(1-0.10*(decay?1:1))/1, '-10%']
+  ];
+  // 单价单独用 0.9 系数重算，避免与年降混淆
+  const priceLow = vol*1e4*(fit/100)*(share/100)*(chance/100)*(price*0.9*Math.pow(1-decay/100,4))/1e8;
+  sens[4] = ['单价 ±10%', priceLow, '-10%'];
+  const items=sens.map(([n,v,dir])=>{
+    const up = v-base;
+    return {n, dir, up: up/base*100};
+  }).sort((a,b)=>Math.abs(b.up)-Math.abs(a.up));
+
+  document.getElementById('md-top').textContent = items[0].n.split(' ')[0];
+  const maxd=Math.max(...items.map(x=>Math.abs(x.up)))||1;
+  document.getElementById('md-sens').innerHTML = items.map(x=>`
+    <div class="bar-row" style="margin-bottom:9px">
+      <div class="bar-name">${x.n}</div>
+      <div class="bar-track"><div class="bar-fill tam" style="width:${Math.abs(x.up)/maxd*100}%"></div></div>
+      <div class="bar-val">${x.up>0?'+':''}${x.up.toFixed(1)}%</div>
+    </div>`).join('') + `
+    <div class="tip" style="margin-top:10px">各参数的历史偏差区间不同，因此按<b>实际不确定性</b>（非统一 ±10%）计算对 2030 年收入的影响；这也是预测复核时应优先追问的参数。</div>`;
+}
+
 // ========== 初始化 ==========
 renderSize('base');
 renderComp();
 renderPolicy();
 renderRisk();
+renderInvest();
+renderModel();
 bindSort('tbl-size');
 bindSort('tbl-comp');
 bindSort('tbl-policy');
 bindSort('tbl-risk');
+
+['iv-inv','iv-rate','iv-rev'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', renderInvest);
+});
+['md-vol','md-fit','md-share','md-chance','md-price','md-decay'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', renderModel);
+});
 </script>
 </body>
 </html>

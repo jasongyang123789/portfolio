@@ -316,6 +316,29 @@ footer {
   .hl-item { grid-template-columns:1fr; gap:6px; }
   .resume-meta { font-size:12.5px; gap:8px 18px; }
 }
+
+/* ===== 岗位要求覆盖矩阵 ===== */
+.cover-wrap {
+  background: var(--card); border: 1px solid var(--line); padding: 26px 30px;
+  margin-top: 8px;
+}
+.cover-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cover-tbl th {
+  text-align: left; padding: 10px 12px; color: var(--ink-3); font-size: 11px;
+  letter-spacing: 1.5px; border-bottom: 1px solid var(--line); font-weight: 600;
+}
+.cover-tbl td {
+  padding: 11px 12px; border-bottom: 1px dashed var(--line);
+  color: var(--ink-2); line-height: 1.75; vertical-align: top;
+}
+.cover-tbl tr:last-child td { border-bottom: none; }
+.cover-tbl td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; padding-right: 20px; }
+.cover-tbl .ev { color: var(--accent); }
+@media (max-width: 860px) {
+  .cover-wrap { padding: 18px 16px; }
+  .cover-tbl { font-size: 12.5px; }
+  .cover-tbl td:first-child { white-space: normal; }
+}
 </style>
 </head>
 <body>
@@ -327,6 +350,7 @@ footer {
       <a href="#profile">个人信息</a>
       <a href="#highlights">个人亮点</a>
       <a href="#works">代表项目</a>
+      <a href="#coverage">岗位覆盖</a>
       <a href="#experience">工作经历</a>
       <a href="#capabilities">能力</a>
       <a href="#contact">联系</a>
@@ -337,7 +361,7 @@ footer {
 
 <!-- ============ Hero / 个人信息 ============ -->
 <header class="hero" id="profile">
-  <div class="hero-tag">Industry Research · Market Insight · Data Analysis</div>
+  <div class="hero-tag">行业研究 · 市场洞察 · 数据分析</div>
   <h1>杨钧凇</h1>
   <p class="hero-sub" style="margin-bottom:0">
     求职意向：<strong>行业研究 / 市场分析 / 数据分析</strong>　·　6 年行业研究与经营数据分析经验
@@ -362,7 +386,7 @@ footer {
 <!-- ============ 个人亮点 ============ -->
 <section id="highlights">
   <div class="sec-head reveal">
-    <span class="sec-index">01 — HIGHLIGHTS</span>
+    <span class="sec-index">01　个人亮点</span>
     <h2 class="sec-title">个人亮点</h2>
     <p class="sec-desc">六年在做的只有一件事：把分散的信息变成可判断的结论，再变成可执行的建议。</p>
   </div>
@@ -413,28 +437,30 @@ footer {
 
 <section id="works">
   <div class="sec-head reveal">
-    <span class="sec-index">02 — SELECTED WORKS</span>
+    <span class="sec-index">02　代表项目</span>
     <h2 class="sec-title">用数据回答：市场在发生什么，我们该怎么办</h2>
     <p class="sec-desc">
-      下面第一个是行业研究的标准工作台（市场测算 / 竞争对标 / 政策评估 / 风险分级），
-      第二个是我把预测数据校验自动化的工作流。均可在线交互，数据已脱敏。
+      第一个是行业研究工作台（市场测算 / 竞争对标 / 政策评估 / 风险分级 / 投资测算 / 预测建模，共 6 个模块），
+      第二个是把预测数据校验自动化的工作流。均可在线交互，数据已脱敏。
     </p>
   </div>
 
   <div class="work-card reveal">
     <div class="work-meta">
       <div class="work-idx">WORK 01</div>
-      <div class="work-title">行业研究工作台 · 市场测算 / 竞争对标 / 政策评估 / 风险分级</div>
+      <div class="work-title">行业研究工作台 · 市场测算 / 竞争对标 / 政策评估 / 风险分级 / 投资测算 / 预测建模</div>
       <p class="work-desc">
-        把行业研究拆成四个可复用的分析模块：<b>TAM/SAM/SOM 市场容量测算</b>（含情景切换）、
+        把行业研究拆成六个可复用的分析模块：<b>TAM/SAM/SOM 市场容量测算</b>（含情景切换）、
         <b>五维竞争对标矩阵</b>（自动识别优势与短板维度）、<b>政策事件影响评估</b>（方向 × 强度 × 时点）、
-        <b>项目风险分级清单</b>（按 Chance 三档口径）。研究结论直接落成资源投入建议与动作项。
+        <b>Chance 三档风险分级</b>、<b>项目投资测算</b>（NPV / IRR / 回收期 + 五情景敏感性）、
+        <b>销售预测建模</b>（量纲 × 装载率 × 市占率 × 概率 × 年降，含参数敏感度排序）。
       </p>
       <div class="work-points">
         <span class="point">TAM / SAM / SOM 测算</span>
         <span class="point">五维竞争对标</span>
         <span class="point">政策影响 × 强度评估</span>
-        <span class="point">Chance 三档风险分级</span>
+        <span class="point">NPV / IRR / 回收期</span>
+        <span class="point">预测建模 + 敏感度排序</span>
       </div>
     </div>
     <div class="work-links">
@@ -491,10 +517,33 @@ footer {
   </div>
 </section>
 
+<!-- ============ 岗位要求覆盖 ============ -->
+<section id="coverage">
+  <div class="sec-head reveal">
+    <span class="sec-index">岗位要求覆盖</span>
+    <h2 class="sec-title">岗位职责逐条对应</h2>
+    <p class="sec-desc">按行业研究 / 市场分析 / 数据分析类岗位的常见要求，逐条对应我的能力与可验证证据。</p>
+  </div>
+  <div class="cover-wrap reveal">
+      <table class="cover-tbl">
+        <thead><tr><th>岗位要求</th><th>我的对应能力与证据</th><th>在 Demo 中的位置</th></tr></thead>
+        <tbody>
+        <tr><td>行业研究</td><td>行业动态、市场规模与格局测算、产业链监控、龙头标杆研究；政策 / 年报 / 论坛材料结构化加工</td><td class="ev">市场规模测算（TAM/SAM/SOM + 三情景）</td></tr>
+        <tr><td>市场与竞争分析</td><td>客户结构、市占率、竞争对标、价格与销量敏感度、GAP 复盘</td><td class="ev">五维竞争对标矩阵（自动识别优势/短板）</td></tr>
+        <tr><td>数据建模</td><td>预测模型 14 版迭代：量纲校验、装载率、市占率、Chance 分级、生命周期与年降</td><td class="ev">预测建模：6 参数联动 + 敏感度排序</td></tr>
+        <tr><td>投资经验</td><td>项目投资测算与回报判断：现金流、折现、回收期、情景对比</td><td class="ev">投资测算：NPV / IRR / 回收期 + 五情景</td></tr>
+        <tr><td>风险识别</td><td>项目风险分级（Chance ≤50% / 50—80% / 80—100%）+ 四维竞争判断</td><td class="ev">风险分级清单（含卡点与动作）</td></tr>
+        <tr><td>政策与预警</td><td>政策影响建模、行业监控与预警机制、11 万字风险数据库</td><td class="ev">政策事件时间轴 + 强度评估表</td></tr>
+        <tr><td>工具</td><td>Excel 复杂模型与多版本管理、SQL、Tableau、PowerBI、Python</td><td class="ev">参数化模型（浏览器内实时计算）</td></tr>
+        </tbody>
+      </table>
+  </div>
+</section>
+
 <!-- ============ 工作经历 ============ -->
 <section id="experience">
   <div class="sec-head reveal">
-    <span class="sec-index">03 — EXPERIENCE</span>
+    <span class="sec-index">03　工作经历</span>
     <h2 class="sec-title">工作经历</h2>
   </div>
 
@@ -549,33 +598,34 @@ footer {
 <!-- ============ 能力 ============ -->
 <section id="capabilities">
   <div class="sec-head reveal">
-    <span class="sec-index">04 — CAPABILITIES</span>
+    <span class="sec-index">04　能力结构</span>
     <h2 class="sec-title">研究型能力的四件事</h2>
   </div>
   <div class="cap-grid reveal">
     <div class="cap-item">
-      <h3><span class="no">Ⅰ</span>会做行业研究</h3>
-      <p>行业动态、市场规模与格局测算、产业链上下游监控、龙头公司标杆研究；论坛/年报/政策文件的结构化加工（SWOT、波特五力、五看）。</p>
+      <h3><span class="no">Ⅰ</span>行业与产业研究</h3>
+      <p>行业动态、市场规模与格局测算、产业链上下游监控、龙头公司标杆研究；政策 / 年报 / 论坛材料的结构化加工（五看、波特五力、SWOT），输出可判断的机会与威胁清单。</p>
     </div>
     <div class="cap-item">
-      <h3><span class="no">Ⅱ</span>会做市场分析</h3>
-      <p>客户结构与市占率分析、竞争对标、价格与销量敏感度、GAP 复盘——从数据到「我们该怎么办」的完整链路。</p>
+      <h3><span class="no">Ⅱ</span>市场与竞争分析</h3>
+      <p>客户结构与市占率分析、竞争对标（五维打分）、价格与销量敏感度、GAP 复盘；不停在「发生了什么」，而是给出「我们该怎么办」的行动建议与优先级。</p>
     </div>
     <div class="cap-item">
-      <h3><span class="no">Ⅲ</span>会做数据建模</h3>
-      <p>销售预测模型 14 个版本迭代（概率分级、量纲校验、生命周期与年降建模），单版公式链路超 1,300 万字符；政策影响建模预测。工具：SQL、Tableau、PowerBI、Python。</p>
+      <h3><span class="no">Ⅲ</span>数据建模与投资测算</h3>
+      <p>销售预测模型 14 个版本迭代（量纲校验、装载率、市占率、Chance 概率分级、生命周期与年降）；项目投资测算：现金流、NPV / IRR / 回收期、情景与敏感性分析，支撑投不投、怎么投的判断。</p>
     </div>
     <div class="cap-item">
-      <h3><span class="no">Ⅳ</span>会建监控体系</h3>
-      <p>行业动态 / 竞品 / 政策的常态化监控与预警机制、11 万字风险数据库、口径统一的报表体系——研究不是一次性报告，而是持续运转的机制。</p>
+      <h3><span class="no">Ⅳ</span>监控体系与预警机制</h3>
+      <p>行业动态 / 竞品 / 政策的常态化监控与预警：指标口径统一、数据源固定、异常自动识别；11 万字风险数据库与报表体系，让研究成为持续运转的机制而非一次性报告。</p>
     </div>
+  
   </div>
 </section>
 
 <!-- ============ 联系 ============ -->
 <section id="contact" class="contact">
   <div class="sec-head reveal">
-    <span class="sec-index">05 — CONTACT</span>
+    <span class="sec-index">05　求职意向</span>
     <h2 class="sec-title">正在寻找长春 / 大连 / 沈阳的<br>行业研究 · 市场分析 · 数据分析机会</h2>
     <p class="sec-desc">
       期望方向：行业研究、市场分析、经营数据、竞品情报类岗位。长春首选，大连、沈阳亦可。简历 PDF 可直接下载。
@@ -595,7 +645,7 @@ footer {
 <footer>
   <div class="footer-inner">
     <span>© 2026 杨钧凇 · 本页项目均可交互</span>
-    <span>行业研究 × 市场分析 × 数据分析</span>
+    <span>行业研究 · 市场分析 · 数据分析</span>
   </div>
 </footer>
 

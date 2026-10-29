@@ -238,6 +238,29 @@ footer {
   .nav-links { display: none; }
   .work-meta, .work-links { padding-left: 24px; padding-right: 24px; }
 }
+
+/* ===== 岗位要求覆盖矩阵 ===== */
+.cover-wrap {
+  background: var(--card); border: 1px solid var(--line); padding: 26px 30px;
+  margin-top: 8px;
+}
+.cover-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cover-tbl th {
+  text-align: left; padding: 10px 12px; color: var(--ink-3); font-size: 11px;
+  letter-spacing: 1.5px; border-bottom: 1px solid var(--line); font-weight: 600;
+}
+.cover-tbl td {
+  padding: 11px 12px; border-bottom: 1px dashed var(--line);
+  color: var(--ink-2); line-height: 1.75; vertical-align: top;
+}
+.cover-tbl tr:last-child td { border-bottom: none; }
+.cover-tbl td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; padding-right: 20px; }
+.cover-tbl .ev { color: var(--accent); }
+@media (max-width: 860px) {
+  .cover-wrap { padding: 18px 16px; }
+  .cover-tbl { font-size: 12.5px; }
+  .cover-tbl td:first-child { white-space: normal; }
+}
 </style>
 </head>
 <body>
@@ -247,6 +270,7 @@ footer {
     <div class="nav-logo">杨钧凇<span>.</span></div>
     <div class="nav-links">
       <a href="#works">作品</a>
+      <a href="#coverage">岗位覆盖</a>
       <a href="#experience">经历</a>
       <a href="#metrics">成果</a>
       <a href="#capabilities">能力</a>
@@ -258,7 +282,7 @@ footer {
 
 <!-- ============ Hero ============ -->
 <header class="hero">
-  <div class="hero-tag">Forward Deployed Engineer · AI Product · Business AI</div>
+  <div class="hero-tag">AI 应用落地 · 前置部署 · 产品化</div>
   <h1>让 AI 在真实业务里跑起来，<br>而不是停在<em>演示</em>里。</h1>
   <p class="hero-sub">
     我是<strong>杨钧凇</strong>，6 年汽车零部件与医疗器械行业一线经验、安永毕马威咨询出身的「落地型」选手。我做过两个 AI 产品——都来自我自己每天被折磨的流程，从痛点发现、方案设计到上线迭代全部独立完成。<strong>不炫技术，先问 ROI</strong>：工具迁就流程，而不是流程迁就工具。这个页面就是我的产品证明。
@@ -274,7 +298,7 @@ footer {
 <!-- ============ 作品 ============ -->
 <section id="works">
   <div class="sec-head reveal">
-    <span class="sec-index">01 — SELECTED WORKS</span>
+    <span class="sec-index">01　代表项目</span>
     <h2 class="sec-title">两个 AI 作品，都来自真实的管理痛点</h2>
     <p class="sec-desc">
       它们不炫技术——没有接大语言模型，因为企业内部数据需要的是准确与可追溯。
@@ -354,10 +378,33 @@ footer {
   </div>
 </section>
 
+<!-- ============ 岗位要求覆盖 ============ -->
+<section id="coverage">
+  <div class="sec-head reveal">
+    <span class="sec-index">岗位要求覆盖</span>
+    <h2 class="sec-title">岗位职责逐条对应</h2>
+    <p class="sec-desc">按 FDE / AI 产品经理 / AI 应用工程师类岗位的常见要求，逐条对应我的能力与可验证证据。</p>
+  </div>
+  <div class="cover-wrap reveal">
+      <table class="cover-tbl">
+        <thead><tr><th>岗位要求</th><th>我的对应能力与证据</th><th>在 Demo 中的位置</th></tr></thead>
+        <tbody>
+        <tr><td>需求发现 / 方案设计</td><td>6 年业务一线（汽车零部件、医疗器械）；从真实流程里识别痛点，先算 ROI 再动手</td><td class="ev">两个作品卡的「痛点 → 方案 → 取舍」三段式</td></tr>
+        <tr><td>RAG 知识工程</td><td>四层知识结构、引用溯源、相关度打分、防编造与无答案处理</td><td class="ev">WORK 01 战略材料知识库（可问答）</td></tr>
+        <tr><td>Workflow 编排</td><td>6 节点链路：数据接入 → 口径校验 → 差异计算 → 风险判定 → 归因 → 报告</td><td class="ev">WORK 02 销售预测差异工作流</td></tr>
+        <tr><td>Agent / 工具链</td><td>本地模型部署、额度监控与模型切换、知识库同步、OCR 与语音工具集成</td><td class="ev">写入能力结构与工作经历</td></tr>
+        <tr><td>落地与 ROI</td><td>嵌入 Excel / API，不改既有习惯；人工 2 天 → 5 秒、翻材料 → 随问随答</td><td class="ev">两个作品的「落地」说明与提效数字</td></tr>
+        <tr><td>跨部门推动</td><td>咨询出身：结构化拆解需求、向高管汇报、推动多部门配合交付</td><td class="ev">工作经历（战略规划统筹 4 战队 / 5 产品线 / 7 职能）</td></tr>
+        <tr><td>工程边界判断</td><td>企业内网无大模型依赖场景下，优先准确与可追溯，而非生成流畅</td><td class="ev">WORK 01 的「取舍」说明</td></tr>
+        </tbody>
+      </table>
+  </div>
+</section>
+
 <!-- ============ 经历 ============ -->
 <section id="experience">
   <div class="sec-head reveal">
-    <span class="sec-index">02 — EXPERIENCE</span>
+    <span class="sec-index">02　工作经历</span>
     <h2 class="sec-title">懂业务的人，才做得出能用的 AI</h2>
   </div>
   <div class="timeline">
@@ -395,7 +442,7 @@ footer {
 <!-- ============ 成果 ============ -->
 <section id="metrics">
   <div class="sec-head reveal">
-    <span class="sec-index">03 — RESULTS</span>
+    <span class="sec-index">03　数字成果</span>
     <h2 class="sec-title">数字会替我说话</h2>
   </div>
   <div class="metrics reveal">
@@ -411,33 +458,34 @@ footer {
 <!-- ============ 能力 ============ -->
 <section id="capabilities">
   <div class="sec-head reveal">
-    <span class="sec-index">04 — CAPABILITIES</span>
+    <span class="sec-index">04　能力结构</span>
     <h2 class="sec-title">落地型能力的四件事</h2>
   </div>
   <div class="cap-grid reveal">
     <div class="cap-item">
-      <h3><span class="no">Ⅰ</span>会找真问题</h3>
-      <p>6 年业务一线（汽车零部件、医疗器械）：从日常流程里识别真实痛点，而不是想象需求——两个 AI 产品的需求都来自我自己每天的工作。</p>
+      <h3><span class="no">Ⅰ</span>需求识别与方案设计</h3>
+      <p>6 年业务一线（汽车零部件、医疗器械）：从日常流程里识别真实痛点，判断「值不值得做」；方案设计含数据来源、结构化方式、防编造约束、验收指标，先算 ROI 再动手。</p>
     </div>
     <div class="cap-item">
-      <h3><span class="no">Ⅱ</span>会做方案</h3>
-      <p>RAG 知识库结构设计（引用溯源、相关度打分、防编造）、多节点工作流编排（口径校验、异常归因、报告生成）；无大模型依赖的轻量方案取舍判断。</p>
+      <h3><span class="no">Ⅱ</span>RAG 与知识工程</h3>
+      <p>知识库分层结构（战略 / 产品 / 制度 / 专题）、引用溯源与相关度打分、防编造与无答案处理；输出可追溯的「结论—依据—数据—来源」四段式回答，适配企业内网无大模型依赖的场景。</p>
     </div>
     <div class="cap-item">
-      <h3><span class="no">Ⅲ</span>会推落地</h3>
-      <p>工具嵌入现有流程（Excel / API 集成）、跨部门推动使用与反馈迭代；咨询出身带来的客户沟通与高管汇报能力。</p>
+      <h3><span class="no">Ⅲ</span>工作流与 Agent 编排</h3>
+      <p>多节点工作流编排：数据接入 → 口径校验 → 计算 → 风险判定 → 异常归因 → 报告生成；异常分级与建议动作自动生成，支持 Excel 导出与 API 数据源，嵌入既有业务流程。</p>
     </div>
     <div class="cap-item">
-      <h3><span class="no">Ⅳ</span>会算价值</h3>
-      <p>每个产品都能回答 ROI：人工两天 → 5 秒、翻半天材料 → 随问随答；用提效数字而不是技术名词证明产品价值。</p>
+      <h3><span class="no">Ⅳ</span>落地交付与价值量化</h3>
+      <p>工具迁就流程：优先复用现有 Excel / OA 习惯，降低使用门槛；每个产品都能给出提效数字（人工 2 天 → 5 秒、翻材料 → 随问随答），并用使用率与反馈持续迭代。</p>
     </div>
+  
   </div>
 </section>
 
 <!-- ============ 联系 ============ -->
 <section id="contact" class="contact">
   <div class="sec-head reveal">
-    <span class="sec-index">05 — CONTACT</span>
+    <span class="sec-index">05　求职意向</span>
     <h2 class="sec-title">正在寻找的<br>FDE · AI 产品经理 · AI 应用机会</h2>
     <p class="sec-desc">
       期望方向：FDE（前置部署工程师）、AI 产品经理、AI 应用工程师、Agent 开发类岗位——把 AI 做进业务流程。长春首选，大连、沈阳亦可，可远程驻场。简历 PDF 可直接下载。

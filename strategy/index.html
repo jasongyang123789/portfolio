@@ -238,6 +238,29 @@ footer {
   .nav-links { display: none; }
   .work-meta, .work-links { padding-left: 24px; padding-right: 24px; }
 }
+
+/* ===== 岗位要求覆盖矩阵 ===== */
+.cover-wrap {
+  background: var(--card); border: 1px solid var(--line); padding: 26px 30px;
+  margin-top: 8px;
+}
+.cover-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cover-tbl th {
+  text-align: left; padding: 10px 12px; color: var(--ink-3); font-size: 11px;
+  letter-spacing: 1.5px; border-bottom: 1px solid var(--line); font-weight: 600;
+}
+.cover-tbl td {
+  padding: 11px 12px; border-bottom: 1px dashed var(--line);
+  color: var(--ink-2); line-height: 1.75; vertical-align: top;
+}
+.cover-tbl tr:last-child td { border-bottom: none; }
+.cover-tbl td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; padding-right: 20px; }
+.cover-tbl .ev { color: var(--accent); }
+@media (max-width: 860px) {
+  .cover-wrap { padding: 18px 16px; }
+  .cover-tbl { font-size: 12.5px; }
+  .cover-tbl td:first-child { white-space: normal; }
+}
 </style>
 </head>
 <body>
@@ -247,6 +270,7 @@ footer {
     <div class="nav-logo">杨钧凇<span>.</span></div>
     <div class="nav-links">
       <a href="#works">作品</a>
+      <a href="#coverage">岗位覆盖</a>
       <a href="#experience">经历</a>
       <a href="#metrics">成果</a>
       <a href="#capabilities">能力</a>
@@ -258,7 +282,7 @@ footer {
 
 <!-- ============ Hero ============ -->
 <header class="hero">
-  <div class="hero-tag">Strategist · Business Analyst · Executive Support</div>
+  <div class="hero-tag">战略规划 · 经营分析 · 高管支撑</div>
   <h1>把管理层的意图，<br>变成<em>可执行的机制</em>与<em>可追踪的指标</em>。</h1>
   <p class="hero-sub">
     我是<strong>杨钧凇</strong>，6 年战略规划与经营分析经验的「军师型」选手——安永、毕马威咨询出身，先后在上市医疗器械企业与汽车零部件企业总经办负责战略规划。我相信三件事：<strong>决策支持要落到指标与流程</strong>，<strong>分析要能追因到动作</strong>，<strong>高管的意图要有机制承接</strong>。这个页面陈列我做成过的事。
@@ -274,17 +298,43 @@ footer {
 <!-- ============ 作品 ============ -->
 <section id="works">
   <div class="sec-head reveal">
-    <span class="sec-index">01 — SELECTED WORKS</span>
+    <span class="sec-index">01　代表项目</span>
     <h2 class="sec-title">把战略做成机制，把分析做成决策依据</h2>
     <p class="sec-desc">
-      以下是两个自研工具——不是展示技术，而是把我每天在做的口径校验、材料检索做成可复用的机制，
-      让决策支持更快、更准。更完整的战略交付见下方第三张卡片。
+      第一个是我日常在用的战略规划工作台（战略解码 / GAP 复盘 / 跨部门协同 / 高管决策包），
+      第二个是销售预测口径校验的自动化工作流。都可在线交互，数据已脱敏。
     </p>
   </div>
 
   <div class="work-card reveal">
     <div class="work-meta">
       <div class="work-idx">WORK 01</div>
+      <div class="work-title">战略规划工作台 · 战略解码 / GAP 复盘 / 跨部门协同 / 高管决策包</div>
+      <p class="work-desc">
+        把战略规划工作拆成四个可复用的模块：<b>战略地图四层解码</b>（财务 / 客户 / 内部流程 / 学习成长 → 举措 → 部门方针 KPI，含权重与责任人）、
+        <b>经营 GAP 复盘</b>（业绩差距 vs 机会差距分开归因，每条差距落到可执行动作）、
+        <b>跨部门协同</b>（RACI 责任矩阵 + 议题闭环看板 + 升级路径）、
+        <b>高管决策包</b>（议题—选项—建议—影响一页说清，会后行动项跟踪到人到日）。
+      </p>
+      <div class="work-points">
+        <span class="point">战略地图四层解码</span>
+        <span class="point">业绩差距 / 机会差距分离</span>
+        <span class="point">RACI 责任矩阵</span>
+        <span class="point">高管决策包 + 行动闭环</span>
+      </div>
+    </div>
+    <div class="work-links">
+      <a class="work-link" href="../demos/demo-strategy.html" target="_blank">在新窗口打开完整版 ↗</a>
+    </div>
+    <div class="work-frame-wrap">
+      <iframe class="work-frame" data-src="../demos/demo-strategy.html" loading="lazy" title="战略规划工作台"></iframe>
+      <div class="frame-tip" onclick="loadFrame(this)"><div class="play">▶</div>点击加载交互演示</div>
+    </div>
+  </div>
+
+  <div class="work-card reveal">
+    <div class="work-meta">
+      <div class="work-idx">WORK 02</div>
       <div class="work-title">四战队销售预测差异 · 自动汇总工作流</div>
       <p class="work-desc">
         多战队上报模板口径不一，人工汇总要两天还容易错。这条 6 节点工作流（数据接入 → 口径校验 → 差异计算 →
@@ -309,31 +359,6 @@ footer {
 
   <div class="work-card reveal">
     <div class="work-meta">
-      <div class="work-idx">WORK 02</div>
-      <div class="work-title">战略材料知识库 · 智能问答</div>
-      <p class="work-desc">
-        把 209 份、2,310 万字符战略材料结构化为四层知识库（公司战略 / 业务产品 / 职能制度 / 专题管控）。
-        提问后返回「结论 → 依据要点 → 关键数据 → 引用来源（含相关度打分）」，每条结论可追溯——
-        管理层要的答案不再依赖「翻半天材料」。
-      </p>
-      <div class="work-points">
-        <span class="point">检索增强 RAG 结构</span>
-        <span class="point">引用溯源 + 相关度打分</span>
-        <span class="point">四层业务化分类</span>
-        <span class="point">防编造设计</span>
-      </div>
-    </div>
-    <div class="work-links">
-      <a class="work-link" href="../demos/demo1.html" target="_blank">在新窗口打开完整版 ↗</a>
-    </div>
-    <div class="work-frame-wrap">
-      <iframe class="work-frame" data-src="../demos/demo1.html" loading="lazy" title="战略材料知识库问答"></iframe>
-      <div class="frame-tip" onclick="loadFrame(this)"><div class="play">▶</div>点击加载交互演示</div>
-    </div>
-  </div>
-
-  <div class="work-card reveal">
-    <div class="work-meta">
       <div class="work-idx">WORK 03</div>
       <div class="work-title">公司级战略规划体系 · 从编制到落地的完整闭环</div>
       <p class="work-desc">
@@ -352,10 +377,32 @@ footer {
   </div>
 </section>
 
+<!-- ============ 岗位要求覆盖 ============ -->
+<section id="coverage">
+  <div class="sec-head reveal">
+    <span class="sec-index">岗位要求覆盖</span>
+    <h2 class="sec-title">岗位职责逐条对应</h2>
+    <p class="sec-desc">按战略规划 / 经营分析 / 高管助理类岗位的常见要求，逐条对应我的能力与可验证证据。</p>
+  </div>
+  <div class="cover-wrap reveal">
+      <table class="cover-tbl">
+        <thead><tr><th>岗位要求</th><th>我的对应能力与证据</th><th>在 Demo 中的位置</th></tr></thead>
+        <tbody>
+        <tr><td>战略规划编制</td><td>公司级 / 业务级 / 职能级三级规划；外部环境与产业分析、业务组合、市场空间测算、举措收敛；战略文件 V12 迭代</td><td class="ev">战略地图四层结构（财务 / 客户 / 流程 / 成长）</td></tr>
+        <tr><td>战略解码</td><td>战略主题 → 举措 → 部门方针 KPI，权重与责任人对齐；50 项公司级重点工作收敛</td><td class="ev">举措 → 方针 / KPI 解码表（含权重、状态）</td></tr>
+        <tr><td>经营分析 / GAP</td><td>业绩差距与机会差距分开归因；销售预测口径校验；预算与目标衔接</td><td class="ev">GAP 复盘：瀑布图 + 归因与改进动作表</td></tr>
+        <tr><td>跨部门协同</td><td>统筹 4 战队 / 5 产品线 / 7 职能；议题闭环、升级机制、责任人到人到日</td><td class="ev">RACI 责任矩阵 + 议题闭环看板</td></tr>
+        <tr><td>高管支撑</td><td>议题—选项—建议—影响一页说清；纪要与行动项跟踪；课题月度汇报、方针点检、MBO 签批</td><td class="ev">高管决策包（3 议题）+ 行动项跟踪</td></tr>
+        <tr><td>流程与内控</td><td>4 类战略管理程序文件编制与修订；总经办内控接口；战略文件分级管控</td><td class="ev">写入工作经历与能力结构</td></tr>
+        </tbody>
+      </table>
+  </div>
+</section>
+
 <!-- ============ 经历 ============ -->
 <section id="experience">
   <div class="sec-head reveal">
-    <span class="sec-index">02 — EXPERIENCE</span>
+    <span class="sec-index">02　工作经历</span>
     <h2 class="sec-title">从咨询方法，到甲方机制</h2>
   </div>
   <div class="timeline">
@@ -393,7 +440,7 @@ footer {
 <!-- ============ 成果 ============ -->
 <section id="metrics">
   <div class="sec-head reveal">
-    <span class="sec-index">03 — RESULTS</span>
+    <span class="sec-index">03　数字成果</span>
     <h2 class="sec-title">数字会替我说话</h2>
   </div>
   <div class="metrics reveal">
@@ -409,33 +456,34 @@ footer {
 <!-- ============ 能力 ============ -->
 <section id="capabilities">
   <div class="sec-head reveal">
-    <span class="sec-index">04 — CAPABILITIES</span>
+    <span class="sec-index">04　能力结构</span>
     <h2 class="sec-title">军师型能力的四件事</h2>
   </div>
   <div class="cap-grid reveal">
     <div class="cap-item">
-      <h3><span class="no">Ⅰ</span>会做规划</h3>
-      <p>公司级 / 业务级 / 职能级三级战略规划编制：外部环境分析、产业分析、业务组合分析、市场空间测算，到战略举措收敛与战略地图迭代。方法：SWOT、波特五力、VRIO、BLM。</p>
+      <h3><span class="no">Ⅰ</span>战略规划编制</h3>
+      <p>公司级 / 业务级 / 职能级三级规划：外部环境与产业分析、业务组合、市场空间测算、战略意图与关键问题、战略举措收敛。交付物：战略规划正式文件（V12 迭代）、战略地图、举措清单。方法：BLM、SWOT、波特五力、VRIO、五看。</p>
     </div>
     <div class="cap-item">
-      <h3><span class="no">Ⅱ</span>会做分析</h3>
-      <p>经营业绩 GAP 分析、销售预测口径校验与差异归因、行业趋势与政策影响建模预测。工具：SQL、Tableau、PowerBI、Python。</p>
+      <h3><span class="no">Ⅱ</span>战略解码与经营分析</h3>
+      <p>把战略拆到可考核的颗粒度：战略主题 → 战略举措 → 部门 KPI / 方针指标，权重与责任人对齐；经营侧做 GAP 复盘（业绩差距 vs 机会差距）、销售预测口径校验、预算与目标衔接。</p>
     </div>
     <div class="cap-item">
-      <h3><span class="no">Ⅲ</span>会推落地</h3>
-      <p>战略解码为部门指标、战略课题治理（三层治理结构）、KPI / 方针 / MBO 核对签批、执行监控与季度复盘、GAP 追因与改进闭环。</p>
+      <h3><span class="no">Ⅲ</span>跨部门协同与推动</h3>
+      <p>统筹 4 支业务战队、5 条产品线、7 大职能模块的规划与交付：明确任务书、节点、交付物与责任人；建立议题闭环与升级机制，把「部门各说各话」收敛为管理层可决策的一致口径。</p>
     </div>
     <div class="cap-item">
-      <h3><span class="no">Ⅳ</span>会支撑高管</h3>
-      <p>管理层研讨组织、纪要与行动闭环、战略文件分级管控与跨部门资料接口、信息甄别与汇报材料整合——总经办视角的决策支持，让高管的意图有抓手。</p>
+      <h3><span class="no">Ⅳ</span>高管决策支持</h3>
+      <p>面向管理层的汇报材料与决策包：议题—选项—建议—影响一页说清；会议纪要与行动项跟踪到人到日；战略课题月度汇报、方针点检、MBO 核对签批。</p>
     </div>
+  
   </div>
 </section>
 
 <!-- ============ 联系 ============ -->
 <section id="contact" class="contact">
   <div class="sec-head reveal">
-    <span class="sec-index">05 — CONTACT</span>
+    <span class="sec-index">05　求职意向</span>
     <h2 class="sec-title">正在寻找长春 / 大连 / 沈阳的<br>战略规划 · 经营分析 · 高管助理机会</h2>
     <p class="sec-desc">
       期望方向：战略规划、经营分析、总助 / 高管支撑等决策支持类岗位。长春首选，大连、沈阳亦可。简历 PDF 可直接下载。
@@ -455,7 +503,7 @@ footer {
 <footer>
   <div class="footer-inner">
     <span>© 2026 杨钧凇 · 本页作品均可交互</span>
-    <span>战略规划 × 经营分析 × 高管支撑</span>
+    <span>战略规划 · 经营分析 · 高管支撑</span>
   </div>
 </footer>
 
