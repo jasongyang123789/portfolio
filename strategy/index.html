@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>杨钧凇 · 战略规划 × 经营分析 × 高管支撑</title>
+<meta name="description" content="杨钧凇 —— 6 年战略规划与经营分析经验，安永、毕马威咨询出身，现任总经办战略规划工程师。为管理层提供从战略编制、经营分析到落地追踪的完整决策支持。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231f3a5f'/%3E%3Ctext x='16' y='22' font-size='16' font-family='Georgia' fill='%23faf9f6' text-anchor='middle'%3E%E6%9D%A8%3C/text%3E%3C/svg%3E">
+<style>
+:root {
+  --ink: #191b1f;
+  --ink-2: #44474e;
+  --ink-3: #7d818a;
+  --paper: #faf9f6;
+  --card: #ffffff;
+  --line: #e6e3dc;
+  --accent: #1f3a5f;
+  --accent-soft: #eef1f6;
+  --gold: #9a7b4f;
+  --serif: Georgia, "Times New Roman", "Source Han Serif SC", "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --sans: -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+  --mono: "SF Mono", Consolas, "Courier New", monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: var(--sans); background: var(--paper); color: var(--ink);
+  font-size: 16px; line-height: 1.75; -webkit-font-smoothing: antialiased;
+}
+::selection { background: #1f3a5f; color: #faf9f6; }
+a { color: inherit; }
+
+/* ===== 导航 ===== */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  background: rgba(250,249,246,.88); backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent; transition: border-color .3s;
+}
+nav.scrolled { border-bottom-color: var(--line); }
+.nav-inner {
+  max-width: 1080px; margin: 0 auto; padding: 18px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { font-family: var(--serif); font-size: 17px; font-weight: 700; letter-spacing: 2px; }
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 30px; font-size: 13.5px; }
+.nav-links a {
+  text-decoration: none; color: var(--ink-2); letter-spacing: 1px;
+  transition: color .2s; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; left: 0; bottom: -4px; width: 0; height: 1px;
+  background: var(--accent); transition: width .25s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-links a:hover::after { width: 100%; }
+
+/* ===== Hero ===== */
+.hero {
+  max-width: 1080px; margin: 0 auto; padding: 168px 32px 96px;
+}
+.hero-tag {
+  font-size: 12px; letter-spacing: 4px; color: var(--gold); font-weight: 600;
+  margin-bottom: 26px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 14px;
+}
+.hero-tag::before { content:''; width: 36px; height: 1px; background: var(--gold); }
+.hero h1 {
+  font-family: var(--serif); font-size: clamp(44px, 7vw, 78px); font-weight: 700;
+  line-height: 1.12; letter-spacing: 1px; margin-bottom: 30px;
+}
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero-sub {
+  font-size: 17px; color: var(--ink-2); max-width: 640px; line-height: 2;
+  margin-bottom: 52px;
+}
+.hero-sub strong { color: var(--ink); font-weight: 600; }
+.hero-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--line); border: 1px solid var(--line);
+}
+.stat {
+  background: var(--paper); padding: 24px 26px;
+}
+.stat-num {
+  font-family: var(--serif); font-size: 32px; font-weight: 700; color: var(--accent);
+  line-height: 1.1; letter-spacing: .5px;
+}
+.stat-num small { font-size: 15px; font-weight: 400; color: var(--ink-3); margin-left: 2px; }
+.stat-label { font-size: 12.5px; color: var(--ink-3); margin-top: 8px; letter-spacing: 1.5px; }
+
+/* ===== 通用 Section ===== */
+section { max-width: 1080px; margin: 0 auto; padding: 92px 32px; }
+.sec-head { margin-bottom: 54px; }
+.sec-index {
+  font-family: var(--mono); font-size: 12px; color: var(--gold);
+  letter-spacing: 3px; display: block; margin-bottom: 14px;
+}
+.sec-title {
+  font-family: var(--serif); font-size: clamp(28px, 4vw, 40px); font-weight: 700;
+  letter-spacing: 1px; line-height: 1.25;
+}
+.sec-desc { color: var(--ink-2); margin-top: 16px; max-width: 620px; font-size: 15px; }
+
+/* ===== 作品 ===== */
+.work-card {
+  background: var(--card); border: 1px solid var(--line);
+  margin-bottom: 56px; overflow: hidden;
+  transition: box-shadow .35s, transform .35s;
+}
+.work-card:hover { box-shadow: 0 18px 50px rgba(25,27,31,.09); transform: translateY(-3px); }
+.work-meta { padding: 34px 40px 26px; }
+.work-idx {
+  font-family: var(--mono); font-size: 11.5px; color: var(--gold); letter-spacing: 2.5px;
+  margin-bottom: 12px;
+}
+.work-title {
+  font-family: var(--serif); font-size: 24px; font-weight: 700; margin-bottom: 14px;
+  letter-spacing: .5px;
+}
+.work-desc { color: var(--ink-2); font-size: 14.5px; max-width: 700px; line-height: 1.9; }
+.work-points { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.point {
+  font-size: 11.5px; color: var(--accent); background: var(--accent-soft);
+  padding: 4px 11px; border-radius: 2px; letter-spacing: .5px;
+}
+.work-links { padding: 0 40px 32px; display: flex; gap: 22px; align-items: center; }
+.work-link {
+  font-size: 13.5px; font-weight: 600; color: var(--accent); text-decoration: none;
+  letter-spacing: .5px; border-bottom: 1px solid rgba(31,58,95,.3); padding-bottom: 2px;
+  transition: border-color .2s;
+}
+.work-link:hover { border-bottom-color: var(--accent); }
+.work-link.secondary { color: var(--ink-3); border-bottom-color: transparent; }
+.work-frame-wrap { position: relative; border-top: 1px solid var(--line); background: #e9e7e1; }
+.work-frame {
+  width: 100%; height: 480px; border: none; display: block;
+  opacity: 0; transition: opacity .6s;
+}
+.work-frame.loaded { opacity: 1; }
+.frame-tip {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--ink-3); letter-spacing: 1px; cursor: pointer;
+  flex-direction: column; gap: 10px;
+}
+.frame-tip .play {
+  width: 58px; height: 58px; border-radius: 50%; background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  box-shadow: 0 8px 26px rgba(31,58,95,.35); transition: transform .25s;
+}
+.frame-tip:hover .play { transform: scale(1.08); }
+
+/* ===== 经历 ===== */
+.timeline { position: relative; padding-left: 36px; }
+.timeline::before {
+  content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 1px;
+  background: var(--line);
+}
+.tl-item { position: relative; padding-bottom: 46px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-item::before {
+  content: ''; position: absolute; left: -36px; top: 9px; width: 11px; height: 11px;
+  border-radius: 50%; background: var(--paper); border: 2px solid var(--accent);
+}
+.tl-time { font-family: var(--mono); font-size: 12px; color: var(--ink-3); letter-spacing: 1.5px; }
+.tl-role {
+  font-family: var(--serif); font-size: 19px; font-weight: 700; margin: 7px 0 4px;
+}
+.tl-role span { color: var(--gold); font-size: 14px; font-weight: 400; margin-left: 10px; font-family: var(--sans); }
+.tl-body { color: var(--ink-2); font-size: 14.5px; max-width: 760px; line-height: 1.9; }
+.tl-body b { color: var(--ink); font-weight: 600; }
+
+/* ===== 数字成果 ===== */
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.metric { background: var(--paper); padding: 34px 30px; }
+.metric:nth-child(2) { background: var(--card); }
+.metric-num { font-family: var(--serif); font-size: 40px; font-weight: 700; color: var(--accent); line-height: 1; }
+.metric-num small { font-size: 16px; color: var(--ink-3); font-weight: 400; }
+.metric-name { font-size: 13.5px; color: var(--ink-2); margin-top: 12px; line-height: 1.7; }
+.metric-sub { font-size: 11.5px; color: var(--ink-3); margin-top: 5px; letter-spacing: .5px; }
+
+/* ===== 能力 ===== */
+.cap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 52px 70px; }
+.cap-item h3 {
+  font-family: var(--serif); font-size: 18px; font-weight: 700; margin-bottom: 10px;
+  display: flex; align-items: baseline; gap: 12px;
+}
+.cap-item h3 .no { font-family: var(--mono); font-size: 12px; color: var(--gold); font-weight: 400; }
+.cap-item p { color: var(--ink-2); font-size: 14px; line-height: 1.9; }
+
+/* ===== 联系 ===== */
+.contact {
+  text-align: left;
+}
+.contact-lines { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 44px; }
+.c-line { background: var(--paper); padding: 26px 28px; }
+.c-line:nth-child(2) { background: var(--card); }
+.c-label { font-size: 11px; color: var(--ink-3); letter-spacing: 2.5px; margin-bottom: 9px; }
+.c-val { font-size: 15.5px; font-weight: 600; letter-spacing: .5px; }
+.c-note { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+
+.cta {
+  margin-top: 60px; display: flex; gap: 18px; flex-wrap: wrap;
+}
+.btn {
+  display: inline-block; text-decoration: none; font-size: 14px; font-weight: 600;
+  letter-spacing: 1px; padding: 15px 34px; transition: all .25s;
+  border: 1px solid var(--accent);
+}
+.btn-primary { background: var(--accent); color: #faf9f6; }
+.btn-primary:hover { background: #16293f; border-color: #16293f; }
+.btn-ghost { color: var(--accent); background: transparent; }
+.btn-ghost:hover { background: var(--accent-soft); }
+
+/* ===== 页脚 ===== */
+footer {
+  border-top: 1px solid var(--line); margin-top: 40px;
+}
+.footer-inner {
+  max-width: 1080px; margin: 0 auto; padding: 34px 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: var(--ink-3); letter-spacing: 1px;
+}
+
+/* ===== 渐显 ===== */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
+}
+
+@media (max-width: 860px) {
+  .hero { padding: 130px 24px 70px; }
+  section { padding: 66px 24px; }
+  .hero-stats, .metrics { grid-template-columns: 1fr 1fr; }
+  .cap-grid, .contact-lines { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .work-meta, .work-links { padding-left: 24px; padding-right: 24px; }
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">杨钧凇<span>.</span></div>
+    <div class="nav-links">
+      <a href="#works">作品</a>
+      <a href="#experience">经历</a>
+      <a href="#metrics">成果</a>
+      <a href="#capabilities">能力</a>
+      <a href="#contact">联系</a>
+      <a href="../matching.html">岗位匹配</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ Hero ============ -->
+<header class="hero">
+  <div class="hero-tag">Strategist · Business Analyst · Executive Support</div>
+  <h1>把管理层的意图，<br>变成<em>可执行的机制</em>与<em>可追踪的指标</em>。</h1>
+  <p class="hero-sub">
+    我是<strong>杨钧凇</strong>，6 年战略规划与经营分析经验的「军师型」选手——安永、毕马威咨询出身，先后在上市医疗器械企业与汽车零部件企业总经办负责战略规划。我相信三件事：<strong>决策支持要落到指标与流程</strong>，<strong>分析要能追因到动作</strong>，<strong>高管的意图要有机制承接</strong>。这个页面陈列我做成过的事。
+  </p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">6<small>年</small></div><div class="stat-label">战略与经营分析</div></div>
+    <div class="stat"><div class="stat-num">V12<small></small></div><div class="stat-label">公司级战略文件迭代</div></div>
+    <div class="stat"><div class="stat-num">50<small> 项</small></div><div class="stat-label">战略收敛的重点工作</div></div>
+    <div class="stat"><div class="stat-num">1,000<small> 万+</small></div><div class="stat-label">主导项目节约资金</div></div>
+  </div>
+</header>
+
+<!-- ============ 作品 ============ -->
+<section id="works">
+  <div class="sec-head reveal">
+    <span class="sec-index">01 — SELECTED WORKS</span>
+    <h2 class="sec-title">把战略做成机制，把分析做成决策依据</h2>
+    <p class="sec-desc">
+      以下是两个自研工具——不是展示技术，而是把我每天在做的口径校验、材料检索做成可复用的机制，
+      让决策支持更快、更准。更完整的战略交付见下方第三张卡片。
+    </p>
+  </div>
+
+  <div class="work-card reveal">
+    <div class="work-meta">
+      <div class="work-idx">WORK 01</div>
+      <div class="work-title">四战队销售预测差异 · 自动汇总工作流</div>
+      <p class="work-desc">
+        多战队上报模板口径不一，人工汇总要两天还容易错。这条 6 节点工作流（数据接入 → 口径校验 → 差异计算 →
+        风险判定 → 异常归因 → 报告生成）5 秒跑完，能自动识别「万套/套单位混用」这类数量级错误，
+        并为每条异常生成原因分析与建议动作，最终输出可直接上会的报告。
+      </p>
+      <div class="work-points">
+        <span class="point">口径校验机制化</span>
+        <span class="point">11 类业务异常识别</span>
+        <span class="point">报告直接上会</span>
+        <span class="point">Excel 导出 / API 接入</span>
+      </div>
+    </div>
+    <div class="work-links">
+      <a class="work-link" href="../demos/demo2.html" target="_blank">在新窗口打开完整版 ↗</a>
+    </div>
+    <div class="work-frame-wrap">
+      <iframe class="work-frame" data-src="../demos/demo2.html" loading="lazy" title="销售预测差异自动汇总"></iframe>
+      <div class="frame-tip" onclick="loadFrame(this)"><div class="play">▶</div>点击加载交互演示</div>
+    </div>
+  </div>
+
+  <div class="work-card reveal">
+    <div class="work-meta">
+      <div class="work-idx">WORK 02</div>
+      <div class="work-title">战略材料知识库 · 智能问答</div>
+      <p class="work-desc">
+        把 209 份、2,310 万字符战略材料结构化为四层知识库（公司战略 / 业务产品 / 职能制度 / 专题管控）。
+        提问后返回「结论 → 依据要点 → 关键数据 → 引用来源（含相关度打分）」，每条结论可追溯——
+        管理层要的答案不再依赖「翻半天材料」。
+      </p>
+      <div class="work-points">
+        <span class="point">检索增强 RAG 结构</span>
+        <span class="point">引用溯源 + 相关度打分</span>
+        <span class="point">四层业务化分类</span>
+        <span class="point">防编造设计</span>
+      </div>
+    </div>
+    <div class="work-links">
+      <a class="work-link" href="../demos/demo1.html" target="_blank">在新窗口打开完整版 ↗</a>
+    </div>
+    <div class="work-frame-wrap">
+      <iframe class="work-frame" data-src="../demos/demo1.html" loading="lazy" title="战略材料知识库问答"></iframe>
+      <div class="frame-tip" onclick="loadFrame(this)"><div class="play">▶</div>点击加载交互演示</div>
+    </div>
+  </div>
+
+  <div class="work-card reveal">
+    <div class="work-meta">
+      <div class="work-idx">WORK 03</div>
+      <div class="work-title">公司级战略规划体系 · 从编制到落地的完整闭环</div>
+      <p class="work-desc">
+        统筹公司级战略规划编制（4 支业务战队、5 条产品线、7 大职能模块），战略文件迭代至 V12、经 4 轮管理层汇报后上报集团；收敛形成 50 项公司级重点工作；主导战略课题治理改革（三层治理结构）、战略地图年度迭代、KPI/方针/MBO 核对签批，以及 4 类战略管理程序文件与内控手册建设——从方法论到落地机制的全链条。
+      </p>
+      <div class="work-points">
+        <span class="point">战略文件 V12 迭代</span>
+        <span class="point">50 项重点工作收敛</span>
+        <span class="point">战略课题治理改革</span>
+        <span class="point">4 类程序文件 · 内控手册</span>
+      </div>
+    </div>
+    <div class="work-links">
+      <a class="work-link secondary">交付材料涉密 · 面谈可详述</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 经历 ============ -->
+<section id="experience">
+  <div class="sec-head reveal">
+    <span class="sec-index">02 — EXPERIENCE</span>
+    <h2 class="sec-title">从咨询方法，到甲方机制</h2>
+  </div>
+  <div class="timeline">
+    <div class="tl-item reveal">
+      <div class="tl-time">2025.06 — 至今 · 长春</div>
+      <div class="tl-role">总经办（GMO）战略规划工程师 <span>汽车零部件 · 富奥体系</span></div>
+      <p class="tl-body">
+        统筹公司级战略规划编制（4 支业务战队、5 条产品线、7 大职能模块），战略文件迭代至 <b>V12</b>、经 4 轮管理层汇报后上报集团，收敛形成 <b>50 项</b>公司级重点工作。主导销售预测体系与口径校验（14 个版本模型）、十四五差距分析、战略课题治理改革与流程内控建设；另牵头战略文件分级保密与跨部门资料管控机制。
+      </p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-time">2023.04 — 2025.05 · 大连</div>
+      <div class="tl-role">经营数据分析师 <span>目立康（中国）医疗科技 · 上市</span></div>
+      <p class="tl-body">
+        作为事业部总经理的核心决策支持，独立负责行业动态、竞争格局、产业链监控与政策影响建模预测；完成 <b>11 万字</b>风险数据库与龙头上市公司标杆研究，协助公司提前应对集采降价冲击、阻击竞品上市节奏。
+      </p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-time">2022.10 — 2023.04</div>
+      <div class="tl-role">咨询顾问 <span>毕马威（中国）</span></div>
+      <p class="tl-body">
+        参与百亿级上市公司五年战略规划与解码（发布当日市值拉升 <b>7%</b>）、超大型国企集团「十四五」战略定位与组织管控优化、市属金控平台战略设计；个人主导某上市公司运营优化项目，节约资金 <b>1,000 余万元</b>。
+      </p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-time">2020.10 — 2022.10</div>
+      <div class="tl-role">咨询顾问 <span>安永（中国）</span></div>
+      <p class="tl-body">
+        参与 2 家地方国企破产重整（债权人 GP，债转股：交易结构设计、估值与战投引入、股权激励方案、退出路径设计）；参与 2 家上市公司全面风险管理体系建设。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 成果 ============ -->
+<section id="metrics">
+  <div class="sec-head reveal">
+    <span class="sec-index">03 — RESULTS</span>
+    <h2 class="sec-title">数字会替我说话</h2>
+  </div>
+  <div class="metrics reveal">
+    <div class="metric"><div class="metric-num">V12</div><div class="metric-name">公司级战略规划正式文件版本</div><div class="metric-sub">4 轮管理层汇报 · 上报集团</div></div>
+    <div class="metric"><div class="metric-num">50<small> 项</small></div><div class="metric-name">战略收敛形成的公司级重点工作</div><div class="metric-sub">4 战队 · 5 产品线 · 7 职能</div></div>
+    <div class="metric"><div class="metric-num">1,000<small> 万+</small></div><div class="metric-name">主导运营优化项目节约资金</div><div class="metric-sub">个人主导 · 集团深度认可</div></div>
+    <div class="metric"><div class="metric-num">7<small>%</small></div><div class="metric-name">战略规划体系发布当日市值拉升</div><div class="metric-sub">约 6,500 万元</div></div>
+    <div class="metric"><div class="metric-num">1,300<small> 万字符</small></div><div class="metric-name">单版销售预测模型公式链路</div><div class="metric-sub">14 个迭代版本 · 复算一致</div></div>
+    <div class="metric"><div class="metric-num">11<small> 万字</small></div><div class="metric-name">全面风险管理体系风险数据库</div><div class="metric-sub">2 家上市公司风控项目</div></div>
+  </div>
+</section>
+
+<!-- ============ 能力 ============ -->
+<section id="capabilities">
+  <div class="sec-head reveal">
+    <span class="sec-index">04 — CAPABILITIES</span>
+    <h2 class="sec-title">军师型能力的四件事</h2>
+  </div>
+  <div class="cap-grid reveal">
+    <div class="cap-item">
+      <h3><span class="no">Ⅰ</span>会做规划</h3>
+      <p>公司级 / 业务级 / 职能级三级战略规划编制：外部环境分析、产业分析、业务组合分析、市场空间测算，到战略举措收敛与战略地图迭代。方法：SWOT、波特五力、VRIO、BLM。</p>
+    </div>
+    <div class="cap-item">
+      <h3><span class="no">Ⅱ</span>会做分析</h3>
+      <p>经营业绩 GAP 分析、销售预测口径校验与差异归因、行业趋势与政策影响建模预测。工具：SQL、Tableau、PowerBI、Python。</p>
+    </div>
+    <div class="cap-item">
+      <h3><span class="no">Ⅲ</span>会推落地</h3>
+      <p>战略解码为部门指标、战略课题治理（三层治理结构）、KPI / 方针 / MBO 核对签批、执行监控与季度复盘、GAP 追因与改进闭环。</p>
+    </div>
+    <div class="cap-item">
+      <h3><span class="no">Ⅳ</span>会支撑高管</h3>
+      <p>管理层研讨组织、纪要与行动闭环、战略文件分级管控与跨部门资料接口、信息甄别与汇报材料整合——总经办视角的决策支持，让高管的意图有抓手。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 联系 ============ -->
+<section id="contact" class="contact">
+  <div class="sec-head reveal">
+    <span class="sec-index">05 — CONTACT</span>
+    <h2 class="sec-title">正在寻找长春 / 大连 / 沈阳的<br>战略规划 · 经营分析 · 高管助理机会</h2>
+    <p class="sec-desc">
+      期望方向：战略规划、经营分析、总助 / 高管支撑等决策支持类岗位。长春首选，大连、沈阳亦可。简历 PDF 可直接下载。
+    </p>
+  </div>
+  <div class="contact-lines reveal">
+    <div class="c-line"><div class="c-label">PHONE / WECHAT</div><div class="c-val">130-8998-9416</div><div class="c-note">微信同号</div></div>
+    <div class="c-line"><div class="c-label">EMAIL</div><div class="c-val">903334159@qq.com</div><div class="c-note">工作日 24h 内回复</div></div>
+    <div class="c-line"><div class="c-label">BASE</div><div class="c-val">长春</div><div class="c-note">可接受大连 / 沈阳</div></div>
+  </div>
+  <div class="cta reveal">
+    <a class="btn btn-primary" href="../resume/YangJunsong_Resume.pdf" download>下载简历 PDF</a>
+    <a class="btn btn-ghost" href="../matching.html">查看岗位匹配分析 ↗</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <span>© 2026 杨钧凇 · 本页作品均可交互</span>
+    <span>战略规划 × 经营分析 × 高管支撑</span>
+  </div>
+</footer>
+
+<script>
+// 导航滚动状态
+const nav = document.getElementById('nav');
+addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 30), { passive: true });
+
+// 懒加载 iframe
+function loadFrame(tip) {
+  const wrap = tip.parentElement;
+  const frame = wrap.querySelector('iframe');
+  frame.src = frame.dataset.src;
+  frame.onload = () => frame.classList.add('loaded');
+  tip.remove();
+}
+// 视口内自动预载
+const io = new IntersectionObserver((ents) => {
+  ents.forEach(e => { if (e.isIntersecting) { loadFrame(e.target); io.unobserve(e.target); } });
+}, { rootMargin: '300px' });
+document.querySelectorAll('.frame-tip').forEach(t => io.observe(t));
+
+// 渐显
+const ro = new IntersectionObserver((ents) => {
+  ents.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); ro.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+</script>
+
+</body>
+</html>
