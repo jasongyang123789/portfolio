@@ -261,6 +261,32 @@ footer {
   .cover-tbl { font-size: 12.5px; }
   .cover-tbl td:first-child { white-space: normal; }
 }
+
+/* ===== 文字简历式信息栏 ===== */
+.resume-meta {
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px 26px;
+  margin:6px 0 34px; padding:18px 0;
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  font-size:13.5px; color:var(--ink-2);
+}
+.resume-meta b { color:var(--ink); font-weight:600; }
+.resume-meta .dot { color:var(--line); }
+.hl-list { list-style:none; display:flex; flex-direction:column; gap:18px; }
+.hl-item {
+  display:grid; grid-template-columns:120px 1fr; gap:24px; align-items:start;
+  padding-bottom:18px; border-bottom:1px dashed var(--line);
+}
+.hl-item:last-child { border-bottom:none; padding-bottom:0; }
+.hl-key {
+  font-family:var(--serif); font-size:15px; font-weight:700; color:var(--accent);
+  letter-spacing:.5px; padding-top:2px;
+}
+.hl-val { font-size:14.5px; color:var(--ink-2); line-height:1.95; }
+.hl-val b { color:var(--ink); font-weight:600; }
+@media (max-width:860px) {
+  .hl-item { grid-template-columns:1fr; gap:6px; }
+  .resume-meta { font-size:12.5px; gap:8px 18px; }
+}
 </style>
 </head>
 <body>
@@ -269,9 +295,10 @@ footer {
   <div class="nav-inner">
     <div class="nav-logo">杨钧凇<span>.</span></div>
     <div class="nav-links">
-      <a href="#works">作品</a>
+      <a href="#highlights">个人亮点</a>
+      <a href="#works">代表项目</a>
       <a href="#coverage">岗位覆盖</a>
-      <a href="#experience">经历</a>
+      <a href="#experience">工作经历</a>
       <a href="#metrics">成果</a>
       <a href="#capabilities">能力</a>
       <a href="#contact">联系</a>
@@ -281,12 +308,21 @@ footer {
 </nav>
 
 <!-- ============ Hero ============ -->
-<header class="hero">
+<header class="hero" id="profile">
   <div class="hero-tag">战略规划 · 经营分析 · 高管支撑</div>
-  <h1>把管理层的意图，<br>变成<em>可执行的机制</em>与<em>可追踪的指标</em>。</h1>
-  <p class="hero-sub">
-    我是<strong>杨钧凇</strong>，6 年战略规划与经营分析经验的「军师型」选手——安永、毕马威咨询出身，先后在上市医疗器械企业与汽车零部件企业总经办负责战略规划。我相信三件事：<strong>决策支持要落到指标与流程</strong>，<strong>分析要能追因到动作</strong>，<strong>高管的意图要有机制承接</strong>。这个页面陈列我做成过的事。
+  <h1>杨钧凇</h1>
+  <p class="hero-sub" style="margin-bottom:0">
+    求职意向：<strong>战略规划 / 经营分析 / 高管助理</strong>　·　6 年战略规划与经营分析经验
   </p>
+  <div class="resume-meta">
+    <span><b>电话 / 微信</b>　130-8998-9416</span>
+    <span class="dot">|</span>
+    <span><b>邮箱</b>　903334159@qq.com</span>
+    <span class="dot">|</span>
+    <span><b>常驻</b>　长春（可接受大连 / 沈阳）</span>
+    <span class="dot">|</span>
+    <span><b>学历</b>　东北农业大学（211）· 会计学 · 本科</span>
+  </div>
   <div class="hero-stats">
     <div class="stat"><div class="stat-num">6<small>年</small></div><div class="stat-label">战略与经营分析</div></div>
     <div class="stat"><div class="stat-num">V12<small></small></div><div class="stat-label">公司级战略文件迭代</div></div>
@@ -295,10 +331,46 @@ footer {
   </div>
 </header>
 
+<!-- ============ 个人亮点 ============ -->
+<section id="highlights">
+  <div class="sec-head reveal">
+    <span class="sec-index">01　个人亮点</span>
+    <h2 class="sec-title">个人亮点</h2>
+    <p class="sec-desc">先看结论：我能解决什么问题、凭什么。</p>
+  </div>
+  <div class="hl-list reveal">
+    <div class="hl-item">
+      <div class="hl-key">研究型复合背景</div>
+      <div class="hl-val">四大咨询（<b>安永、毕马威</b>）出身，转入甲方后在总经办做战略规划与经营分析 —— 既懂咨询的结构化方法论，也懂组织里怎么把结论推成一件事。</div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-key">完整闭环经验</div>
+      <div class="hl-val">覆盖「<b>外部环境分析 → 战略制定 → 战略解码 → 执行监控 → 复盘迭代</b>」全链路：战略文件迭代至 <b>V12</b>、经 4 轮管理层汇报后上报集团，收敛形成 <b>50 项</b>公司级重点工作。</div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-key">能协调，也能落地</div>
+      <div class="hl-val">统筹 <b>4 支业务战队、5 条产品线、7 大职能模块</b>；建立议题闭环与升级机制，把「部门各说各话」收敛为管理层可决策的一致口径。</div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-key">直接贡献经营</div>
+      <div class="hl-val">咨询阶段个人主导某上市公司运营优化项目，<b>节约资金 1,000 余万元</b>；参与的战略规划体系发布当日市值拉升 <b>7%</b>（约 6,500 万元）。</div>
+    </div>
+  </div>
+
+  <div class="metrics reveal" style="margin-top:44px">
+    <div class="metric"><div class="metric-num">V12</div><div class="metric-name">公司级战略规划正式文件版本</div><div class="metric-sub">4 轮管理层汇报 · 上报集团</div></div>
+    <div class="metric"><div class="metric-num">50<small> 项</small></div><div class="metric-name">战略收敛形成的公司级重点工作</div><div class="metric-sub">4 战队 · 5 产品线 · 7 职能</div></div>
+    <div class="metric"><div class="metric-num">1,000<small> 万+</small></div><div class="metric-name">主导运营优化项目节约资金</div><div class="metric-sub">个人主导 · 集团深度认可</div></div>
+    <div class="metric"><div class="metric-num">7<small>%</small></div><div class="metric-name">战略规划体系发布当日市值拉升</div><div class="metric-sub">约 6,500 万元</div></div>
+    <div class="metric"><div class="metric-num">1,300<small> 万字符</small></div><div class="metric-name">单版销售预测模型公式链路</div><div class="metric-sub">14 个迭代版本 · 复算一致</div></div>
+    <div class="metric"><div class="metric-num">11<small> 万字</small></div><div class="metric-name">全面风险管理体系风险数据库</div><div class="metric-sub">2 家上市公司风控项目</div></div>
+  </div>
+</section>
+
 <!-- ============ 作品 ============ -->
 <section id="works">
   <div class="sec-head reveal">
-    <span class="sec-index">01　代表项目</span>
+    <span class="sec-index">02　代表项目</span>
     <h2 class="sec-title">把战略做成机制，把分析做成决策依据</h2>
     <p class="sec-desc">
       第一个是我日常在用的战略规划工作台（战略解码 / GAP 复盘 / 跨部门协同 / 高管决策包），
@@ -386,14 +458,14 @@ footer {
   </div>
   <div class="cover-wrap reveal">
       <table class="cover-tbl">
-        <thead><tr><th>岗位要求</th><th>我的对应能力与证据</th><th>在 Demo 中的位置</th></tr></thead>
+        <thead><tr><th>岗位职责 / 要求</th><th>我的对应能力与证据</th><th>在 Demo 中的位置</th></tr></thead>
         <tbody>
-        <tr><td>战略规划编制</td><td>公司级 / 业务级 / 职能级三级规划；外部环境与产业分析、业务组合、市场空间测算、举措收敛；战略文件 V12 迭代</td><td class="ev">战略地图四层结构（财务 / 客户 / 流程 / 成长）</td></tr>
-        <tr><td>战略解码</td><td>战略主题 → 举措 → 部门方针 KPI，权重与责任人对齐；50 项公司级重点工作收敛</td><td class="ev">举措 → 方针 / KPI 解码表（含权重、状态）</td></tr>
-        <tr><td>经营分析 / GAP</td><td>业绩差距与机会差距分开归因；销售预测口径校验；预算与目标衔接</td><td class="ev">GAP 复盘：瀑布图 + 归因与改进动作表</td></tr>
-        <tr><td>跨部门协同</td><td>统筹 4 战队 / 5 产品线 / 7 职能；议题闭环、升级机制、责任人到人到日</td><td class="ev">RACI 责任矩阵 + 议题闭环看板</td></tr>
-        <tr><td>高管支撑</td><td>议题—选项—建议—影响一页说清；纪要与行动项跟踪；课题月度汇报、方针点检、MBO 签批</td><td class="ev">高管决策包（3 议题）+ 行动项跟踪</td></tr>
-        <tr><td>流程与内控</td><td>4 类战略管理程序文件编制与修订；总经办内控接口；战略文件分级管控</td><td class="ev">写入工作经历与能力结构</td></tr>
+        <tr><td>战略规划编制</td><td>组织公司级中长期规划编制，牵头外部环境与产业分析、业务组合、市场空间测算，输出战略规划报告</td><td class="ev">战略地图四层结构 + 举措解码表</td></tr>
+        <tr><td>战略解码与目标分解</td><td>把战略目标拆成业务/职能年度重点任务、方针与 KPI，明确权重与责任人</td><td class="ev">举措 → 部门方针/KPI 解码表（含权重、状态）</td></tr>
+        <tr><td>经营分析与 GAP 复盘</td><td>定期经营分析，跟踪指标达成，做业绩差距与机会差距归因并提出改进动作</td><td class="ev">GAP 复盘：瀑布图 + 根因与改进动作表</td></tr>
+        <tr><td>战略议题推进与跨部门协同</td><td>建立议题清单与节点、责任人、升级机制；无汇报关系也能推动跨部门落地</td><td class="ev">RACI 责任矩阵 + 议题闭环看板（含升级路径）</td></tr>
+        <tr><td>高管决策支持</td><td>准备汇报材料与决策建议、会议纪要与行动项跟踪；能直接对接总监/总经理层级</td><td class="ev">高管决策包（背景—选项—建议）+ 行动项跟踪</td></tr>
+        <tr><td>战略管理制度与流程</td><td>战略管理程序文件编制修订、内控配套、战略文件分级管控</td><td class="ev">写入工作经历与能力结构</td></tr>
         </tbody>
       </table>
   </div>
@@ -402,7 +474,7 @@ footer {
 <!-- ============ 经历 ============ -->
 <section id="experience">
   <div class="sec-head reveal">
-    <span class="sec-index">02　工作经历</span>
+    <span class="sec-index">03　工作经历</span>
     <h2 class="sec-title">从咨询方法，到甲方机制</h2>
   </div>
   <div class="timeline">
@@ -434,22 +506,6 @@ footer {
         参与 2 家地方国企破产重整（债权人 GP，债转股：交易结构设计、估值与战投引入、股权激励方案、退出路径设计）；参与 2 家上市公司全面风险管理体系建设。
       </p>
     </div>
-  </div>
-</section>
-
-<!-- ============ 成果 ============ -->
-<section id="metrics">
-  <div class="sec-head reveal">
-    <span class="sec-index">03　数字成果</span>
-    <h2 class="sec-title">数字会替我说话</h2>
-  </div>
-  <div class="metrics reveal">
-    <div class="metric"><div class="metric-num">V12</div><div class="metric-name">公司级战略规划正式文件版本</div><div class="metric-sub">4 轮管理层汇报 · 上报集团</div></div>
-    <div class="metric"><div class="metric-num">50<small> 项</small></div><div class="metric-name">战略收敛形成的公司级重点工作</div><div class="metric-sub">4 战队 · 5 产品线 · 7 职能</div></div>
-    <div class="metric"><div class="metric-num">1,000<small> 万+</small></div><div class="metric-name">主导运营优化项目节约资金</div><div class="metric-sub">个人主导 · 集团深度认可</div></div>
-    <div class="metric"><div class="metric-num">7<small>%</small></div><div class="metric-name">战略规划体系发布当日市值拉升</div><div class="metric-sub">约 6,500 万元</div></div>
-    <div class="metric"><div class="metric-num">1,300<small> 万字符</small></div><div class="metric-name">单版销售预测模型公式链路</div><div class="metric-sub">14 个迭代版本 · 复算一致</div></div>
-    <div class="metric"><div class="metric-num">11<small> 万字</small></div><div class="metric-name">全面风险管理体系风险数据库</div><div class="metric-sub">2 家上市公司风控项目</div></div>
   </div>
 </section>
 
