@@ -96,7 +96,7 @@ footer{border-top:1px solid var(--line)}
 
   <div class="tbl-wrap">
   <table>
-    <thead><tr><th>#</th><th>职位</th><th>公司</th><th>薪资</th><th>地点</th><th>平台</th><th>定制方向</th><th>简历</th></tr></thead>
+    <thead><tr><th>#</th><th>职位</th><th>公司</th><th>薪资</th><th>地点</th><th>平台</th><th>定制方向</th><th>岗位</th><th>简历</th></tr></thead>
     <tbody id="tb"></tbody>
   </table>
   <div class="empty" id="empty" style="display:none">没有匹配的结果，试试清空筛选条件</div>
@@ -156,6 +156,7 @@ function render(){
     + '<td style="font-size:12px">' + d.city + '</td>'
     + '<td style="font-size:12px;white-space:nowrap">' + d.src + '</td>'
     + '<td><span class="arch">' + d.arch + '</span></td>'
+    + '<td>' + (d.joburl ? '<a class="pdflink" href="' + d.joburl + '" target="_blank">岗位 ↗</a>' : '—') + '</td>'
     + '<td>' + (d.pdf ? '<a class="pdflink" href="' + d.pdf + '" target="_blank">PDF ↗</a>' : '—') + '</td>'
     + '</tr>').join('');
 }
