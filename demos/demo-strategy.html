@@ -3,563 +3,459 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>战略规划工作台 · 战略解码 / GAP 复盘 / 跨部门协同 / 高管决策包</title>
+<title>岗位 JD 知识库 · 真实 RAG 检索问答</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family:-apple-system,"Microsoft YaHei","PingFang SC",sans-serif;
-  background:#f2f4f7; color:#1a1d23; height:100vh; overflow:hidden;
+  background:#f5f6f8; color:#1a1d23; height:100vh; overflow:hidden;
   display:flex; flex-direction:column;
 }
 header {
-  background:linear-gradient(135deg,#1a2f4a 0%,#2c5282 100%); color:#fff;
-  padding:14px 26px; display:flex; align-items:center; justify-content:space-between;
-  box-shadow:0 2px 10px rgba(0,0,0,.16); z-index:20; flex-shrink:0;
+  background:linear-gradient(135deg,#1e3a5f 0%,#2c5282 100%);
+  color:#fff; padding:14px 26px; display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 2px 8px rgba(0,0,0,.12); z-index:20;
 }
-header h1 { font-size:16px; font-weight:600; display:flex; align-items:center; gap:10px; }
-.tag { background:rgba(255,255,255,.16); padding:3px 9px; border-radius:4px; font-size:10.5px; font-weight:400; }
-.hdr-right { display:flex; align-items:center; gap:14px; font-size:11.5px; opacity:.92; }
-.cycle { display:flex; background:rgba(255,255,255,.12); border-radius:7px; padding:3px; gap:2px; }
-.cycle button {
-  background:none; border:none; color:rgba(255,255,255,.75); font-family:inherit;
-  font-size:11.5px; padding:5px 12px; border-radius:5px; cursor:pointer; transition:all .18s;
+header h1 { font-size:16.5px; font-weight:600; letter-spacing:.3px; display:flex; align-items:center; gap:10px; }
+.badge { background:rgba(255,255,255,.18); padding:3px 9px; border-radius:4px; font-size:11px; font-weight:400; }
+.header-meta { font-size:11.5px; opacity:.9; display:flex; gap:14px; align-items:center; }
+.domain-toggle { display:flex; background:rgba(255,255,255,.13); border-radius:7px; overflow:hidden; }
+.domain-btn {
+  border:none; background:transparent; color:#fff; font-family:inherit; font-size:12px;
+  padding:7px 14px; cursor:pointer; opacity:.75; transition:all .2s;
 }
-.cycle button.on { background:#fff; color:#1a365d; font-weight:600; }
-.cycle button:hover:not(.on) { color:#fff; }
-
-.note {
-  background:#fffbe6; border-bottom:1px solid #f0e0a8; color:#7a6417;
-  font-size:11.5px; padding:8px 26px; flex-shrink:0; line-height:1.6;
+.domain-btn.active { background:#fff; color:#1e3a5f; opacity:1; font-weight:600; }
+.btn-gear {
+  background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.25); color:#fff;
+  border-radius:7px; padding:7px 12px; font-size:12px; cursor:pointer; font-family:inherit;
 }
-.note b { color:#5d4b0f; }
-
-.tabs {
-  display:flex; gap:2px; padding:0 22px; background:#fff;
-  border-bottom:1px solid #e2e8f0; flex-shrink:0;
+.layout { display:flex; flex:1; overflow:hidden; }
+aside {
+  width:280px; background:#fff; border-right:1px solid #e3e6eb;
+  display:flex; flex-direction:column; flex-shrink:0;
 }
-.tab {
-  padding:13px 18px; font-size:12.5px; color:#718096; cursor:pointer;
-  border-bottom:2px solid transparent; transition:all .18s; font-weight:500;
+.aside-head { padding:13px 18px 9px; border-bottom:1px solid #eef0f3; font-size:12px; font-weight:600; color:#4a5568; letter-spacing:.5px; }
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:13px 15px; }
+.stat { background:#f8f9fb; border-radius:6px; padding:9px 11px; border:1px solid #eef0f3; }
+.stat-num { font-size:17px; font-weight:700; color:#1e3a5f; line-height:1.2; }
+.stat-label { font-size:10px; color:#8b95a5; margin-top:3px; }
+.doc-list { flex:1; overflow-y:auto; padding:4px 10px 14px; }
+.doc-list-title { font-size:11px; color:#8b95a5; padding:9px 8px 5px; letter-spacing:.5px; }
+.doc-item { padding:6px 9px; border-radius:5px; font-size:11.5px; color:#3d4757; margin-bottom:2px; display:flex; gap:6px; align-items:flex-start; }
+.doc-item:hover { background:#f0f4f9; }
+.doc-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; margin-top:6px; }
+main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.engine-bar {
+  display:flex; align-items:center; gap:10px; padding:8px 30px;
+  background:#eef1f6; border-bottom:1px solid #e3e6eb; font-size:11px; color:#4a5568; flex-wrap:wrap;
 }
-.tab.active { color:#2b6cb0; border-bottom-color:#2b6cb0; }
-.tab:hover:not(.active) { color:#4a5568; }
-
-.content { flex:1; overflow-y:auto; padding:20px 26px 36px; }
-.pane { display:none; }
-.pane.active { display:block; }
-.pane-head { margin-bottom:14px; }
-.pane-head h2 { font-size:15px; font-weight:600; color:#2d3748; }
-.pane-head p { font-size:12px; color:#8b95a5; margin-top:4px; line-height:1.7; }
-
-.cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
-.card { background:#fff; border:1px solid #e2e8f0; border-radius:9px; padding:15px 17px; }
-.card-lab { font-size:11px; color:#8b95a5; letter-spacing:.5px; }
-.card-val { font-size:23px; font-weight:700; color:#1a365d; margin-top:5px; font-variant-numeric:tabular-nums; }
-.card-val small { font-size:12px; font-weight:500; color:#718096; margin-left:2px; }
-.card-sub { font-size:10.5px; color:#a0aec0; margin-top:4px; }
-
-.panel { background:#fff; border:1px solid #e2e8f0; border-radius:9px; padding:18px 20px; margin-bottom:16px; }
-.panel-title {
-  font-size:12.5px; font-weight:600; color:#2d3748; margin-bottom:14px;
-  display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+.engine-chip { background:#fff; border:1px solid #dde1e7; border-radius:10px; padding:2px 10px; font-family:Consolas,monospace; }
+.engine-chip.hl { border-color:#4299e1; color:#2b6cb0; font-weight:600; }
+.chat { flex:1; overflow-y:auto; padding:24px 34px 8px; }
+.welcome { max-width:680px; margin:26px auto; }
+.welcome h2 { font-size:18px; color:#1e3a5f; margin-bottom:8px; font-family:Georgia,serif; }
+.welcome p { font-size:13px; color:#718096; line-height:1.8; }
+.welcome p b { color:#1e3a5f; }
+.suggests { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:18px; }
+.suggest {
+  background:#fff; border:1px solid #e3e6eb; border-radius:8px; padding:11px 13px;
+  font-size:12.5px; color:#3d4757; text-align:left; cursor:pointer; transition:all .18s; line-height:1.5; font-family:inherit;
 }
-.panel-title span { font-size:10.5px; font-weight:400; color:#a0aec0; }
-
-table { width:100%; border-collapse:collapse; font-size:12px; }
-th {
-  text-align:left; padding:9px 10px; color:#718096; font-weight:600;
-  border-bottom:2px solid #e2e8f0; font-size:11px; white-space:nowrap;
-  cursor:pointer; user-select:none; background:#fafbfc;
+.suggest:hover { border-color:#4299e1; box-shadow:0 2px 10px rgba(66,153,225,.13); }
+.suggest-tag { font-size:10px; color:#4299e1; display:block; margin-bottom:4px; letter-spacing:.4px; }
+.msg { margin-bottom:20px; animation:fadeUp .3s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.msg-user { display:flex; justify-content:flex-end; }
+.msg-user .bubble { background:#2c5282; color:#fff; padding:10px 15px; border-radius:12px 12px 3px 12px; max-width:70%; font-size:13.5px; line-height:1.6; }
+.msg-ai { display:flex; gap:11px; }
+.avatar { width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,#2c5282,#4299e1); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; color:#fff; font-weight:700; }
+.ai-body { flex:1; max-width:88%; min-width:0; }
+.answer { background:#fff; border:1px solid #e3e6eb; border-radius:3px 12px 12px 12px; padding:15px 17px; font-size:13.5px; line-height:1.8; color:#2d3748; }
+.answer h3 { font-size:12px; color:#2c5282; font-weight:600; margin:12px 0 6px; letter-spacing:.4px; display:flex; align-items:center; gap:6px; }
+.answer h3:first-child { margin-top:0; }
+.answer h3::before { content:''; width:3px; height:12px; background:#4299e1; border-radius:2px; }
+.answer ul { margin:0 0 4px 0; padding-left:18px; }
+.answer li { margin-bottom:4px; }
+.answer strong { color:#1e3a5f; }
+.kpi-inline { display:inline-block; background:#ebf4ff; color:#2c5282; padding:0 6px; border-radius:3px; font-size:12px; font-weight:600; margin:0 1px; }
+.mode-badge { display:inline-flex; align-items:center; gap:5px; font-size:10.5px; padding:1px 8px; border-radius:9px; margin-left:8px; vertical-align:2px; }
+.mode-extract { background:#c6f6d5; color:#276749; }
+.mode-llm { background:#bee3f8; color:#2a4365; }
+.sources { margin-top:10px; }
+.sources-label { font-size:11px; color:#8b95a5; margin-bottom:6px; }
+.source-card { background:#f8f9fb; border-left:3px solid #4299e1; border-radius:0 6px 6px 0; padding:8px 12px; margin-bottom:6px; font-size:11.5px; color:#4a5568; line-height:1.6; }
+.src-top { display:flex; justify-content:space-between; gap:8px; margin-bottom:3px; }
+.src-title { font-weight:600; color:#2c5282; font-size:11.5px; }
+.src-scores { font-family:Consolas,monospace; font-size:10px; color:#718096; white-space:nowrap; }
+.src-scores b { color:#2b6cb0; }
+.fb-row { display:flex; gap:8px; margin-top:9px; align-items:center; flex-wrap:wrap; }
+.fb-btn {
+  border:1px solid #e2e8f0; background:#fff; border-radius:6px; padding:4px 12px;
+  font-size:12px; cursor:pointer; font-family:inherit; color:#4a5568; transition:all .15s;
 }
-th:hover { color:#2b6cb0; }
-th .ar { color:#cbd5e0; font-size:9px; margin-left:3px; }
-th.sorted .ar { color:#2b6cb0; }
-td { padding:9px 10px; border-bottom:1px solid #edf2f7; color:#2d3748; vertical-align:top; }
-tr:hover td { background:#f7fafc; }
-td.num { text-align:right; font-variant-numeric:tabular-nums; }
-
-.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10.5px; font-weight:600; white-space:nowrap; }
-.b-hi { background:#fed7d7; color:#9b2c2c; }
-.b-mid { background:#feebc8; color:#975a16; }
-.b-low { background:#c6f6d5; color:#22543d; }
-.b-neutral { background:#e2e8f0; color:#4a5568; }
-.b-blue { background:#bee3f8; color:#1a365d; }
-
-/* 战略地图四层 */
-.map-layer { display:flex; gap:10px; margin-bottom:9px; align-items:stretch; }
-.map-side {
-  width:62px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
-  font-size:10.5px; font-weight:700; letter-spacing:1px; border-radius:6px;
+.fb-btn:hover { border-color:#4299e1; color:#2b6cb0; }
+.fb-btn:disabled { opacity:.5; cursor:default; }
+.fb-note { font-size:11px; color:#38a169; }
+.input-bar { padding:12px 34px 18px; background:#f5f6f8; border-top:1px solid #e3e6eb; }
+.input-wrap { background:#fff; border:1.5px solid #dde1e7; border-radius:10px; display:flex; align-items:flex-end; padding:8px 8px 8px 15px; transition:all .18s; max-width:920px; margin:0 auto; }
+.input-wrap:focus-within { border-color:#4299e1; box-shadow:0 0 0 3px rgba(66,153,225,.11); }
+textarea { flex:1; border:none; outline:none; resize:none; font-size:13.5px; font-family:inherit; line-height:1.6; max-height:96px; background:transparent; }
+.send-btn { background:#2c5282; color:#fff; border:none; border-radius:7px; padding:8px 18px; font-size:13px; cursor:pointer; font-family:inherit; font-weight:600; }
+.send-btn:disabled { background:#cbd5e0; }
+.hint { text-align:center; font-size:10.5px; color:#a8b1bf; margin-top:7px; }
+.llm-panel {
+  display:none; position:fixed; top:58px; right:26px; z-index:60;
+  background:#fff; border:1px solid #e3e6eb; border-radius:10px; padding:16px 18px;
+  width:360px; box-shadow:0 12px 40px rgba(0,0,0,.16);
 }
-.lv1 { background:#bee3f8; color:#1a365d; }
-.lv2 { background:#c6f6d5; color:#22543d; }
-.lv3 { background:#fefcbf; color:#744210; }
-.lv4 { background:#e9d8fd; color:#44337a; }
-.map-items { flex:1; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-.map-item {
-  background:#fafbfc; border:1px solid #e2e8f0; border-radius:6px; padding:9px 10px;
-  font-size:11px; color:#4a5568; line-height:1.55; cursor:default; transition:all .18s;
+.llm-panel.show { display:block; }
+.llm-panel h3 { font-size:13px; color:#1e3a5f; margin-bottom:10px; }
+.llm-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.llm-row label { font-size:11px; color:#718096; width:64px; flex-shrink:0; }
+.llm-row input { flex:1; border:1px solid #dde1e7; border-radius:6px; padding:6px 10px; font-size:12px; font-family:Consolas,monospace; }
+.llm-note { font-size:10.5px; color:#a0aec0; line-height:1.6; margin-top:6px; }
+.detail-panel {
+  background:#1a202c; border-radius:8px; padding:12px 15px; margin-top:9px;
+  font-family:Consolas,monospace; font-size:10.5px; color:#a0aec0; line-height:1.8; max-height:180px; overflow-y:auto;
 }
-.map-item:hover { border-color:#4299e1; background:#f0f7ff; }
-.map-item b { display:block; color:#2d3748; font-size:11.5px; margin-bottom:2px; }
-.map-item .owner { font-size:10px; color:#a0aec0; margin-top:4px; }
-
-/* RACI */
-.raci-r { background:#c6f6d5; color:#22543d; font-weight:700; }
-.raci-a { background:#bee3f8; color:#1a365d; font-weight:700; }
-.raci-c { background:#feebc8; color:#975a16; font-weight:700; }
-.raci-i { background:#edf2f7; color:#718096; }
-.raci-cell { text-align:center; font-size:11px; border-radius:4px; padding:2px 0; display:block; width:22px; margin:0 auto; }
-
-/* GAP 瀑布 */
-.gap-row { display:grid; grid-template-columns:150px 1fr 92px; gap:12px; align-items:center; margin-bottom:10px; }
-.gap-name { font-size:11.5px; color:#4a5568; }
-.gap-track { height:26px; background:#edf2f7; border-radius:4px; position:relative; overflow:hidden; }
-.gap-bar { position:absolute; top:3px; bottom:3px; border-radius:3px; transition:all .5s; }
-.gap-bar.neg { background:linear-gradient(90deg,#fc8181,#e53e3e); left:50%; }
-.gap-bar.pos { background:linear-gradient(90deg,#68d391,#38a169); right:50%; }
-.gap-mid { position:absolute; left:50%; top:0; bottom:0; width:1px; background:#a0aec0; }
-.gap-val { font-size:11.5px; font-weight:600; text-align:right; font-variant-numeric:tabular-nums; }
-
-/* 决策包 */
-.dec { border-left:3px solid #2b6cb0; padding:10px 0 10px 14px; margin-bottom:14px; background:#fafbfc; border-radius:0 6px 6px 0; }
-.dec-hd { font-size:12.5px; font-weight:600; color:#2d3748; display:flex; justify-content:space-between; gap:10px; }
-.dec-body { font-size:11.5px; color:#718096; margin-top:5px; line-height:1.75; }
-.dec-body b { color:#2d3748; }
-.opt { display:flex; gap:8px; margin-top:7px; flex-wrap:wrap; }
-.opt span { font-size:11px; background:#edf2f7; color:#4a5568; padding:3px 9px; border-radius:3px; }
-.opt span.rec { background:#c6f6d5; color:#22543d; font-weight:600; }
-
-.tip { margin-top:14px; font-size:11px; color:#8b95a5; line-height:1.75; border-left:3px solid #e2e8f0; padding-left:11px; }
-.tip b { color:#4a5568; }
-
-@media (max-width:900px) {
-  .cards { grid-template-columns:repeat(2,1fr); }
-  .map-items { grid-template-columns:repeat(2,1fr); }
-  .gap-row { grid-template-columns:96px 1fr 72px; }
-  .content { padding:14px 14px 30px; }
-  .tabs { overflow-x:auto; } .tab { white-space:nowrap; }
-  .hdr-right { display:none; }
-}
+.detail-panel b { color:#e2e8f0; }
+details.explain { margin-top:9px; font-size:11px; color:#718096; }
+details.explain summary { cursor:pointer; color:#4299e1; }
+details.explain .detail-panel { margin-top:7px; }
+.typing { display:inline-flex; gap:3px; padding:4px 0; }
+.typing span { width:6px; height:6px; border-radius:50%; background:#a0aec0; animation:bounce 1.2s infinite; }
+.typing span:nth-child(2){animation-delay:.15s} .typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce { 0%,60%,100%{transform:translateY(0);opacity:.5} 30%{transform:translateY(-5px);opacity:1} }
+::-webkit-scrollbar { width:7px; } ::-webkit-scrollbar-thumb { background:#d3d8e0; border-radius:4px; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>战略规划工作台 <span class="tag">战略解码 · GAP 复盘 · 跨部门协同 · 高管决策包</span></h1>
-  <div class="hdr-right">
-    <div class="cycle" id="cycle">
-      <button data-y="2026" class="on">2026 年</button>
-      <button data-y="2027">2027 年</button>
+  <h1>战略规划知识库 · RAG 检索问答 <span class="badge">BM25 + TF-IDF + TextRank</span></h1>
+  <div class="header-meta">
+    <div class="domain-toggle">
+      <button class="domain-btn active" data-domain="strategy">战略材料与知识域（15 条）</button>
     </div>
-    <span>脱敏示意数据 · 展示工作方法</span>
+    <button class="btn-gear" id="btnLlm">⚙ 大模型</button>
   </div>
 </header>
 
-<div class="note">
-  <b>说明：</b>本页为脱敏示意数据，用于展示战略规划工作的分析与推进方法，不代表任何真实企业数据或结论。
-  覆盖四类工作：战略地图与举措解码、经营 GAP 复盘、跨部门协同（RACI 与议题闭环）、高管决策包。
+<div class="llm-panel" id="llmPanel">
+  <h3>接入大模型（可选）</h3>
+  <div class="llm-row"><label>接口地址</label><input id="llmUrl" placeholder="https://api.deepseek.com/v1/chat/completions"></div>
+  <div class="llm-row"><label>API Key</label><input id="llmKey" type="password" placeholder="sk-..."></div>
+  <div class="llm-row"><label>模型</label><input id="llmModel" placeholder="deepseek-chat / glm-4-flash 等"></div>
+  <div class="llm-note">
+    填写后回答由大模型基于检索到的文档生成（生成式 RAG）；不填则使用内置 TextRank 抽取式摘要。
+    需接口支持浏览器跨域调用（DeepSeek / 智谱 / Kimi 等均可）。配置仅保存在本机浏览器。
+  </div>
 </div>
 
-<div class="tabs">
-  <div class="tab active" data-tab="map">战略解码</div>
-  <div class="tab" data-tab="gap">经营 GAP 复盘</div>
-  <div class="tab" data-tab="raci">跨部门协同</div>
-  <div class="tab" data-tab="decide">高管决策包</div>
-</div>
-
-<div class="content">
-
-  <!-- ===== 战略解码 ===== -->
-  <div class="pane active" id="pane-map">
-    <div class="pane-head">
-      <h2>战略地图与举措解码（四层结构）</h2>
-      <p>把公司战略拆成财务 / 客户 / 内部流程 / 学习成长四层，每一层落到举措与责任人；再向下解码为可考核的部门方针与 KPI。</p>
+<div class="layout">
+  <aside>
+    <div class="aside-head">知识库概览 <span id="domainName" style="color:#4299e1"></span></div>
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-num" id="stDocs">—</div><div class="stat-label">索引文档</div></div>
+      <div class="stat"><div class="stat-num" id="stTerms">—</div><div class="stat-label">词表规模</div></div>
+      <div class="stat"><div class="stat-num" id="stFeedback">0</div><div class="stat-label">反馈训练次数</div></div>
+      <div class="stat"><div class="stat-num" id="stMode">抽取</div><div class="stat-label">回答模式</div></div>
     </div>
-    <div class="cards">
-      <div class="card"><div class="card-lab">战略主题</div><div class="card-val">4<small>个</small></div><div class="card-sub">财务 2 · 客户 2 · 流程 3 · 成长 2</div></div>
-      <div class="card"><div class="card-lab">战略举措</div><div class="card-val">50<small>项</small></div><div class="card-sub">经验收敛后的公司级重点工作</div></div>
-      <div class="card"><div class="card-lab">承接单元</div><div class="card-val">16<small>个</small></div><div class="card-sub">4 战队 · 5 产品线 · 7 职能</div></div>
-      <div class="card"><div class="card-lab">方针指标</div><div class="card-val">38<small>个</small></div><div class="card-sub">含权重与责任人，季度点检</div></div>
-    </div>
+    <div class="doc-list" id="docList"></div>
+  </aside>
 
-    <div class="panel">
-      <div class="panel-title">战略地图（示例） <span>点击卡片可看责任人</span></div>
-      <div id="mapLayers"></div>
-      <div class="tip">
-        解码逻辑：<b>财务结果</b>回答「要赚多少」；<b>客户与市场</b>回答「靠谁买单」；<b>内部流程</b>回答「靠什么能力交付」；<b>学习成长</b>回答「靠什么组织支撑」。
-        四层之间要有明确的因果链，否则地图只是分类表。
+  <main>
+    <div class="engine-bar">
+      <span>检索引擎：</span>
+      <span class="engine-chip hl" id="chipFormula">score = 0.6·BM25 + 0.4·cos(TF-IDF)</span>
+      <span class="engine-chip" id="chipFeedback">Rocchio 反馈：未启用</span>
+      <span class="engine-chip">分词：中文2-gram + 英文词</span>
+      <button class="engine-chip" id="btnResetFb" style="cursor:pointer">重置训练</button>
+    </div>
+    <div class="chat" id="chat">
+      <div class="welcome" id="welcome">
+        <h2 id="welcomeTitle"></h2>
+        <p id="domainIntro"></p>
+        <div class="suggests" id="suggests"></div>
       </div>
     </div>
-
-    <div class="panel">
-      <div class="panel-title">举措 → 部门方针 / KPI 解码表 <span>节选 6 项</span></div>
-      <table id="tbl-decode">
-        <thead>
-          <tr>
-            <th data-k="init">战略举措 <span class="ar">↕</span></th>
-            <th data-k="layer">地图层级 <span class="ar">↕</span></th>
-            <th data-k="owner">承接单元 <span class="ar">↕</span></th>
-            <th data-k="kpi">对应方针 / KPI <span class="ar">↕</span></th>
-            <th data-k="w" class="num">权重 <span class="ar">↕</span></th>
-            <th data-k="st">状态 <span class="ar">↕</span></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div class="tip">权重合计须为 100%，且与考核周期一致；无承接单元或无指标的举措视为「未解码」，必须退回重做。</div>
-    </div>
-  </div>
-
-  <!-- ===== GAP ===== -->
-  <div class="pane" id="pane-gap">
-    <div class="pane-head">
-      <h2>经营 GAP 复盘：业绩差距 vs 机会差距</h2>
-      <p>业绩差距 = 执行不到位（现有打法没做到）；机会差距 = 判断失误（没看到或没敢投）。两者对应完全不同的改进动作，不能混为一谈。</p>
-    </div>
-    <div class="cards">
-      <div class="card"><div class="card-lab">年度目标</div><div class="card-val" id="g-target">80<small>亿元</small></div><div class="card-sub">管理层下达口径</div></div>
-      <div class="card"><div class="card-lab">预计完成</div><div class="card-val" id="g-actual">67<small>亿元</small></div><div class="card-sub">当前预测口径</div></div>
-      <div class="card"><div class="card-lab">总差距</div><div class="card-val" id="g-total" style="color:#c53030">-13<small>亿元</small></div><div class="card-sub">目标 − 预测</div></div>
-      <div class="card"><div class="card-lab">其中机会差距</div><div class="card-val" id="g-opp" style="color:#975a16">-5<small>亿元</small></div><div class="card-sub">未进入/未投的赛道</div></div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">分板块差距归因 <span>红=未达标 · 绿=超额</span></div>
-      <div id="gapBars"></div>
-      <div class="tip">读法：每条差距必须落在「数量 / 价格 / 节奏 / 归属」一类可解释变量上，且给出可执行的补救动作；只写「市场不好」不算归因。</div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">差距清单与改进动作 <span>按金额排序</span></div>
-      <table id="tbl-gap">
-        <thead>
-          <tr>
-            <th data-k="unit">板块 / 单元 <span class="ar">↕</span></th>
-            <th data-k="type">差距类型 <span class="ar">↕</span></th>
-            <th data-k="amt" class="num">金额（亿元） <span class="ar">↕</span></th>
-            <th data-k="cause">根因判断 <span class="ar">↕</span></th>
-            <th data-k="act">改进动作 <span class="ar">↕</span></th>
-            <th data-k="by">责任人 <span class="ar">↕</span></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ===== RACI ===== -->
-  <div class="pane" id="pane-raci">
-    <div class="pane-head">
-      <h2>跨部门协同：责任矩阵与议题闭环</h2>
-      <p>RACI 明确每一项关键任务由谁执行、谁批准、谁被咨询、谁被告知；议题闭环看板保证「提了的事有人接、接了的事有节点」。</p>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">责任矩阵 RACI <span>R执行 · A批准 · C咨询 · I知会</span></div>
-      <table id="tbl-raci">
-        <thead>
-          <tr>
-            <th>关键任务</th>
-            <th style="text-align:center">业务战队</th>
-            <th style="text-align:center">产品线</th>
-            <th style="text-align:center">财务</th>
-            <th style="text-align:center">研发</th>
-            <th style="text-align:center">供应链</th>
-            <th style="text-align:center">总经办</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div class="tip">常见问题：一个任务出现两个 A（谁都能拍板 = 没人拍板），或只有 R 没有 A（执行层背锅）。矩阵定稿前先做这两项体检。</div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">议题闭环看板 <span>按截止日排序</span></div>
-      <table id="tbl-issue">
-        <thead>
-          <tr>
-            <th data-k="issue">议题 <span class="ar">↕</span></th>
-            <th data-k="from">提出方 <span class="ar">↕</span></th>
-            <th data-k="to">责任方 <span class="ar">↕</span></th>
-            <th data-k="due">截止 <span class="ar">↕</span></th>
-            <th data-k="st">状态 <span class="ar">↕</span></th>
-            <th data-k="esc">升级路径 <span class="ar">↕</span></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ===== 决策包 ===== -->
-  <div class="pane" id="pane-decide">
-    <div class="pane-head">
-      <h2>高管决策包：议题一页说清</h2>
-      <p>每个议题按「背景—选项—建议—影响—需要的决策」组织，管理层只需回答「同意 / 不同意 / 要补充什么」，而不是从头听背景。</p>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">本次上会议题 <span>3 项</span></div>
-      <div id="decList"></div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">会议决议与行动项跟踪 <span>到人到日</span></div>
-      <table id="tbl-action">
-        <thead>
-          <tr>
-            <th data-k="act">行动项 <span class="ar">↕</span></th>
-            <th data-k="by">责任人 <span class="ar">↕</span></th>
-            <th data-k="due">截止 <span class="ar">↕</span></th>
-            <th data-k="prog" class="num">进度 <span class="ar">↕</span></th>
-            <th data-k="st">状态 <span class="ar">↕</span></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div class="tip">
-        决策包的关键不是「写得多」，而是<b>把决策点显性化</b>：每个议题都要明确「今天需要老板决定什么」。会后再用行动项表闭环，避免「会上都同意、会后没人动」。
+    <div class="input-bar">
+      <div class="input-wrap">
+        <textarea id="input" rows="1" placeholder="试试问知识库里的内容，或换个问法观察排序变化"></textarea>
+        <button class="send-btn" id="send">发送</button>
       </div>
+      <div class="hint">检索为真实 BM25+TF-IDF 算法 · 回答默认 TextRank 抽取式 · 填写大模型配置后切换生成式</div>
     </div>
-  </div>
-
+  </main>
 </div>
+
+<script src="rag-engine.js"></script>
 
 <script>
-// ================= 数据（脱敏示意） =================
-const MAP = {
-  '财务结果': [
-    { t:'销售目标达成', o:'业务战队' }, { t:'利润总额保障', o:'财务 / 总经办' },
-    { t:'毛利率提升', o:'产品线 / 财务' }, { t:'资产效率提升', o:'财务' }
-  ],
-  '客户与市场': [
-    { t:'目标客户份额提升', o:'业务战队' }, { t:'白点客户突破', o:'业务战队' },
-    { t:'产品竞争力', o:'产品线' }, { t:'客户关系深化', o:'业务战队' }
-  ],
-  '内部流程': [
-    { t:'成本竞争力', o:'供应链 / 制造' }, { t:'卓越质量', o:'质量' },
-    { t:'准时交付', o:'研发 / 制造' }, { t:'技术传承与突破', o:'研发' }
-  ],
-  '学习成长': [
-    { t:'组织架构配称', o:'总经办 / HR' }, { t:'人才培养与发展', o:'HR' },
-    { t:'数智化建设', o:'IT' }, { t:'文化与雇主品牌', o:'HR' }
-  ]
+// ============ 语料：双知识域 ============
+const STRATEGY_CORPUS = [{"id": "K01", "title": "公司级战略规划 V12", "category": "strategy", "cat": "公司战略", "content": "公司战略正式文件迭代至 V12，经 4 轮管理层汇报后上报集团。规划周期聚焦十五五（2026—2030），收敛形成 50 项公司级重点工作。战略体系为\"公司—战队—产品线—职能\"四级结构。", "keywords": ["公司战略", "V12", "十五五", "50项", "四级", "上报集团", "规划周期", "2026", "2030"], "numbers": ["V12", "4轮", "50项"]}, {"id": "K02", "title": "四大业务战队战略 · 德系", "category": "biz", "cat": "业务战队", "content": "德系战队（含大众、奥迪、捷达三个客户体系）在十四五期间整体未达预期，是 GAP 复盘中的主要负向偏差来源。十五五规划重点为存量份额稳固与新能源配套产品导入，需重点说明项目清单变化原因。", "keywords": ["德系", "大众", "奥迪", "捷达", "未达预期", "负向偏差", "GAP", "份额", "新能源"], "numbers": ["3个客户体系"]}, {"id": "K03", "title": "四大业务战队战略 · 日系", "category": "biz", "cat": "业务战队", "content": "日系战队（丰田体系）表现超预期，正向偏差约 21.5 亿元，是公司整体业绩的主要支撑。十五五规划重点为产能承接能力建设与新产品同步开发节奏匹配。", "keywords": ["日系", "丰田", "超预期", "正向偏差", "21.5亿", "产能", "新产品"], "numbers": ["+21.5亿元"]}, {"id": "K04", "title": "四大业务战队战略 · 自主", "category": "biz", "cat": "业务战队", "content": "自主战队 OI 转化率 57%，低于目标水平，主要制约因素为项目获取概率偏低与部分产品竞争力不足。十五五规划重点为提升中标率、优化报价策略与产品组合。", "keywords": ["自主", "OI", "转化率", "57%", "中标率", "报价", "产品组合"], "numbers": ["57%"]}, {"id": "K05", "title": "四大业务战队战略 · 代工", "category": "biz", "cat": "业务战队", "content": "代工战队定位为产能利用率调节与风险分散，十五五规划重点为优质代工客户筛选与装载率提升，需与自制产能排产统筹考虑。", "keywords": ["代工", "产能利用", "装载率", "风险分散", "排产"], "numbers": []}, {"id": "K06", "title": "五条产品线规划 P01—P05", "category": "biz", "cat": "产品线", "content": "产品线划分为 P01 至 P05 五条，规划编制需明确各产品线的技术路线、目标客户、生命周期阶段与销量预测。产品战略汇报需与业务战队战略对齐，避免重复投入与资源冲突。", "keywords": ["P01", "P02", "P03", "P04", "P05", "产品线", "技术路线", "生命周期", "销量预测"], "numbers": ["5条"]}, {"id": "K07", "title": "七大职能模块战略承接", "category": "func", "cat": "职能模块", "content": "七大职能模块包括财务、研发、制造、质量、供应链、人力资源、信息技术。职能战略需承接业务侧资源需求，形成\"业务提需求—职能给承接\"的闭环。2025 年 6 月启动职能战略，10 月完成承接排期。", "keywords": ["财务", "研发", "制造", "质量", "供应链", "人力资源", "信息技术", "职能", "承接"], "numbers": ["7大模块"]}, {"id": "K08", "title": "销售预测体系与口径规则", "category": "topic", "cat": "预测管理", "content": "销售预测按统一模板组织四大战队更新，逐项核对项目归属、获取概率（Chance）、生命周期、装载率、单价年降、量纲对应与预算衔接。累计维护 14 个迭代版本，单版本模型含公式与计算链路超 1,300 万字符。", "keywords": ["销售预测", "模板", "Chance", "装载率", "单价年降", "量纲", "预算", "14个版本", "1300万"], "numbers": ["14版", "1300万字符"]}, {"id": "K09", "title": "项目风险分级标准", "category": "topic", "cat": "风险管控", "content": "建立项目风险分级标准：获取概率 Chance ≤50% 为高风险，50—80% 为中风险，80—100% 为低风险。同时按技术、客户、质量、成本四个维度做竞争性判断，风险结论纳入预测复核流程。", "keywords": ["风险分级", "Chance", "高风险", "中风险", "低风险", "技术", "客户", "质量", "成本", "四维"], "numbers": ["3档+4维"]}, {"id": "K10", "title": "十四五 GAP 差距分析报告", "category": "topic", "cat": "差距分析", "content": "差距分析覆盖德系、日系、自主三大板块。要求各战队从三个层面解释差异：一为项目变化（清单增减），二为内外部成因（市场、客户、竞争），三为举措对应关系（已采取/拟采取什么动作）。", "keywords": ["GAP", "差距分析", "项目变化", "成因", "举措", "三层", "德系", "日系", "自主"], "numbers": ["3大板块", "3层解释"]}, {"id": "K11", "title": "战略课题管理改善方案", "category": "topic", "cat": "课题治理", "content": "识别三类核心问题：①课题大而全、②与 2030 目标支撑关系不清、③日常运营与战略工作混同。提出\"战略—项目组合—项目分解\"三层治理结构，并配套战略性工作定义、负责人激励机制与战略预算机制。", "keywords": ["课题", "治理", "大而全", "2030", "三层治理", "项目组合", "激励", "预算"], "numbers": ["3类问题", "3层治理"]}, {"id": "K12", "title": "战略地图（2025版 / 2026版）", "category": "strategy", "cat": "战略地图", "content": "战略地图年度迭代，完成 2025 版与 2026 版，输出业务、产品、职能、课题四类主题的匹配与调整建议。战略地图用于将战略意图转化为各层级可执行的举措序列。", "keywords": ["战略地图", "2025版", "2026版", "主题", "举措", "迭代", "业务", "产品", "职能", "课题"], "numbers": ["2个版本"]}, {"id": "K13", "title": "战略管理程序文件", "category": "func", "cat": "流程制度", "content": "独立拟制与修订 4 类程序文件：《公司级战略》CP-027-04 V6.0、《业务/职能级战略》、《战略课题管理》、《战略宣贯》。设计战略文件分级管控机制：跨部门查阅须经双审批、由总经办统一发放，实现全流程可追溯。", "keywords": ["程序文件", "CP-027-04", "V6.0", "战略宣贯", "双审批", "分级管控", "保密", "追溯"], "numbers": ["4类文件"]}, {"id": "K14", "title": "年度部门方针与 KPI/MBO 管理", "category": "func", "cat": "指标管理", "content": "完成年度全部部门方针的修订与签署确认，实现方针与战略举措逐条对应。协同开展公司及部门方针、KPI 与 MBO 的核对、签批与反馈，确保战略目标在指标层可追踪。", "keywords": ["方针", "KPI", "MBO", "签批", "指标", "战略举措", "逐条对应"], "numbers": []}, {"id": "K15", "title": "十五五目标论证材料", "category": "strategy", "cat": "目标论证", "content": "组织公司级战略会开展十五五目标论证与课题规划。论证需回答三个问题：目标是否与市场容量匹配、是否有项目支撑、资源投入是否可承受。论证结论纳入战略课题立项依据。", "keywords": ["十五五", "目标论证", "战略会", "市场容量", "项目支撑", "资源投入", "课题立项"], "numbers": []}];
+
+const STRATEGY_DOCS = STRATEGY_CORPUS.map((d, i) => ({
+  id: 'S' + String(i + 1).padStart(2, '0'),
+  domain: 'strategy',
+  title: d.title,
+  text: (d.content || '') + ' ' + (d.keywords || []).join(' '),
+  meta: { cat: d.category || '战略', src: '战略材料库' }
+}));
+
+const JD_DOCS = (window.JD_CORPUS || []).map((d) => ({
+  id: d.id,
+  domain: 'jd',
+  title: d.title + '｜' + (d.company || ''),
+  text: (d.text || ''),
+  meta: { salary: d.meta?.salary || '', city: d.meta?.city || '', dir: d.meta?.dir || '', src: d.meta?.src || '' }
+}));
+
+const DOMAINS = {
+  strategy: { name: '战略规划知识库', docs: STRATEGY_DOCS, color: '#38a169',
+    intro: '知识库为 <b>15 个战略材料结构化片段</b>（公司战略 V12、四大战队、预测口径、风险分级、课题治理、流程制度）。',
+    suggests: [
+      { tag: '战略体系', q: '公司的四级战略体系是怎么构成的？' },
+      { tag: '预测管理', q: '销售预测的口径校验包含哪些项？' },
+      { tag: '课题治理', q: '战略课题管理存在什么问题？改善方案是什么？' },
+      { tag: '风险规则', q: '项目风险分级标准是怎么定的？' } ] }
 };
-const DECODE = [
-  { init:'提升核心客户份额', layer:'客户与市场', owner:'业务战队（德系）', kpi:'内部客户市占率 ≥ 21%', w:12, st:'跟踪中' },
-  { init:'成本竞争力提升', layer:'内部流程', owner:'供应链 + 制造', kpi:'核心 BOM 成本年降 3%', w:10, st:'跟踪中' },
-  { init:'技术平台国产化', layer:'内部流程', owner:'研发 + 产品线', kpi:'国产化方案覆盖 ≥ 2 条产品线', w:8, st:'延期风险' },
-  { init:'战略课题治理', layer:'学习成长', owner:'总经办', kpi:'课题准时跟进率 ≥ 95%', w:6, st:'正常' },
-  { init:'质量成本优化', layer:'内部流程', owner:'质量', kpi:'质量成本率下降 0.5pt', w:7, st:'正常' },
-  { init:'数智化系统建设', layer:'学习成长', owner:'IT', kpi:'关键流程线上化 ≥ 80%', w:5, st:'未启动' }
-];
-const GAP = [
-  { unit:'德系业务', type:'业绩差距', amt:-4.2, cause:'重点车型项目未获取，节奏延后', act:'锁定替代项目，重排定点节奏', by:'战队负责人' },
-  { unit:'日系业务', type:'业绩差距', amt:1.8,  cause:'存量客户上量超预期', act:'补充产能与交付保障', by:'战队负责人' },
-  { unit:'自主业务', type:'机会差距', amt:-3.1, cause:'外部新客户未突破', act:'明确目标客户与进入路径', by:'战队 + 产品线' },
-  { unit:'代工业务', type:'机会差距', amt:-2.4, cause:'集团外代工机会未识别', act:'建立机会清单与报价能力', by:'代工团队' },
-  { unit:'产品线溢价', type:'业绩差距', amt:-3.5, cause:'产品魅点未转化为报价能力', act:'魅点清单化，进入报价模板', by:'产品线' },
-  { unit:'成本端', type:'业绩差距', amt:-1.6, cause:'降本举措落地慢于计划', act:'按项目分解到月，纳入点检', by:'供应链' }
-];
-const RACI = [
-  { task:'年度战略规划编制', cells:['C','C','C','C','C','A'], note:'' },
-  { task:'销售预测与口径校验', cells:['R','C','C','I','I','A'], note:'' },
-  { task:'战略课题立项与推进', cells:['R','R','I','C','C','A'], note:'' },
-  { task:'部门方针与 KPI 签批', cells:['C','C','C','C','C','A'], note:'' },
-  { task:'关键客户项目定点', cells:['R','C','I','R','C','I'], note:'' },
-  { task:'经营风险预警处置', cells:['C','I','R','C','R','A'], note:'' }
-];
-const ISSUE = [
-  { issue:'国产化方案 B 点认证进度滞后', from:'研发', to:'研发 + 供应链', due:'10-31', st:'进行中', esc:'两周未闭环 → 升级至管理层' },
-  { issue:'代工报价模型缺失', from:'代工团队', to:'财务 + 总经办', due:'11-08', st:'待启动', esc:'逾期 → 列入月度经营会' },
-  { issue:'预测口径与财务预算不一致', from:'财务', to:'总经办', due:'11-15', st:'进行中', esc:'差异 > 5% → 专项研讨' },
-  { issue:'质量成本数据来源不统一', from:'质量', to:'质量 + IT', due:'11-30', st:'待启动', esc:'跨部门 → 总经办协调' },
-  { issue:'组织变革建议未形成方案', from:'HR', to:'总经办', due:'12-15', st:'进行中', esc:'逾期 → 提交管理层决策' }
-];
-const DECIDE = [
-  {
-    t:'议题一：2027 年是否增设国产化技术中心',
-    body:'背景：国产化替代从「点状推进」转为「体系推进」，当前缺专职统筹与技术载体。<br><b>建议：</b>先以虚拟小组形式试运行 6 个月，再决定是否实体化。',
-    opts:['方案 A：立即实体化（投入 大）','方案 B：虚拟小组试运行 6 个月（推荐）','方案 C：维持现状（风险 高）'],
-    rec:1
-  },
-  {
-    t:'议题二：代工业务是否单列考核口径',
-    body:'背景：代工业务的盈利结构与自研差异大，混在一起考核会掩盖真实贡献。<br><b>建议：</b>单列毛利口径，与自研分账管理。',
-    opts:['方案 A：维持合并口径','方案 B：单列毛利口径（推荐）'],
-    rec:1
-  },
-  {
-    t:'议题三：战略课题数量是否从 6 项收敛至 4 项',
-    body:'背景：课题数量过多导致资源分散，日常运营工作与战略性工作混同。<br><b>建议：</b>收敛至 4 项，并明确每项的战略控制点。',
-    opts:['方案 A：维持 6 项','方案 B：收敛至 4 项（推荐）'],
-    rec:1
-  }
-];
-const ACTION = [
-  { act:'国产化技术中心方案（试运行版）', by:'研发负责人', due:'11-10', prog:40, st:'进行中' },
-  { act:'代工业务毛利口径测算', by:'财务', due:'11-08', prog:70, st:'进行中' },
-  { act:'战略课题收敛清单与责任人确认', by:'总经办', due:'11-15', prog:20, st:'进行中' },
-  { act:'部门方针指标权重复核', by:'总经办 + HR', due:'11-20', prog:0, st:'待启动' },
-  { act:'经营风险预警指标口径统一', by:'财务 + 质量', due:'11-30', prog:55, st:'进行中' }
-];
 
-// ================= 渲染 =================
-function renderMap(){
-  const levelCls = { '财务结果':'lv1', '客户与市场':'lv2', '内部流程':'lv3', '学习成长':'lv4' };
-  document.getElementById('mapLayers').innerHTML = Object.entries(MAP).map(([lv, items])=>{
-    return `<div class="map-layer">
-      <div class="map-side ${levelCls[lv]}">${lv.replace('与','<br>与')}</div>
-      <div class="map-items">
-        ${items.map(i=>`<div class="map-item"><b>${i.t}</b><span class="owner">${i.o}</span></div>`).join('')}
-      </div>
-    </div>`;
-  }).join('');
-}
+let curDomain = 'strategy';
+let lastResult = null;
+const chatEl = document.getElementById('chat');
+const inputEl = document.getElementById('input');
+const sendBtn = document.getElementById('send');
 
-function renderDecode(){
-  document.querySelector('#tbl-decode tbody').innerHTML = DECODE.map(d=>{
-    const cls = d.st==='正常'?'b-low':d.st==='跟踪中'?'b-blue':d.st==='延期风险'?'b-mid':'b-hi';
-    return `<tr>
-      <td>${d.init}</td><td>${d.layer}</td><td>${d.owner}</td>
-      <td style="font-size:11.5px">${d.kpi}</td>
-      <td class="num">${d.w}%</td>
-      <td><span class="badge ${cls}">${d.st}</span></td>
-    </tr>`;
-  }).join('');
-}
-
-function renderGap(){
-  const max = Math.max(...GAP.map(g=>Math.abs(g.amt)));
-  document.getElementById('gapBars').innerHTML = GAP.map(g=>{
-    const pct = Math.abs(g.amt)/max*50;
-    const cls = g.amt<0?'neg':'pos';
-    return `<div class="gap-row">
-      <div class="gap-name">${g.unit}</div>
-      <div class="gap-track"><div class="gap-mid"></div>
-        <div class="gap-bar ${cls}" style="width:${pct}%"></div>
-      </div>
-      <div class="gap-val" style="color:${g.amt<0?'#c53030':'#2f855a'}">${g.amt>0?'+':''}${g.amt.toFixed(1)}</div>
-    </div>`;
-  }).join('');
-  document.querySelector('#tbl-gap tbody').innerHTML = GAP.slice().sort((a,b)=>a.amt-b.amt).map(g=>{
-    const cls = g.type==='机会差距'?'b-mid':'b-hi';
-    return `<tr>
-      <td>${g.unit}</td>
-      <td><span class="badge ${cls}">${g.type}</span></td>
-      <td class="num" style="color:${g.amt<0?'#c53030':'#2f855a'}">${g.amt>0?'+':''}${g.amt.toFixed(1)}</td>
-      <td style="font-size:11.5px;color:#4a5568">${g.cause}</td>
-      <td style="font-size:11.5px;color:#4a5568">${g.act}</td>
-      <td>${g.by}</td>
-    </tr>`;
-  }).join('');
-}
-
-function renderRaci(){
-  document.querySelector('#tbl-raci tbody').innerHTML = RACI.map(r=>{
-    const cells = r.cells.map(c=>`<td><span class="raci-cell raci-${c.toLowerCase()}">${c}</span></td>`).join('');
-    return `<tr><td style="font-size:11.5px">${r.task}</td>${cells}</tr>`;
-  }).join('');
-  document.querySelector('#tbl-issue tbody').innerHTML = ISSUE.map(i=>{
-    const cls = i.st==='进行中'?'b-blue':i.st==='待启动'?'b-neutral':'b-low';
-    return `<tr>
-      <td>${i.issue}</td><td>${i.from}</td><td>${i.to}</td>
-      <td style="font-variant-numeric:tabular-nums">${i.due}</td>
-      <td><span class="badge ${cls}">${i.st}</span></td>
-      <td style="font-size:11px;color:#8b95a5">${i.esc}</td>
-    </tr>`;
-  }).join('');
-}
-
-function renderDecide(){
-  document.getElementById('decList').innerHTML = DECIDE.map(d=>`
-    <div class="dec">
-      <div class="dec-hd"><span>${d.t}</span></div>
-      <div class="dec-body">${d.body}</div>
-      <div class="opt">${d.opts.map((o,idx)=>`<span class="${idx===d.rec?'rec':''}">${o}</span>`).join('')}</div>
-    </div>`).join('');
-  document.querySelector('#tbl-action tbody').innerHTML = ACTION.map(a=>{
-    const cls = a.st==='进行中'?'b-blue':a.st==='待启动'?'b-neutral':'b-low';
-    return `<tr>
-      <td>${a.act}</td><td>${a.by}</td>
-      <td style="font-variant-numeric:tabular-nums">${a.due}</td>
-      <td class="num">${a.prog}%</td>
-      <td><span class="badge ${cls}">${a.st}</span></td>
-    </tr>`;
-  }).join('');
-}
-
-// 表格排序
-function bindSort(id){
-  const tbl=document.getElementById(id); if(!tbl)return;
-  const dir={};
-  tbl.querySelectorAll('th').forEach(th=>{
-    if(!th.dataset.k)return;
-    th.addEventListener('click',()=>{
-      const k=th.dataset.k; dir[k]=!dir[k];
-      tbl.querySelectorAll('th').forEach(x=>{x.classList.remove('sorted');const a=x.querySelector('.ar');if(a)a.textContent='↕';});
-      th.classList.add('sorted'); th.querySelector('.ar').textContent=dir[k]?'↑':'↓';
-      const tbody=tbl.querySelector('tbody'), rows=[...tbody.querySelectorAll('tr')];
-      const idx=[...tbl.querySelectorAll('th')].indexOf(th);
-      rows.sort((a,b)=>{
-        const va=a.children[idx].textContent.trim(), vb=b.children[idx].textContent.trim();
-        const na=parseFloat(va.replace(/[^\d.\-]/g,'')), nb=parseFloat(vb.replace(/[^\d.\-]/g,''));
-        const c=(!isNaN(na)&&!isNaN(nb))?na-nb:va.localeCompare(vb,'zh');
-        return dir[k]?c:-c;
-      });
-      rows.forEach(r=>tbody.appendChild(r));
+// ============ 引擎初始化 / 域切换 ============
+function renderDocList(cfg) {
+  const dl = document.getElementById('docList');
+  dl.innerHTML = '';
+  const byCat = {};
+  cfg.docs.forEach(d => {
+    const cat = (d.meta && (d.meta.dir || d.meta.cat)) || '其他';
+    (byCat[cat] = byCat[cat] || []).push(d);
+  });
+  Object.keys(byCat).forEach(cat => {
+    dl.insertAdjacentHTML('beforeend', `<div class="doc-list-title">${cat}（${byCat[cat].length}）</div>`);
+    byCat[cat].forEach(d => {
+      const sub = d.meta.salary ? ` · ${d.meta.salary}` : '';
+      dl.insertAdjacentHTML('beforeend',
+        `<div class="doc-item"><span class="doc-dot" style="background:${cfg.color}"></span><span>${esc(d.title)}${esc(sub)}</span></div>`);
     });
   });
 }
-
-// Tab
-
-// 支持 #tab=xxx 直达（便于分享与截图）
-function activateTab(key){
-  const t = document.querySelector('.tab[data-tab="'+key+'"]');
-  if(!t) return;
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  const pane = document.getElementById('pane-'+key);
-  if(pane) pane.classList.add('active');
+function renderSuggests(cfg) {
+  const sug = document.getElementById('suggests');
+  sug.innerHTML = '';
+  cfg.suggests.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'suggest';
+    b.innerHTML = `<span class="suggest-tag">${s.tag}</span>${esc(s.q)}`;
+    b.onclick = () => { inputEl.value = s.q; ask(); };
+    sug.appendChild(b);
+  });
 }
-(function(){
-  const m = location.hash.match(/tab=([\w-]+)/);
-  if(m) activateTab(m[1]);
-  // #hash-tab 标记
-})();
-addEventListener('hashchange', ()=>{
-  const m = location.hash.match(/tab=([\w-]+)/);
-  if(m) activateTab(m[1]);
-});
-// #hash-tab
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById('pane-'+t.dataset.tab).classList.add('active');
+function switchDomain(dom) {
+  curDomain = dom;
+  const cfg = DOMAINS[dom];
+  window.RAG.buildIndex(cfg.docs);
+  window.RAG.resetFeedback();
+  lastResult = null;
+  // 先清空对话并重建欢迎区（此时 welcome 可能已被移除，必须先重建再填充）
+  chatEl.innerHTML = '';
+  const w = document.createElement('div');
+  w.className = 'welcome'; w.id = 'welcome';
+  w.innerHTML = `<h2 id="welcomeTitle"></h2><p id="domainIntro"></p><div class="suggests" id="suggests"></div>`;
+  chatEl.appendChild(w);
+  w.querySelector('#welcomeTitle').textContent = cfg.name + ' · 索引已重建';
+  w.querySelector('#domainIntro').innerHTML = cfg.intro;
+  const sug = w.querySelector('.suggests');
+  cfg.suggests.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'suggest';
+    b.innerHTML = `<span class="suggest-tag">${s.tag}</span>${esc(s.q)}`;
+    b.onclick = () => { inputEl.value = s.q; ask(); };
+    sug.appendChild(b);
   });
+  // 侧栏统计与文档列表
+  document.getElementById('domainName').textContent = '· ' + cfg.name;
+  document.getElementById('stDocs').textContent = cfg.docs.length;
+  document.getElementById('stTerms').textContent = Object.keys(window.RAG.getIndex().idf).length;
+  document.getElementById('stFeedback').textContent = '0';
+  document.getElementById('chipFeedback').textContent = 'Rocchio 反馈：未启用';
+  renderDocList(cfg);
+}
+document.querySelectorAll('.domain-btn').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.domain-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    switchDomain(b.dataset.domain);
+  };
 });
 
-// 年度切换：轻微扰动数据，展示口径可切换
-document.querySelectorAll('#cycle button').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('#cycle button').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');
-    const is2027 = b.dataset.y==='2027';
-    document.getElementById('g-target').innerHTML = (is2027?95:80) + '<small>亿元</small>';
-    document.getElementById('g-actual').innerHTML = (is2027?79:67) + '<small>亿元</small>';
-    document.getElementById('g-total').innerHTML = (is2027?-16:-13) + '<small>亿元</small>';
-    document.getElementById('g-opp').innerHTML = (is2027?-6:-5) + '<small>亿元</small>';
-  });
-});
+// ============ LLM 配置 ============
+const llmPanel = document.getElementById('llmPanel');
+document.getElementById('btnLlm').onclick = () => llmPanel.classList.toggle('show');
+const LLM_CFG_KEY = 'rag_llm_cfg';
+function loadLlmCfg() {
+  try {
+    const c = JSON.parse(localStorage.getItem(LLM_CFG_KEY) || '{}');
+    if (c.url) document.getElementById('llmUrl').value = c.url;
+    if (c.key) document.getElementById('llmKey').value = c.key;
+    if (c.model) document.getElementById('llmModel').value = c.model;
+  } catch (e) {}
+}
+function llmCfg() {
+  const c = { url: document.getElementById('llmUrl').value.trim(),
+              key: document.getElementById('llmKey').value.trim(),
+              model: document.getElementById('llmModel').value.trim() };
+  return (c.url && c.key && c.model) ? c : null;
+}
+loadLlmCfg();
 
-// 初始化
-renderMap(); renderDecode(); renderGap(); renderRaci(); renderDecide();
-bindSort('tbl-decode'); bindSort('tbl-gap'); bindSort('tbl-issue'); bindSort('tbl-action');
+// ============ 工具 ============
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function addUser(text) {
+  chatEl.insertAdjacentHTML('beforeend', `<div class="msg msg-user"><div class="bubble"></div></div>`);
+  chatEl.lastChild.querySelector('.bubble').textContent = text;
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+function addAi(html) {
+  chatEl.insertAdjacentHTML('beforeend', `<div class="msg msg-ai"><div class="avatar">AI</div><div class="ai-body"><div class="answer">${html}</div></div></div>`);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return chatEl.lastChild.querySelector('.answer');
+}
+function typing() {
+  chatEl.insertAdjacentHTML('beforeend', `<div class="msg msg-ai" id="typing"><div class="avatar">AI</div><div class="ai-body"><div class="answer"><div class="typing"><span></span><span></span><span></span></div></div></div></div>`);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+function sourceCards(hits) {
+  let h = `<div class="sources"><div class="sources-label">引用来源（${hits.length}）· 综合 = 0.6·BM25norm + 0.4·cos</div>`;
+  hits.forEach(h2 => {
+    const d = h2.doc;
+    const meta = [d.meta.salary, d.meta.city, d.meta.dir, d.meta.src].filter(Boolean).join(' · ');
+    h += `<div class="source-card"><div class="src-top"><span class="src-title">${esc(d.id)} ${esc(d.title)}</span>
+      <span class="src-scores">综合 <b>${h2.score.toFixed(3)}</b>｜BM25 ${h2.bm.toFixed(2)}｜cos ${h2.cos.toFixed(3)}</span></div>
+      ${meta ? esc(meta) + '<br>' : ''}${esc((d.text || '').slice(0, 90))}…</div>`;
+  });
+  return h + '</div>';
+}
+
+// ============ 抽取式回答（TextRank） ============
+function extractiveAnswer(query, res) {
+  const hits = res.hits;
+  if (!hits.length) {
+    return `<h3>未命中</h3><p>当前知识域中没有与「${esc(query)}」相关的文档。试试换用库内词汇，或切换知识域。</p>`;
+  }
+  const context = hits.map(h => `【${h.doc.title}】${h.doc.text}`).join('\n');
+  const sents = window.RAG.textrank(context, 4);
+  let h = `<h3>回答 <span class="mode-badge mode-extract">抽取式 · TextRank</span></h3>
+    <p>${sents.map(esc).join('')}</p>`;
+  const nums = [];
+  hits.forEach(h2 => {
+    (h2.doc.text.match(/\d+(?:\.\d+)?\s*(?:万|亿|k|K|%)|V\d+|\d+项|\d+个版本|\d+轮/g) || []).slice(0, 3)
+      .forEach(n => nums.push(n.trim()));
+  });
+  if (nums.length) h += `<h3>关键数字</h3><p>` + [...new Set(nums)].slice(0, 8).map(n => `<span class="kpi-inline">${esc(n)}</span>`).join(' ') + `</p>`;
+  return h;
+}
+
+// ============ 生成式回答（LLM 可选） ============
+async function llmAnswer(query, res) {
+  const cfg = llmCfg();
+  const hits = res.hits.slice(0, 4);
+  const context = hits.map((h, i) =>
+    `【文档${i + 1}】${h.doc.title}（${[h.doc.meta.salary, h.doc.meta.city, h.doc.meta.dir].filter(Boolean).join(' · ')}）\n${h.doc.text.slice(0, 900)}`).join('\n\n');
+  const sys = '你是严谨的岗位知识库问答助手。只依据给出的参考文档回答问题；文档中没有的信息要明确说"库中未提及"；回答末尾标注引用的文档编号。中文回答，简洁分点。';
+  const body = { model: cfg.model,
+    messages: [ { role: 'system', content: sys },
+      { role: 'user', content: `参考文档：\n${context}\n\n问题：${query}` } ],
+    temperature: 0.3 };
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 30000);
+  const r = await fetch(cfg.url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.key },
+    body: JSON.stringify(body), signal: ctrl.signal });
+  clearTimeout(timer);
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const j = await r.json();
+  const text = j.choices?.[0]?.message?.content || '(空响应)';
+  return `<h3>回答 <span class="mode-badge mode-llm">生成式 · ${esc(cfg.model)}</span></h3>
+    <p style="white-space:pre-wrap">${esc(text)}</p>`;
+}
+
+// ============ 主流程 ============
+let busy = false;
+async function ask() {
+  const q = inputEl.value.trim();
+  if (!q || busy) return;
+  busy = true; sendBtn.disabled = true;
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+  addUser(q);
+  inputEl.value = ''; inputEl.style.height = 'auto';
+  typing();
+
+  try {
+    const res = window.RAG.search(q, 6);
+    lastResult = { query: q, res };
+    await new Promise(r => setTimeout(r, 450));
+    const tEl = document.getElementById('typing');
+    if (tEl) tEl.remove();
+
+    const cfg = llmCfg();
+    const fbTarget = res.hits.slice(0, 3).map(h => h.doc.id);
+    let html;
+    if (cfg) {
+      try { html = await llmAnswer(q, res); }
+      catch (e) { html = extractiveAnswer(q, res).replace('抽取式 · TextRank', '抽取式 · TextRank（LLM 调用失败：' + esc(String(e).slice(0, 40)) + '，已回退）'); }
+    } else {
+      html = extractiveAnswer(q, res);
+    }
+    const ex = res.explain;
+    const detail = `<details class="explain"><summary>检索过程明细（点击展开）</summary>
+      <div class="detail-panel"><b>查询分词：</b>${esc(res.qTokens.slice(0, 18).join(' / '))}<br>
+      <b>排序公式：</b>${esc(ex.formula)}<br>
+      <b>Rocchio 反馈：</b>${ex.feedbackActive ? '已启用（' + ex.feedbackLog.length + ' 轮训练生效中）' : '未启用'}<br>
+      <b>Top 命中：</b>${res.hits.slice(0, 4).map(h => h.doc.id + '(' + h.score.toFixed(2) + ')').join(' ')}<br>
+      <b>候选范围：</b>${res.hits.length} / 索引 ${DOMAINS[curDomain].docs.length} 条</div></details>`;
+    const fb = `<div class="fb-row">
+      <button class="fb-btn" data-fb="1" data-di='${esc(JSON.stringify(fbTarget))}'>👍 结果有用（强化）</button>
+      <button class="fb-btn" data-fb="0" data-di='${esc(JSON.stringify(fbTarget))}'>👎 不相关（抑制）</button>
+      <span class="fb-note"></span></div>`;
+
+    addAi(html + fb + detail + sourceCards(res.hits));
+    chatEl.querySelectorAll('.fb-btn:not([data-bound])').forEach(b => {
+      if (b.dataset.bound) return; b.dataset.bound = '1';
+      b.onclick = () => {
+        const pos = b.dataset.fb === '1';
+        const ids = JSON.parse(b.dataset.di);
+        const dis = ids.map(id => DOMAINS[curDomain].docs.findIndex(x => x.id === id)).filter(i => i > -1);
+        const log = window.RAG.feedback(dis, window.RAG.tokenize(lastResult.query), pos);
+        document.getElementById('stFeedback').textContent = Number(document.getElementById('stFeedback').textContent) + 1;
+        document.getElementById('chipFeedback').textContent = 'Rocchio 反馈：已启用（' + log.topTerms.join('/') + '）';
+        const note = b.parentElement.querySelector('.fb-note');
+        if (note) note.textContent = '✓ 查询向量已调整（' + (pos ? '强化' : '抑制') + '：' + log.topTerms.join('/') + '），下次检索生效';
+      };
+    });
+  } catch (e) {
+    const tEl = document.getElementById('typing');
+    if (tEl) tEl.remove();
+    addAi(`<h3>出错了</h3><p>${esc(String(e).slice(0, 120))}</p>`);
+  }
+  busy = false; sendBtn.disabled = false;
+  inputEl.focus();
+}
+
+sendBtn.onclick = ask;
+inputEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(); } });
+inputEl.addEventListener('input', () => { inputEl.style.height = 'auto'; inputEl.style.height = Math.min(inputEl.scrollHeight, 96) + 'px'; });
+
+// ============ 启动 ============
+switchDomain('strategy');
+inputEl.focus();
 </script>
 </body>
 </html>
